@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
-    private static final String ARCHIVE_VERSION = Optional.ofNullable(Start.class.getPackage().getImplementationVersion()).orElse("v1.2.1-BETA");
+    private static final String ARCHIVE_VERSION = Optional.ofNullable(AnsiEscapes.shiftVersionTags(Start.class.getPackage().getImplementationVersion())).orElse("LATEST");
     private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
 
     public static void main(String[] args) {

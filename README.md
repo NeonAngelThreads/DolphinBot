@@ -1,6 +1,6 @@
 # DolphinMinecraftBot-Reloaded
 <p align="center">
-   <img src="assets/logo.jpg" width="300" height="300">
+   <img src="assets/logo.png" width="350" height="350">
 </p>
    <div align="center">
    ✨ A lightweight, reliable, intelligent MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
@@ -43,8 +43,8 @@
    - Automatic answer questions in `2b2t.xin` for speeding up login process.
    - Supporting to reload a plugin while the client is running on server.
 
-### Screenshots:
-
+## Screenshots:
+### Running on Windows 10:
 <p align="center">
    <img src="assets/dolphinbot1.png">
 </p>
@@ -54,7 +54,7 @@
    - [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
 - [`Terminal Interactions`]()
 
-   **Implemented Event APIs:**
+**Implemented Event APIs:**
 
 - [`Command System`](PluginDocs.md#2-commands-system)
 - [`Packet Handlers`](PluginDocs.md#3-deep-understand-dolphinapis-)
