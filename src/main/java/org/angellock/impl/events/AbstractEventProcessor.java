@@ -54,10 +54,8 @@ public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends 
             return;
         } catch (IllegalArgumentException e) {
             log.warn(ConsoleTokens.colorizeText("&6 {}"), e.getLocalizedMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
         } catch (Throwable throwable) {
-            log.warn(ConsoleTokens.colorizeText("&7 {}"), throwable.getStackTrace());
+            log.warn(ConsoleTokens.colorizeText("&8 {}"), throwable.toString());
         }
     }
 

@@ -2,6 +2,7 @@ package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
@@ -62,6 +63,10 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
     }
 
+    public void sendRegister(AbstractRobot entityBot){
+        entityBot.sendPacket(new ServerboundChatCommandPacket("reg " + entityBot.getPassword() +" "+ entityBot.getPassword()));
+    }
+
     @Override
     public void onEnable(AbstractRobot entityBot) {
         this.botInstance = entityBot;
@@ -78,7 +83,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
                         if (entityBot.getSession().isConnected()){
                             if (!this.isBypassed()) {
-                                if(this.verifyTimes < 3){
+                                if(this.verifyTimes < 2){
                                     this.verifyTimes++;
                                     entityBot.getSession().disconnect("Bypassing");
                                 }
@@ -89,10 +94,10 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
                                     this.botInstance.setBypassed(true);
 
                                     log.info(ConsoleTokens.colorizeText("&6=&aRobot verification successfully passed, sending reg command!&6="));
-                                    entityBot.sendPacket(new ServerboundChatCommandPacket("reg " + entityBot.getPassword() +" "+ entityBot.getPassword()));
+                                    this.sendRegister(entityBot);
                                     this.verifyTimes = 0;
 
-                                    Thread.sleep(3000L);
+                                    Thread.sleep(6000L);
                                     entityBot.getSession().disconnect("Exiting After Registered");
 
                                 }
@@ -110,7 +115,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             this.autoLoginThread = new Thread(() -> {
                 while (true) {
                     try {
-                        Thread.sleep((this.inQueue) ? 10000L : 1500L);
+                        Thread.sleep((this.inQueue) ? 10000L : 2500L);
                         if (!entityBot.getSession().isConnected()){
                             break;
                         }
@@ -151,7 +156,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             else if (msg.contains("请登陆")){
                 this.hasLoggedIn = false;
             } else if (msg.contains("请注册")){
-                log.info("registering");
+                this.sendRegister(entityBot);
             }
         }));
 
@@ -164,10 +169,13 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
         getListeners().add(new TitlePacketHandler().addExtraAction((titleTextPacket)->{
             String titleMsg = ((TextComponent) titleTextPacket.getText()).content();
+            getLogger().info("log-in state:"+this.hasLoggedIn);
             if(titleMsg.contains("成功")){
                 this.hasLoggedIn = true;
             } else if (titleMsg.contains("请登陆")){
                 this.hasLoggedIn = false;
+            } else if (titleMsg.contains("请注册")){
+                this.sendRegister(entityBot);
             }
         }));
 

@@ -40,7 +40,7 @@ public class BotManager extends ResourceHelper {
         if (option != null) {
             return option.replaceAll("\"", "").split(";");
         }
-        log.warn(ConsoleTokens.colorizeText("&eBot profiles argument&3('--profiles')&e was &6NOT-SET&e, will load all of bots inside profile config file."));
+        log.warn(ConsoleTokens.colorizeText("&eBot profiles argument&3('--profiles')&e was &6NOT-SET&e, it will load all of bots inside profile config file."));
         return new String[0];
     }
     public BotManager loadProfiles(String profileString){
@@ -129,6 +129,10 @@ public class BotManager extends ResourceHelper {
             selected.getMessageManager().putMessage(string);
             last = selected;
         }
+    }
+
+    public Map<String, RobotPlayer> getBots() {
+        return bots;
     }
 
     public void startAll(){

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6ConfigManager"));
-    private final Map<Object, Object> cache = new HashMap<>();
+    private final Map<String, Object> cache = new HashMap<>();
     private final ResourceHelper configHelper;
     public ConfigManager(OptionSet optionList, @Nullable String defaultPath){
         for (OptionSpec<?> option: optionList.specs()){
@@ -38,8 +38,8 @@ public class ConfigManager {
         return this.cache;
     }
 
-    public Object getConfigValue(Object key) {
-        return this.cache.get(key);
+    public String getConfigValue(String key) {
+        return (String) this.cache.get(key);
     }
 
     private void loadConfig(){

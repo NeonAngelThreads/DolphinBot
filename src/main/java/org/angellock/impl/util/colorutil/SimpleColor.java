@@ -2,7 +2,6 @@ package org.angellock.impl.util.colorutil;
 
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.IComparable;
-import org.jetbrains.annotations.NotNull;
 
 public class SimpleColor implements IComparable<ConsoleTokens> {
     private short R;

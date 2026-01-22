@@ -1,6 +1,6 @@
 # DolphinMinecraftBot-Reloaded
 <p align="center">
-   <img src="assets/logo.png" width="350" height="350">
+   <img src="assets/logo.jpg" width="350" height="350">
 </p>
    <div align="center">
    ✨ A lightweight, reliable, intelligent MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
@@ -44,7 +44,7 @@
    - Supporting to reload a plugin while the client is running on server.
 
 ## Screenshots:
-### Running on Windows 10:
+### Running on Windows server 2019:
 <p align="center">
    <img src="assets/dolphinbot1.png">
 </p>
@@ -242,4 +242,30 @@ Dolphin bot supports you to hot-reload plugins in server, without quit the entir
 You can send `!reload <pluginName>` dolphin command in server chat.
 Console controlling are still in-developing, currently. 
 
-## Inputting In-game Messages from Terminal
+## Interactions from Terminal (Beta)
+- You can send in-game messages or execute commands form the dolphin bot terminal.
+- Built-in commands (In-dev)
+
+## FAQ
+
+- Can I make my plugin for dolphin bot?   
+    Yes, DolphinBot has an easy used plugin system, aggregating bukkit-like API, here is the [Full guideline for development.](PluginDocs.md)
+
+
+- Is it difficult to configure the config files?  
+    No, the initial config is highly sufficient to use for most cases.
+
+
+- How do I put issues or request features?  
+    Open an issue bar on GitHub Issues. Detailed steps or reproduce are appreciated.
+
+
+- Can I join the DolphinBot development?  
+    Sure! you can become the **first contributor** of DolphinBot team! you can join at any time freely. 
+
+## Community
+  - Encountered a bug? issues and suggestions are welcome!  
+  My Bilibili space:
+  https://m.bilibili.com/space/386644641
+
+**By NeonAngelThreads, with ❤️**

@@ -120,7 +120,6 @@ import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
 import org.angellock.impl.events.types.PlayerMoveEvent;
 import org.angellock.impl.ingame.Player;
-import org.angellock.impl.util.math.Position;
 
 public class MyListener implements IListener {
     @EventHandler(EventPriority.HIGHEST)
@@ -128,12 +127,12 @@ public class MyListener implements IListener {
         Player player = event.getPlayer();
         System.out.println("Warning! the player " + player.getName() + " is moving!");
     }
-    
+
     @EventHandler(EventPriority.LOW)
-    public void onPlayerChat(PlayerChatEvent event){
+    public void onPlayerChat(PlayerChatEvent event) {
         Player sender = event.getSender();
         String msg = event.getMessage();
-        System.out.println("In-Game message: "+sender.getName()+ " has sent "+msg);
+        System.out.println("In-Game message: " + sender.getName() + " has sent " + msg);
     }
 }
 ```

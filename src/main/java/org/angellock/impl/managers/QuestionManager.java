@@ -3,7 +3,6 @@ package org.angellock.impl.managers;
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class QuestionManager extends ResourceHelper{

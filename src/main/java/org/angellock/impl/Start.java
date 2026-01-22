@@ -4,6 +4,7 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.angellock.impl.dolphin.GUIWindowManager;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -16,12 +17,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.*;
 
 public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
-    private static final String ARCHIVE_VERSION = Optional.ofNullable(AnsiEscapes.shiftVersionTags(Start.class.getPackage().getImplementationVersion())).orElse("LATEST");
+    private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional.ofNullable(Start.class.getPackage().getImplementationVersion()).orElse("LATEST"));
     private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
-
+    private static GUIWindowManager guiManager;
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser();
 
@@ -32,8 +34,9 @@ public class Start {
         optionParser.accepts("username").withRequiredArg().ofType(String.class);
         optionParser.accepts("password").withRequiredArg().ofType(String.class);
         optionParser.accepts("server").withRequiredArg().ofType(String.class);
-        optionParser.accepts("port").withRequiredArg().ofType(Integer.class);
+        optionParser.accepts("port").withRequiredArg().ofType(String.class);
         optionParser.accepts("skin-recorder").withRequiredArg().ofType(String.class);
+        optionParser.accepts("gui");
         ArgumentAcceptingOptionSpec<String> profilesArg = optionParser.accepts("profiles").withOptionalArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> pluginDir = optionParser.accepts("plugin-dir").withOptionalArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> configFile = optionParser.accepts("config-file").withOptionalArg().ofType(String.class);
@@ -57,11 +60,21 @@ public class Start {
         ConfigManager config = new ConfigManager(parsedOption, defaultConfigPath);
         BotManager botManager = new BotManager(defaultConfigPath, ".json", config).globalPluginManager(parsedOption.valueOf(pluginDir)).loadProfiles(profiles);
 
-        AnsiEscapes.printArt(ARCHIVE_VERSION);
-        config.printConfigSpec();
+        if (parsedOption.has("gui")){
+            guiManager = new GUIWindowManager(botManager);
+            guiManager.startGUI();
+        } else {
+            AnsiEscapes.printArt(ARCHIVE_VERSION);
+            config.printConfigSpec();
 
-        log.info(ConsoleTokens.colorizeText("&8Loading bots..."));
-        botManager.startAll();
+            log.info(ConsoleTokens.colorizeText("&8Loading bots..."));
+            botManager.startAll();
+        }
+
+    }
+
+    public static String getArchiveVersion() {
+        return ARCHIVE_VERSION;
     }
 
     public static boolean isWindows() {

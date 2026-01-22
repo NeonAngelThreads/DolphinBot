@@ -129,7 +129,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
             for (SessionListener listener : listeners) {
                 if (!provider.getSession().getListeners().contains(listener)) {
-                    log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &6Injecting Event Handler Object &7&l{}"), listener.toString());
+                    log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &eInjecting Event Handler Object &l&7{}"), listener.toString());
                     provider.getSession().addListener(listener);
                 }
 

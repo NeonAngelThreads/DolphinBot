@@ -9,7 +9,6 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import org.angellock.impl.util.colorutil.SimpleColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {

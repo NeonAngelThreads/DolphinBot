@@ -63,18 +63,18 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
         this.config = configManager;
-        String playerName = (String) this.config.getConfigValue("username");
-        String serverAddress = (String) this.config.getConfigValue("server");
-        int serverPort = (Integer) this.config.getConfigValue("port");
-        this.password = (String) this.config.getConfigValue("password");
+        String playerName = this.config.getConfigValue("username");
+        String serverAddress = this.config.getConfigValue("server");
+        int serverPort = Integer.parseInt(this.config.getConfigValue("port"));
+        this.password = this.config.getConfigValue("password");
 
         this.pluginManager = pluginManager;
 
         this.server = serverAddress;
         this.name = playerName;
         this.port = serverPort;
-        this.TIME_OUT = Integer.parseInt((String) this.config.getConfigValue("connect-timing-out"));
-        this.ReconnectionDelay = Integer.parseInt((String) this.config.getConfigValue("reconnect-delay"));
+        this.TIME_OUT = Integer.parseInt(this.config.getConfigValue("connect-timing-out"));
+        this.ReconnectionDelay = Integer.parseInt(this.config.getConfigValue("reconnect-delay"));
 
     }
 

@@ -1,9 +1,7 @@
 package org.angellock.impl.events.handlers;
 
 import org.angellock.impl.events.AbstractEventProcessor;
-import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.packet.login.serverbound.ServerboundLoginAcknowledgedPacket;
 
 public class JoinedGameHandler extends AbstractEventProcessor<ServerboundLoginAcknowledgedPacket> {

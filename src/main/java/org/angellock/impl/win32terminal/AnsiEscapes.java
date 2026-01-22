@@ -37,6 +37,14 @@ public class AnsiEscapes {
         } else {
             System.out.println("Failed to set console mode.");
         }
+        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
+        try {
+            Process p = pb.start();
+            p.waitFor();
+        } catch (IOException e) {
+            System.out.println(ConsoleTokens.colorizeText("&eFailed to change and active page code to 65001.(UTF-8)"));
+        } catch (InterruptedException ignore) {
+        }
         try {
             winTerminal = TerminalBuilder.builder()
                     .system(true)
@@ -65,6 +73,10 @@ public class AnsiEscapes {
                 "&b                 | |                                   \n" +
                 "&b                 |_|                                 " + "&5VERSION  &d" + ARCHIVE_VERSION + "\n\n\n")
         );
+    }
+
+    public static String shiftVersionTags(String version){
+        return ConsoleTokens.colorizeText(version.replace("ALPHA", "&cALPHA").replace("BETA", "&6BETA").replace("RELEASE", "&aRELEASE"));
     }
 
     public static Terminal getTerminal() {
