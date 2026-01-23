@@ -12,14 +12,26 @@ public class DolphinWindow {
     private JButton restartButton;
     private JTable table1;
     private JButton open_folder;
-    private JButton add_bot;
+    private JButton add_bot = new JButton();
     private JEditorPane hFdFsdFsEditorPane;
     private JButton settings;
     private JButton start_all;
     private JButton stop_all;
     private JButton restart_all;
 
-    public DolphinWindow() {
+    private JFrame frame;
+
+    public DolphinWindow(JFrame frame) {
+        this.frame = frame;
+    }
+
+    public void initWindow() {
+        this.frame.setSize(800, 600);
+        this.frame.setContentPane(mainWindow);
+        this.frame.setVisible(true);
+    }
+    public DolphinWindow(JPanel mainWindow) {
+        this.mainWindow = mainWindow;
         add_bot.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -1,7 +1,12 @@
-# DolphinMinecraftBot-Reloaded
+# DolphinBot-Reloaded
+
 <p align="center">
    <img src="assets/logo.jpg" width="350" height="350">
+    <a href="https://www.oracle.com/java/technologies/downloads/">
+        <img src="https://forthebadge.com/images/badges/made-with-java.svg" alt="java"/>
+    </a>
 </p>
+
    <div align="center">
    ✨ A lightweight, reliable, intelligent MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
    </div>

@@ -10,18 +10,17 @@ import java.awt.*;
 import java.util.List;
 
 public class GUIWindowManager {
-    private JFrame mainWindow;
     private final BotManager botManager;
-    private final DolphinWindow window = new DolphinWindow();
+    private DolphinWindow window;
     public GUIWindowManager(BotManager botManager) {
         this.botManager = botManager;
-
-        this.mainWindow = new JFrame("DolphinBot " + Start.getArchiveVersion());
+        JFrame frame = new JFrame("DolphinBot " + Start.getArchiveVersion());
+        this.window = new DolphinWindow(frame);
     }
 
     // manager.getBots()
     public void startGUI(){
         System.out.println(botManager.getBots().toString());
-        window.getTabbedPane1().setVisible(true);
+        window.initWindow();
     }
 }

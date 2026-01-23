@@ -1,7 +1,7 @@
 {
   "profiles": {
     "bot#1": {
-      "name": "DolphinTest",
+      "name": "DolphinTest调试",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -14,7 +14,7 @@
     },
     "bot#2": {
       "name": "DolphinThread1",
-      "password": "pwd_here",
+      "password": "default_password",
       "owner": [
         "Melibertan"
       ],
