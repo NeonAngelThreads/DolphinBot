@@ -2,6 +2,7 @@
 
 <p align="center">
    <img src="assets/logo.jpg" width="350" height="350">
+   <br>
     <a href="https://www.oracle.com/java/technologies/downloads/">
         <img src="https://forthebadge.com/images/badges/made-with-java.svg" alt="java"/>
     </a>
