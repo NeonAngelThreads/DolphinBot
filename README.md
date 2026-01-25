@@ -61,9 +61,9 @@
 - [`Terminal Interactions`]()
 
 **Implemented Event APIs:**
-- [`Programmable State Machine`](PluginDocs.md#2-commands-system)
-- [`Command System`](PluginDocs.md#2-commands-system)
-- [`Packet Handlers`](PluginDocs.md#3-deep-understand-dolphinapis-)
+- [`Programmable State Machine`](PluginDocs.md#dolphins-event-listeners)
+- [`Command System`](PluginDocs.md#42-commands-system)
+- [`Packet Handlers`](PluginDocs.md#4-deep-understand-dolphinapis)
 - [`Event Handler System`](PluginDocs.md#3-register-event-handlers)
    - [`Player Events`](PluginDocs.md#player-events)
 - [`Force Unicode Chat`](PluginDocs.md#unicode-string-helper)
@@ -276,4 +276,4 @@ Console controlling are still in-developing, currently.
   My Bilibili space:
   https://m.bilibili.com/space/386644641
 
-**By NeonAngelThreads, with ❤️**
+### **By NeonAngelThreads, coding with ❤️**
