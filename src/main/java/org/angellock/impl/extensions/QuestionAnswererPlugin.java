@@ -4,7 +4,7 @@ import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.managers.QuestionManager;
-import org.angellock.impl.providers.AbstractPlugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.QuestionSerializer;
 import org.angellock.impl.util.TextComponentSerializer;

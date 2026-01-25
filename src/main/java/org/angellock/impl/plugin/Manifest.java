@@ -1,4 +1,4 @@
-package org.angellock.impl.providers;
+package org.angellock.impl.plugin;
 
 public class Manifest {
     private String entry;

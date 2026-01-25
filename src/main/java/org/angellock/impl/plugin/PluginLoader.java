@@ -1,4 +1,4 @@
-package org.angellock.impl.providers;
+package org.angellock.impl.plugin;
 
 import com.google.gson.Gson;
 import org.angellock.impl.extensions.BaseDefaultPlugin;

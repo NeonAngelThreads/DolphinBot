@@ -8,7 +8,7 @@ import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.events.handlers.TitlePacketHandler;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
-import org.angellock.impl.providers.AbstractPlugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
 import org.geysermc.mcprotocollib.auth.GameProfile;

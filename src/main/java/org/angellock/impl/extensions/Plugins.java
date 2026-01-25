@@ -1,8 +1,8 @@
 package org.angellock.impl.extensions;
 
-import org.angellock.impl.providers.Plugin;
-
 import java.lang.reflect.InvocationTargetException;
+
+import org.angellock.impl.plugin.Plugin;
 
 public enum Plugins {
     QUEUE_PLUGIN("QuestionAnswerer", QuestionAnswererPlugin.class),

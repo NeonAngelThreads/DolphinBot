@@ -3,13 +3,15 @@ package org.angellock.impl;
 import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.ConfigManager;
-import org.angellock.impl.providers.PluginManager;
+import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.math.Position;
 
+import java.util.Optional;
+
 public class RobotPlayer extends AbstractRobot {
     private long connectTime;
-    private long lastMsgTime = 0;
+    private long lastMsgTime = 0L;
     private final long msgDelay;
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
@@ -23,7 +25,7 @@ public class RobotPlayer extends AbstractRobot {
 
         }));
 
-        this.msgDelay = 3000L;
+        this.msgDelay = Long.parseLong(Optional.ofNullable(this.config.getConfigValue("msg-send-delay")).orElse("3000"));
     }
 
     @Override

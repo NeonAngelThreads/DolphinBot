@@ -4,6 +4,7 @@
   "auto-reconnecting": true,
 
   "packet-filter-delay": 3000,
+  "msg-send-delay": 3000,
   "max-chunk-view": 12,
 
   "connect-timing-out": 2000,

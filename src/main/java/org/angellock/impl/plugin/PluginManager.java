@@ -1,4 +1,4 @@
-package org.angellock.impl.providers;
+package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.managers.utils.Manager;
@@ -134,8 +134,8 @@ public class PluginManager extends Manager implements IPluginInjectable{
                 }
 
             }
+            log.info(ConsoleTokens.colorizeText("&aSuccessfully registered plugin &2{}, &dversion: &5{}, &bdescription: &3{}"), plugin.getName(), plugin.getVersion(), plugin.getDescription());
         }
-        log.info(ConsoleTokens.colorizeText("&aSuccessfully registered plugin &2{}, &dversion: &5{}, &bdescription: &3{}"), plugin.getName(), plugin.getVersion(), plugin.getDescription());
     }
 
     public void loadPlugin(AbstractRobot botInstance, File target) {

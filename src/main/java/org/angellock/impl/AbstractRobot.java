@@ -7,6 +7,7 @@ import org.angellock.impl.commands.CommandSerializer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.IDisconnectListener;
+import org.angellock.impl.events.handlers.KeepAliveHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.events.packets.AddEntityPacket;
 import org.angellock.impl.events.packets.PlayerChatPacketHandler;
@@ -16,9 +17,9 @@ import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
-import org.angellock.impl.providers.Plugin;
-import org.angellock.impl.providers.PluginManager;
-import org.angellock.impl.providers.SessionProvider;
+import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.plugin.PluginManager;
+import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlainTextSerializer;
 import org.angellock.impl.util.math.Position;
@@ -29,6 +30,7 @@ import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
+import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundKeepAlivePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,6 +173,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
             log.info(ConsoleTokens.colorizeText("&7Logged-in At Position &b{}"), packet.getPosition());
             this.loginPos.from(packet.getPosition());
         })));
+
+        this.serverSession.addListener(new KeepAliveHandler().addExtraAction((packet) -> {
+            this.serverSession.send(new ServerboundKeepAlivePacket(packet.getPingId()));
+            log.debug("KeepAlive has been sent.");
+        }));
 
         this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);

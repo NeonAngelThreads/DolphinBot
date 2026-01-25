@@ -1,7 +1,13 @@
-# DolphinMinecraftBot-Reloaded
+# DolphinBot-Reloaded
+
 <p align="center">
    <img src="assets/logo.jpg" width="350" height="350">
+   <br>
+    <a href="https://www.oracle.com/java/technologies/downloads/">
+        <img src="https://forthebadge.com/images/badges/made-with-java.svg" alt="java"/>
+    </a>
 </p>
+
    <div align="center">
    ✨ A lightweight, reliable, intelligent MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
    </div>
@@ -55,7 +61,7 @@
 - [`Terminal Interactions`]()
 
 **Implemented Event APIs:**
-
+- [`Programmable State Machine`](PluginDocs.md#2-commands-system)
 - [`Command System`](PluginDocs.md#2-commands-system)
 - [`Packet Handlers`](PluginDocs.md#3-deep-understand-dolphinapis-)
 - [`Event Handler System`](PluginDocs.md#3-register-event-handlers)
@@ -220,6 +226,7 @@ In this section, you will understand below how-tos:
           "auto-reconnecting": true,
    
           "packet-filter-delay": 3000,
+          "msg-send-delay": 3000,
           "max-chunk-view": 12,
    
           "connect-timing-out": 2000,
@@ -237,6 +244,7 @@ In this section, you will understand below how-tos:
       | `max-chunk-view`      | Max scale of chunk packet receiving.                                       |
       | `connect-timing-out`  | How long millis does it take to determine a connection time out.           |
       | `reconnect-delay`     | Min delay(millis) for cooling down when reconnect a server.                |
+      | `msg-send-delay`      | The delay of sending in-game messages.                                     |
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to hot-reload plugins in server, without quit the entire client and reconnecting to server.
 You can send `!reload <pluginName>` dolphin command in server chat.

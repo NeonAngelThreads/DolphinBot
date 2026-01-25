@@ -3,7 +3,7 @@ package org.angellock.impl.events;
 import org.angellock.impl.events.annotations.EventHandler;
 import org.angellock.impl.events.bukkit.ActiveListener;
 import org.angellock.impl.events.bukkit.Event;
-import org.angellock.impl.providers.Plugin;
+import org.angellock.impl.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

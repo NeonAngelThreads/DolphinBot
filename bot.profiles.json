@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "bot#1": {
+      "name": "爱丽丝的DolphinBot5",
+      "password": "default_password",
+      "owner": [
+        "Melibertan"
+      ],
+      "enabled_plugins": [
+        "QuestionAnswerer",
+        "MessageDisplay",
+        "HumanVerify"
+      ]
+    }
+  }
+}

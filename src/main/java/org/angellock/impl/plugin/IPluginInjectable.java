@@ -1,4 +1,4 @@
-package org.angellock.impl.providers;
+package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
 
