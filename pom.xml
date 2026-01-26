@@ -6,7 +6,7 @@
 
     <groupId>org.angellock.impl</groupId>
     <artifactId>DolphinBot</artifactId>
-    <version>1.2.3-BETA-full</version>
+    <version>1.2.4-Alpha-full</version>
     <packaging>
         jar
     </packaging>

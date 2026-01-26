@@ -61,7 +61,7 @@
 - [`Terminal Interactions`]()
 
 **Implemented Event APIs:**
-- [`Programmable State Machine`](PluginDocs.md#dolphins-event-listeners)
+- [`Programmable State Machine`](PluginDocs.md#3-programmable-login-state-machine)
 - [`Command System`](PluginDocs.md#42-commands-system)
 - [`Packet Handlers`](PluginDocs.md#4-deep-understand-dolphinapis)
 - [`Event Handler System`](PluginDocs.md#3-register-event-handlers)

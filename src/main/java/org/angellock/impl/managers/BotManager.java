@@ -140,7 +140,7 @@ public class BotManager extends ResourceHelper {
         this.terminalInput = new Thread(() -> {
             try {
                 while (true) {
-                    String s = reader.readLine();
+                    String s = reader.readLine("Terminal>");
                     for (AbstractRobot dolphinBot : this.bots.values()) {
                         ChatMessageManager messageManager = dolphinBot.getMessageManager();
                         if (messageManager != null) {

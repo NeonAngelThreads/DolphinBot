@@ -1,7 +1,7 @@
 {
   "profiles": {
     "bot#1": {
-      "name": "爱丽丝的DolphinBot5",
+      "name": "DolphinTest调试",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -10,6 +10,17 @@
         "QuestionAnswerer",
         "MessageDisplay",
         "HumanVerify"
+      ]
+    },
+    "bot#2": {
+      "name": "DolphinThread1",
+      "password": "default_password",
+      "owner": [
+        "Melibertan"
+      ],
+      "enabled_plugins": [
+        "HumanVerify",
+        "MessageDisplay"
       ]
     }
   }
