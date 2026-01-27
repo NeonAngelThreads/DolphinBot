@@ -14,9 +14,7 @@ public abstract class ResourceHelper extends AbstractJsonAccessor {
     private final String fileType;
     public ResourceHelper(@Nullable String defaultPath, String fileType) {
         this.fileType = fileType;
-
-        File outFile = new File((defaultPath != null) ? defaultPath : "");
-        System.out.println(outFile.getAbsolutePath());
+        File outFile = new File((defaultPath != null) ? defaultPath : getBaseConfigRoot());
         if (!outFile.exists()){
             if (defaultPath != null) {
                 log.warn(ConsoleTokens.colorizeText("&eSpecified config file &c" + defaultPath + "&e not found, &6reading from the default file: &3.\\" + getFullFileName()));
@@ -26,7 +24,7 @@ public abstract class ResourceHelper extends AbstractJsonAccessor {
             outFile = new File(this.getBaseConfigRoot());
         }
         if (outFile.isDirectory()) {
-            outFile = new File(defaultPath, getFullFileName());
+            outFile = new File(outFile, getFullFileName());
         }
         try {
             this.autoCopy(outFile);

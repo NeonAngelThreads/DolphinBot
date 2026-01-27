@@ -3,8 +3,7 @@ package org.angellock.impl.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandBuilder {
-    private String commandName = "";
+public class CommandBuilder extends AbstractBuilder<Command> {
     private List<String> users = new ArrayList<>();
 
     public CommandBuilder withName(String cmdName){
@@ -17,7 +16,11 @@ public class CommandBuilder {
         return this;
     }
 
+    @Override
     public Command build(ICommandAction action) {
-        return new Command(this.commandName, action, this.users);
+        Command command = new Command(this.commandName, action, this.users);
+        command.setDescription(this.description);
+        command.setAliases(this.aliases);
+        return command;
     }
 }

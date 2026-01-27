@@ -25,13 +25,7 @@ public class CommandSpec {
 
     public @Nullable Command getCommand(String commandName) {
         String standardizedCommand = commandName.toLowerCase();
-//        log.info(standardizedCommand);
-//        for (String command: registeredCommands.keySet()){
-//            if (standardizedCommand.startsWith(command)){
         return this.registeredCommands.get(standardizedCommand);
-//            }
-//        }
-//        return null;
     }
 
     public void executeCommand(CommandResponse response) {

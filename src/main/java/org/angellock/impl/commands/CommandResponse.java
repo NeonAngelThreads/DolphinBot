@@ -30,6 +30,10 @@ public class CommandResponse {
     }
 
     public boolean isInvalid(){
-        return (this.sender == null || this.commandName == null);
+        return (this.sender == null && this.commandName == null);
+    }
+
+    public boolean isFromTerminal(){
+        return this.sender == null;
     }
 }

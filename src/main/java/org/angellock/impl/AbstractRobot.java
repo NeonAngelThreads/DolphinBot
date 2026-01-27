@@ -17,6 +17,7 @@ import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
+import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
@@ -49,7 +50,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected final int TIME_OUT;
     protected MinecraftProtocol minecraftProtocol;
     protected ConfigManager config;
-    protected long connectDuration = 0;
+    protected long connectDuration;
     protected boolean isByPassedVerification = true;
     protected GameMode serverGamemode = GameMode.ADVENTURE;
     private ChatMessageManager messageManager;
@@ -61,6 +62,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     private String profileName;
     protected List<String> owners = new ArrayList<>();
     protected String password;
+    protected final TerminalCommandManager commandManager = new TerminalCommandManager();
     protected final CommandSpec commands = new CommandSpec(this);
 
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
@@ -68,6 +70,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         String playerName = this.config.getConfigValue("username");
         String serverAddress = this.config.getConfigValue("server");
         int serverPort = Integer.parseInt(this.config.getConfigValue("port"));
+        this.connectDuration = Long.parseLong(this.config.getConfigValue("reconnect-delay"));
         this.password = this.config.getConfigValue("password");
 
         this.pluginManager = pluginManager;
@@ -114,6 +117,10 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public AbstractRobot buildProtocol(){
         this.minecraftProtocol = new MinecraftProtocol(this.name);
         return this;
+    }
+
+    public TerminalCommandManager getCommandManager() {
+        return commandManager;
     }
 
     public BotManager getBotManager() {

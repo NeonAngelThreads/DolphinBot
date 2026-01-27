@@ -21,8 +21,15 @@ import javax.swing.*;
 
 public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
-    private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional.ofNullable(Start.class.getPackage().getImplementationVersion()).orElse("LATEST"));
-    private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
+    private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional
+            .ofNullable(Start.class
+                    .getPackage()
+                    .getImplementationVersion()
+            ).orElse("LATEST"));
+    private static final boolean win32 = System
+            .getProperty("os.name")
+            .toLowerCase()
+            .contains("windows");
     private static GUIWindowManager guiManager;
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser();
@@ -48,7 +55,10 @@ public class Start {
             log.warn(ConsoleTokens.colorizeText("&6Omitted option arguments " + badOptions));
         }
 
-        String defaultConfigPath = Optional.ofNullable(parsedOption.valueOf(configFile)).orElse("Not-Set");
+        String defaultConfigPath = Optional
+                .ofNullable(parsedOption.valueOf(configFile))
+                .orElse("not-set");
+
         if (Files.exists(Paths.get(defaultConfigPath))) {
             log.info(ConsoleTokens.colorizeText("&dThe default config file path was specified: &5&l" + defaultConfigPath));
         } else {
@@ -58,7 +68,9 @@ public class Start {
         @Nullable String profiles = (parsedOption.valueOf(profilesArg));
 
         ConfigManager config = new ConfigManager(parsedOption, defaultConfigPath);
-        BotManager botManager = new BotManager(defaultConfigPath, ".json", config).globalPluginManager(parsedOption.valueOf(pluginDir)).loadProfiles(profiles);
+        BotManager botManager = new BotManager(defaultConfigPath, ".json", config)
+                .globalPluginManager(parsedOption.valueOf(pluginDir))
+                .loadProfiles(profiles);
 
         if (parsedOption.has("gui")){
             guiManager = new GUIWindowManager(botManager);
@@ -66,7 +78,6 @@ public class Start {
         } else {
             AnsiEscapes.printArt(ARCHIVE_VERSION);
             config.printConfigSpec();
-
             log.info(ConsoleTokens.colorizeText("&8Loading bots..."));
             botManager.startAll();
         }

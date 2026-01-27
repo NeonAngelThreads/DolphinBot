@@ -2,8 +2,10 @@ package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.commands.executors.ReloadCommandExecutor;
+import org.angellock.impl.commands.terminal.TerminalCommand;
 import org.angellock.impl.events.handlers.LoginHandler;
-import org.angellock.impl.events.handlers.PlayerLogInfo;
+import org.angellock.impl.events.handlers.PlayerLogInfoHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.events.handlers.TitlePacketHandler;
 import org.angellock.impl.ingame.Player;
@@ -64,6 +66,8 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     @Override
     public void onEnable(AbstractRobot robotEntity) {
 
+        getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
+
         getListeners().add(new LoginHandler().addExtraAction(packet -> {
             log.info(ConsoleTokens.colorizeText("&l&bSuccessfully logged-in to server world."));
 
@@ -78,7 +82,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
             }
         }));
 
-        getListeners().add(new PlayerLogInfo.UpdateHandler().addExtraAction((updatePacket) -> {
+        getListeners().add(new PlayerLogInfoHandler.UpdateHandler().addExtraAction((updatePacket) -> {
             PlayerListEntry[] players = updatePacket.getEntries();
 
             for (PlayerListEntry player : players) {
@@ -101,7 +105,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
             }
         }));
 
-        getListeners().add(new PlayerLogInfo.RemoveHandler().addExtraAction((packet -> {
+        getListeners().add(new PlayerLogInfoHandler.RemoveHandler().addExtraAction((packet -> {
             if(packet.getProfileIds().isEmpty()) {
                 return;
             }

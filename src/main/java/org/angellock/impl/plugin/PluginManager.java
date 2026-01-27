@@ -1,6 +1,7 @@
 package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
@@ -19,7 +20,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     private final Map<String, File> loadedExternalPlugin = new HashMap<>();
     private final Collection<Plugin> enabled_base_plugin = new ArrayList<>();
     private final File pluginFolder;
-    private final PluginLoader loader;
+    private static final PluginLoader loader = new PluginLoader();
 
     public PluginManager(){
         this((File) null);
@@ -39,7 +40,14 @@ public class PluginManager extends Manager implements IPluginInjectable{
         else {
             this.pluginFolder = pluginDir;
         }
-        this.loader = new PluginLoader();
+    }
+
+    public static PluginLoader loader(){
+        return loader;
+    }
+
+    public File getPluginFolder() {
+        return pluginFolder;
     }
 
     private void registerPlugin(Plugin plugin){
@@ -139,7 +147,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     }
 
     public void loadPlugin(AbstractRobot botInstance, File target) {
-        Plugin plugin = this.loader.loadPluginClass(target);
+        Plugin plugin = loader.loadPluginClass(target);
         if (plugin != null) {
             log.info(ConsoleTokens.colorizeText("&2Registering plugin: &b" + plugin.getName()));
             enable(plugin, botInstance);

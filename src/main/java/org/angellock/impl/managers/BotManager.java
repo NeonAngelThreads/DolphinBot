@@ -21,11 +21,12 @@ import java.util.*;
 
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
-    private final Map<String, RobotPlayer> bots = new HashMap<>();
+    private static final Map<String, RobotPlayer> bots = new HashMap<>();
     //    private final ScheduledExecutorService terminal = Executors.newScheduledThreadPool(1);
     private Thread terminalInput;
     private final ConfigManager botConfigHelper;
     private PluginManager pluginManager;
+    private volatile boolean exit = false;
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
         super(defaultPath, fileType);
         this.botConfigHelper = botConfigHelper;
@@ -91,7 +92,7 @@ public class BotManager extends ResourceHelper {
                 .withBotManager(this)
                 .withOwners(owners)
                 .buildProtocol();
-        this.bots.put(name, (RobotPlayer) botInst);
+        bots.put(name, (RobotPlayer) botInst);
     }
 
     private void registerBot(String username, String password, String owner){
@@ -103,14 +104,19 @@ public class BotManager extends ResourceHelper {
                 .withPassword(password)
                 .withOwners(owners)
                 .buildProtocol();
-        for (Plugins plugins: Plugins.values()){
-            botInst.getPluginManager().getDefaultPlugins().add(plugins.getPlugin());
-        }
-        this.bots.put(username, (RobotPlayer) botInst);
+//        for (Plugins plugins: Plugins.values()){
+//            botInst
+//                    .getPluginManager()
+//                    .getDefaultPlugins()
+//                    .add(plugins
+//                            .getPlugin()
+//                    );
+//        }
+        bots.put(username, (RobotPlayer) botInst);
     }
 
     public void dispatchMessages(List<String> msgQueue){
-        List<RobotPlayer> randomBots = new ArrayList<>(this.bots.values());
+        List<RobotPlayer> randomBots = new ArrayList<>(bots.values());
         Collections.shuffle(randomBots);
         Random random = new Random();
         RobotPlayer last = null;
@@ -131,7 +137,7 @@ public class BotManager extends ResourceHelper {
         }
     }
 
-    public Map<String, RobotPlayer> getBots() {
+    public static Map<String, RobotPlayer> getBots() {
         return bots;
     }
 
@@ -141,7 +147,7 @@ public class BotManager extends ResourceHelper {
             try {
                 while (true) {
                     String s = reader.readLine("Terminal>");
-                    for (AbstractRobot dolphinBot : this.bots.values()) {
+                    for (AbstractRobot dolphinBot : bots.values()) {
                         ChatMessageManager messageManager = dolphinBot.getMessageManager();
                         if (messageManager != null) {
                             dolphinBot.getMessageManager().putMessage(s);
@@ -150,7 +156,12 @@ public class BotManager extends ResourceHelper {
                     }
                 }
             } catch (UserInterruptException w) {
-                System.exit(0);
+                if (exit){
+                    System.exit(0);
+                } else {
+                    log.warn("To exit the DolphinBot, Ctrl + C again.");
+                    exit = true;
+                }
             } catch (Throwable e) {
                 log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getLocalizedMessage());
             }

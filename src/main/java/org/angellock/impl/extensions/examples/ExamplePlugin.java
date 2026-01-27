@@ -1,6 +1,7 @@
 package org.angellock.impl.extensions.examples;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.state.Action;
 import org.angellock.impl.state.LoginState;
 import org.angellock.impl.state.LoginStateMachine;
@@ -80,5 +81,7 @@ public class ExamplePlugin extends AbstractPlugin {
                     getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
                 })
         );
+
+        getCommands().register(new CommandBuilder().withDescription("acsd").build((action)->{}));
     }
 }

@@ -4,6 +4,7 @@ import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.EventDispatcher;
 import org.angellock.impl.events.IListener;
+import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,10 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
 
     public CommandSpec getCommands(){
         return this.targetBot.getRegisteredCommands();
+    }
+
+    public TerminalCommandManager getTerminalCommands(){
+        return this.targetBot.getCommandManager();
     }
     @Override
     public void onEnables(AbstractRobot targetBot){

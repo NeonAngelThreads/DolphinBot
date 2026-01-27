@@ -5,7 +5,7 @@ import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerInfoRemovePacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerInfoUpdatePacket;
 
-public class PlayerLogInfo {
+public class PlayerLogInfoHandler {
     public static class RemoveHandler extends AbstractEventProcessor<ClientboundPlayerInfoRemovePacket> {
         @Override
         protected boolean isTargetPacket(Packet packet) {
