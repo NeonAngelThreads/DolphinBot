@@ -34,15 +34,17 @@
 </p>
 
 ## Why DolphinBot?
-   - **High performance**, DolphinBot allows you to start multiple bot instances at one client with low CPU usage.   
-   - **High reliability**, ability to bypass 2b2t's human verification, auto-reconnect when disconnected, long term running with no worries for losing connection.  
-   - **High extensibility**, DolphinBot embedded mature DolphinAPI that contains variety of `packet listeners`, `event systems` and easy-used `event handlers` based on `mc protocol lib`,
+   - **High reliability**, low network utilization, auto-reconnect when disconnected, long term running with no worries for losing connection.  
+   - **High programmability**, DolphinBot implemented a **SpringBoot**-like finite **StateMachines**, allows you to easily configure **multiple login-process** for different servers.
+   - **High extensibility**, DolphinBot embedded a mature DolphinAPI that contains variety of `packet listeners`, `event systems` and easy-used `event handlers` based on `mc protocol lib`,
      It integrates a bukkit-like plugin API, allowing you to develop custom plugins at very short time.  
-   - **Advanced logging system**, DolphinAPI also implemented `TextComponent` serializer to parse rich colors and styles for server messages, with more useful information.
+   - **Advanced logging system**, DolphinAPI also implemented `TextComponent` serializer to parse rich colors and styles for server messages, with more useful debug information.
+   - **High performance**, DolphinBot allows you to start multiple bot instances at single client with low CPU and Memory usage.
    - **Easy to use**, directly run, you can put the bot profile(s) into config file instead of defining on command-line, fast start.
 ### **Shortcuts**: [Custom plugin developing guideline](PluginDocs.md)
 ## Features:
-   - Easy to register custom commands starting with `!` by using CommandBuilder DolphinAPIs
+   - Easy to register custom commands starting with `!` by using CommandBuilder DolphinAPIs.
+   - Can **hot-inject** plugins during the connection of server.
    - Bypassing human verification in most servers including `2b2t.xin`.
    - Supporting to configure the bot clusters, and start at once.
    - Supporting colourful console logging strings expression `colorizeText("&6Hello &lWorld")`.
@@ -68,7 +70,14 @@
    - [`Player Events`](PluginDocs.md#player-events)
 - [`Force Unicode Chat`](PluginDocs.md#unicode-string-helper)
 
-Command-line Arguments
+## Interactions in Terminal
+- You can send in-game messages or execute commands form the dolphin bot terminal.
+- Built-in commands:
+- 
+  | Terminal Commands         | Description                      |
+  |---------------------------|----------------------------------|
+  | `reload <Plugin Name>`    | Hot-reloading a specified plugin |
+- For these commands, you can press `TAB` to complete automatically.
 ## Getting Started
 In this section, you will understand below how-tos:  
   - **1. How to directly start a single bot with command-line.**  
@@ -246,13 +255,9 @@ In this section, you will understand below how-tos:
       | `reconnect-delay`     | Min delay(millis) for cooling down when reconnect a server.                |
       | `msg-send-delay`      | The delay of sending in-game messages.                                     |
 ## Hot Swapping Plugins In-Game
-Dolphin bot supports you to hot-reload plugins in server, without quit the entire client and reconnecting to server.
+Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
 You can send `!reload <pluginName>` dolphin command in server chat.
-Console controlling are still in-developing, currently. 
-
-## Interactions from Terminal (Beta)
-- You can send in-game messages or execute commands form the dolphin bot terminal.
-- Built-in commands (In-dev)
+Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload plugins.
 
 ## FAQ
 
