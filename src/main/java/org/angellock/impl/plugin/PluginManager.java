@@ -1,6 +1,9 @@
 package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.events.EventDispatcher;
+import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.managers.EventManager;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -21,6 +24,8 @@ public class PluginManager extends Manager implements IPluginInjectable{
     private final Collection<Plugin> enabled_base_plugin = new ArrayList<>();
     private final File pluginFolder;
     private static final PluginLoader loader = new PluginLoader();
+
+    private static final EventManager eventManager = new EventManager();
 
     public PluginManager(){
         this((File) null);
@@ -46,8 +51,16 @@ public class PluginManager extends Manager implements IPluginInjectable{
         return loader;
     }
 
+    public static EventManager event(){
+        return eventManager;
+    }
+
     public File getPluginFolder() {
         return pluginFolder;
+    }
+
+    public String[] listPlugins(){
+        return pluginFolder.list(this.pluginFilePattern);
     }
 
     private void registerPlugin(Plugin plugin){

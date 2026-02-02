@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.ChatMessageManager;
 import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.events.SystemEventLogger;
 import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.plugin.PluginManager;
@@ -22,19 +23,22 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
+    private static final SystemEventLogger systemEventLogger = new SystemEventLogger();
     //    private final ScheduledExecutorService terminal = Executors.newScheduledThreadPool(1);
-    private Thread terminalInput;
     private final ConfigManager botConfigHelper;
-    private PluginManager pluginManager;
-    private volatile boolean exit = false;
+    private String globalPluginDir;
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
         super(defaultPath, fileType);
         this.botConfigHelper = botConfigHelper;
     }
 
     public BotManager globalPluginManager(String pluginDir){
-        this.pluginManager = new PluginManager(pluginDir);
+        this.globalPluginDir = pluginDir;
         return this;
+    }
+
+    public static SystemEventLogger getSystemEventLogger() {
+        return systemEventLogger;
     }
 
     public String[] escapeArrayCommandLine(String option) {
@@ -84,7 +88,7 @@ public class BotManager extends ResourceHelper {
             pluginList.add(Plugins.getPluginFromString(element.getAsString()));
         }
 
-        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, pluginManager)
+        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
                 .withName(botName)
                 .withPassword(password)
                 .withDefaultPlugins(pluginList)
@@ -92,6 +96,7 @@ public class BotManager extends ResourceHelper {
                 .withBotManager(this)
                 .withOwners(owners)
                 .buildProtocol();
+
         bots.put(name, (RobotPlayer) botInst);
     }
 
@@ -99,19 +104,19 @@ public class BotManager extends ResourceHelper {
         String[] owners = this.escapeArrayCommandLine(owner);
         log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), username, password, Arrays.toString(owners));
 
-        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, pluginManager)
+        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
                 .withName(username)
                 .withPassword(password)
                 .withOwners(owners)
                 .buildProtocol();
-//        for (Plugins plugins: Plugins.values()){
-//            botInst
-//                    .getPluginManager()
-//                    .getDefaultPlugins()
-//                    .add(plugins
-//                            .getPlugin()
-//                    );
-//        }
+        for (Plugins plugins: Plugins.values()){
+            botInst
+                    .getPluginManager()
+                    .getDefaultPlugins()
+                    .add(plugins
+                            .getPlugin()
+                    );
+        }
         bots.put(username, (RobotPlayer) botInst);
     }
 
@@ -137,37 +142,12 @@ public class BotManager extends ResourceHelper {
         }
     }
 
-    public static Map<String, RobotPlayer> getBots() {
+    public static Map<String, RobotPlayer> bots() {
         return bots;
     }
 
     public void startAll(){
-        LineReader reader = AnsiEscapes.getReader();
-        this.terminalInput = new Thread(() -> {
-            try {
-                while (true) {
-                    String s = reader.readLine("Terminal>");
-                    for (AbstractRobot dolphinBot : bots.values()) {
-                        ChatMessageManager messageManager = dolphinBot.getMessageManager();
-                        if (messageManager != null) {
-                            dolphinBot.getMessageManager().putMessage(s);
-                            break;
-                        }
-                    }
-                }
-            } catch (UserInterruptException w) {
-                if (exit){
-                    System.exit(0);
-                } else {
-                    log.warn("To exit the DolphinBot, Ctrl + C again.");
-                    exit = true;
-                }
-            } catch (Throwable e) {
-                log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getLocalizedMessage());
-            }
-        });
-        this.terminalInput.start();
-        for (RobotPlayer bot: this.bots.values()){
+        for (RobotPlayer bot: bots.values()){
             bot.scheduleConnect(0);
             while (bot.getServerGamemode() == GameMode.ADVENTURE){
                 try {

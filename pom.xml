@@ -6,7 +6,7 @@
 
     <groupId>org.angellock.impl</groupId>
     <artifactId>DolphinBot</artifactId>
-    <version>1.2.4-ALPHA-full</version>
+    <version>1.2.4-RELEASE-full</version>
     <packaging>
         jar
     </packaging>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.geysermc.mcprotocollib</groupId>
             <artifactId>protocol</artifactId>
-            <version>1.21.2-SNAPSHOT</version>
+            <version>1.21-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
@@ -64,6 +64,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

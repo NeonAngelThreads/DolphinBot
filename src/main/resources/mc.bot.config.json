@@ -2,11 +2,13 @@
   "server": "2b2t.xin",
   "port": 25565,
   "auto-reconnecting": true,
+  "enable-skin-recorder": true,
 
   "packet-filter-delay": 3000,
   "msg-send-delay": 3000,
   "max-chunk-view": 12,
 
   "connect-timing-out": 2000,
-  "reconnect-delay": 3500
+  "reconnect-delay": 1,
+  "enable-packet-debug": true
 }

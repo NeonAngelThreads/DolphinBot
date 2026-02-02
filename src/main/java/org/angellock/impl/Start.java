@@ -1,3 +1,19 @@
+/*
+ * This file is a part of DolphinBot, see <https://github.com/NeonAngelThreads/DolphinBot>
+ *
+ *     Copyright (C) 2025-2026 NeonAngelThreads
+ *
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should
+ *     have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc.,
+ *      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * Contact with me> Bilibili space: https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -10,26 +26,24 @@ import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.win32terminal.AnsiEscapes;
 import org.jetbrains.annotations.Nullable;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import javax.swing.*;
 
 public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
-    private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional
-            .ofNullable(Start.class
-                    .getPackage()
-                    .getImplementationVersion()
-            ).orElse("LATEST"));
-    private static final boolean win32 = System
-            .getProperty("os.name")
-            .toLowerCase()
-            .contains("windows");
+    private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional.ofNullable(Start.class.getPackage()
+                    .getImplementationVersion()).orElse(ConsoleTokens.colorizeText("&dDEVELOPMENT")));
+    private static Thread terminalInput;
+    private static volatile boolean exit = false;
+    private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
     private static GUIWindowManager guiManager;
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser();
@@ -72,6 +86,9 @@ public class Start {
                 .globalPluginManager(parsedOption.valueOf(pluginDir))
                 .loadProfiles(profiles);
 
+        Map<String, RobotPlayer> bots = BotManager.bots();
+        getTerminal(bots.values().iterator().next());
+
         if (parsedOption.has("gui")){
             guiManager = new GUIWindowManager(botManager);
             guiManager.startGUI();
@@ -82,6 +99,31 @@ public class Start {
             botManager.startAll();
         }
 
+    }
+
+    private static void getTerminal(AbstractRobot dolphinBot) {
+        LineReader reader = AnsiEscapes.getReader();
+        terminalInput = new Thread(() -> {
+            try {
+                while (true) {
+                    String s = reader.readLine(ConsoleTokens.colorizeText("&lTerminal>&b"));
+                    ChatMessageManager messageManager = dolphinBot.getMessageManager();
+                    if (messageManager != null) {
+                        dolphinBot.getMessageManager().putMessage(s);
+                    }
+                }
+            } catch (UserInterruptException w) {
+                if (exit){
+                    System.exit(0);
+                } else {
+                    log.warn("To exit the DolphinBot, press Ctrl + C again.");
+                    exit = true;
+                }
+            } catch (Throwable e) {
+                log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getLocalizedMessage());
+            }
+        });
+        terminalInput.start();
     }
 
     public static String getArchiveVersion() {

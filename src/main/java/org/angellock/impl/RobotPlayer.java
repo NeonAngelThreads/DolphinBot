@@ -1,6 +1,7 @@
 package org.angellock.impl;
 
 import org.angellock.impl.commands.CommandBuilder;
+import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
@@ -16,14 +17,6 @@ public class RobotPlayer extends AbstractRobot {
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
         super(configManager, pluginManager);
-
-        this.commands.register(new CommandBuilder().withName("reload").allowedUsers(this.owners).build((act) -> {
-            long timeElapse = System.currentTimeMillis();
-            this.pluginManager.reloadPlugin(this, act.getCommandList()[1].toLowerCase());
-            long time = (System.currentTimeMillis() - timeElapse);
-            this.getMessageManager().putMessage("[INFO]操作已成功完成。耗时" + time + "ms");
-
-        }));
 
         this.msgDelay = Long.parseLong(Optional.ofNullable(this.config.getConfigValue("msg-send-delay")).orElse("3000"));
     }
@@ -71,7 +64,7 @@ public class RobotPlayer extends AbstractRobot {
 
     @Override
     public void onPreLogin() {
-        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3"+ this.server+':'+this.port +". &bWaiting for server establishing the connection..."));
+        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3"+ this.infoHelper.getServer()+':'+this.infoHelper.getPort() +". &bWaiting for server establishing the connection..."));
     }
 
     @Override

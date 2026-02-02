@@ -77,7 +77,7 @@ public class AnsiEscapes {
                 "&b    | |/ / (_) | | |_) | | | | | | | | |_/ / (_) | |_  " + "&5  -- &9/ / &b/ \n" +
                 "&b    |___/ \\___/|_| .__/|_| |_|_|_| |_\\____/ \\___/ \\__| " + "&1 -- &9/_/&b_/ \n" +
                 "&b                 | |                                   \n" +
-                "&b                 |_|                                 " + "&5VERSION  &d" + ARCHIVE_VERSION + "\n\n\n")
+                "&b                 |_|                                 " + "&5VERSION  &a&l" + ARCHIVE_VERSION + "\n\n\n")
         );
     }
 

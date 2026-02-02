@@ -12,14 +12,13 @@ import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Queue;
 
-public class ChatMessageManager implements ISendable{
-
+public class ChatMessageManager{
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&7ChatMessageManager"));
     private final Queue<String> chatMessageQueue = new ArrayDeque<>();
-    private final Session serverSession;
+    private final AbstractRobot instance;
 
-    public ChatMessageManager(Session serverSession) {
-        this.serverSession = serverSession;
+    public ChatMessageManager(AbstractRobot bot) {
+        this.instance = bot;
     }
 
     public void putMessage(String msg){
@@ -35,18 +34,21 @@ public class ChatMessageManager implements ISendable{
         return false;
     }
 
+    private boolean isCommand(String msg){
+        return msg.startsWith("/");
+    }
+
     private void sendMessagePacket(String message){
-        MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
-        log.info(ConsoleTokens.colorizeText("&7Sending in-game chat message: &b&l&o{}"), message);
-        this.sendPacket(msgPacket);
+        if (!this.isCommand(message)) {
+            MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
+            log.info(ConsoleTokens.colorizeText("&7Sending in-game chat message: &b&l&o{}"), message);
+            this.instance.sendPacket(msgPacket);
+        } else {
+            this.instance.commandManager.callCommand(message);
+        }
     }
 
     public Queue<String> getChatMessageQueue() {
         return chatMessageQueue;
-    }
-
-    @Override
-    public void sendPacket(MinecraftPacket packet) {
-        this.serverSession.send(packet);
     }
 }

@@ -1,15 +1,33 @@
+/*
+ * This file is a part of DolphinBot, see <https://github.com/NeonAngelThreads/DolphinBot>
+ *
+ *     Copyright (C) 2025-2026 NeonAngelThreads
+ *
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should
+ *     have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc.,
+ *      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * Contact with me> Bilibili space: https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.commands.CommandBuilder;
+import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
+import org.angellock.impl.commands.executors.LoadCommandExecutor;
 import org.angellock.impl.commands.executors.ReloadCommandExecutor;
+import org.angellock.impl.commands.executors.RespawnExecutor;
 import org.angellock.impl.commands.terminal.TerminalCommand;
-import org.angellock.impl.events.handlers.LoginHandler;
-import org.angellock.impl.events.handlers.PlayerLogInfoHandler;
-import org.angellock.impl.events.handlers.SystemChatHandler;
-import org.angellock.impl.events.handlers.TitlePacketHandler;
+import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
+import org.angellock.impl.listeners.PlayerListener;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
@@ -18,7 +36,6 @@ import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.HandPreference;
 import org.geysermc.mcprotocollib.protocol.data.game.setting.ChatVisibility;
-import org.geysermc.mcprotocollib.protocol.data.game.setting.ParticleStatus;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundClientInformationPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
@@ -67,10 +84,21 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     public void onEnable(AbstractRobot robotEntity) {
 
         getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
+        getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
+        getTerminalCommands().registerCommand(new TerminalCommand("respawn", new RespawnExecutor()));
+
+        robotEntity.getRegisteredCommands().register(new CommandBuilder().withName("reload").allowedUsers(robotEntity.getInfoHelper().getOwners()).build((response) -> {
+            long timeElapse = System.currentTimeMillis();
+            robotEntity.getPluginManager().reloadPlugin(robotEntity, response.getCommandList()[1].toLowerCase());
+            long time = (System.currentTimeMillis() - timeElapse);
+            robotEntity.getMessageManager().putMessage("[INFO]操作已成功完成。耗时" + time + "ms");
+        }));
+
+        getEvents().registerEvents(new PlayerListener(), this);
 
         getListeners().add(new LoginHandler().addExtraAction(packet -> {
             log.info(ConsoleTokens.colorizeText("&l&bSuccessfully logged-in to server world."));
-
+            this.joinGame(robotEntity);
         }));
 
         getListeners().add(new SystemChatHandler().addExtraAction((packet) -> {
@@ -78,8 +106,16 @@ public class BaseDefaultPlugin extends AbstractPlugin {
             String msg = componentSerializer.serialize(packet.getContent());
             if (!msg.equals(this.lastMsg)) {
                 this.lastMsg = msg;
-                log.info(ConsoleTokens.colorizeText(msg));
+                log.info(robotEntity.getProfileName()+" "+ConsoleTokens.colorizeText(msg));
             }
+        }));
+
+        getListeners().add(new PlayerChatPacketHandler().addExtraAction((packet) -> {
+            TextComponentSerializer componentSerializer = new TextComponentSerializer();
+            String msg = packet.getContent();
+            String player = componentSerializer.serialize(packet.getName());
+            log.info(ConsoleTokens.colorizeText("&6{}&7>> {}"), player, ConsoleTokens.colorizeText(msg));
+
         }));
 
         getListeners().add(new PlayerLogInfoHandler.UpdateHandler().addExtraAction((updatePacket) -> {
@@ -136,7 +172,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     }
 
     public void joinGame(AbstractRobot player){
-        player.sendPacket(new ServerboundClientInformationPacket("en-us", 12, ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.LEFT_HAND, true, true, ParticleStatus.ALL));
+        player.sendPacket(new ServerboundClientInformationPacket("en-us", 1, ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.LEFT_HAND, true, true));
                     player.sendPacket(new ServerboundSetCarriedItemPacket(1));
                     player.sendPacket(new ServerboundUseItemPacket(
                             Hand.MAIN_HAND,

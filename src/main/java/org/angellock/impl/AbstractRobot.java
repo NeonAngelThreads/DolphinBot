@@ -1,20 +1,42 @@
+/*
+ * This file is a part of DolphinBot, see <https://github.com/NeonAngelThreads/DolphinBot>
+ *
+ *     Copyright (C) 2025-2026 NeonAngelThreads
+ *
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should
+ *     have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc.,
+ *      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * Contact with me> Bilibili space: https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl;
 
 
 import com.google.gson.JsonElement;
+import lombok.Getter;
+import net.kyori.adventure.text.TranslatableComponent;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.CommandSerializer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.handlers.KeepAliveHandler;
-import org.angellock.impl.events.handlers.SystemChatHandler;
+import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.events.packets.AddEntityPacket;
-import org.angellock.impl.events.packets.PlayerChatPacketHandler;
+import org.angellock.impl.events.packets.EntityMovePacket;
 import org.angellock.impl.events.packets.PlayerPositionPacket;
+import org.angellock.impl.events.packets.debugger.PacketDebugger;
+import org.angellock.impl.events.types.EntityEmergedEvent;
+import org.angellock.impl.events.types.EntityMovedEvent;
+import org.angellock.impl.events.types.JoinedGameEvent;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
+import org.angellock.impl.managers.BotInfoHelper;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.managers.TerminalCommandManager;
@@ -23,15 +45,22 @@ import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlainTextSerializer;
+import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.Session;
+import org.geysermc.mcprotocollib.network.event.session.*;
+import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.network.tcp.TcpClientSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
+import org.geysermc.mcprotocollib.protocol.data.status.handler.ServerPingTimeHandler;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundKeepAlivePacket;
+import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundPongPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundMoveEntityPosPacket;
+import org.geysermc.mcprotocollib.protocol.packet.status.serverbound.ServerboundStatusRequestPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +75,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
     protected final Random randomizer = new Random();
     protected final PluginManager pluginManager;
-    protected final long ReconnectionDelay;
-    protected final int TIME_OUT;
     protected MinecraftProtocol minecraftProtocol;
     protected ConfigManager config;
     protected long connectDuration;
@@ -55,13 +82,9 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected GameMode serverGamemode = GameMode.ADVENTURE;
     private ChatMessageManager messageManager;
     private BotManager botManager;
-    protected Position loginPos = new Position(0d,0d,0d);
-    protected String server;
-    protected int port;
-    protected String name;
-    private String profileName;
-    protected List<String> owners = new ArrayList<>();
-    protected String password;
+    protected Position loginPos = new Position();
+    protected @Getter BotInfoHelper infoHelper = new BotInfoHelper();
+
     protected final TerminalCommandManager commandManager = new TerminalCommandManager();
     protected final CommandSpec commands = new CommandSpec(this);
 
@@ -71,25 +94,25 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         String serverAddress = this.config.getConfigValue("server");
         int serverPort = Integer.parseInt(this.config.getConfigValue("port"));
         this.connectDuration = Long.parseLong(this.config.getConfigValue("reconnect-delay"));
-        this.password = this.config.getConfigValue("password");
+        this.infoHelper.setPassword(this.config.getConfigValue("password"));
 
         this.pluginManager = pluginManager;
 
-        this.server = serverAddress;
-        this.name = playerName;
-        this.port = serverPort;
-        this.TIME_OUT = Integer.parseInt(this.config.getConfigValue("connect-timing-out"));
-        this.ReconnectionDelay = Integer.parseInt(this.config.getConfigValue("reconnect-delay"));
+        this.infoHelper.setServer(serverAddress);
+        this.infoHelper.setName(playerName);
+        this.infoHelper.setPort(serverPort);
+        this.infoHelper.setTIME_OUT(Integer.parseInt(this.config.getConfigValue("connect-timing-out")));
+        this.infoHelper.setReconnectionDelay(Integer.parseInt(this.config.getConfigValue("reconnect-delay")));
 
     }
 
     public AbstractRobot withName(String userName){
-        this.name = userName;
+        this.infoHelper.setName(userName);
         return this;
     }
 
     public AbstractRobot withOwners(String... owners) {
-        this.owners = List.of(owners);
+        this.infoHelper.setOwners(List.of(owners));
         return this;
     }
 
@@ -98,12 +121,12 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         for (JsonElement obj : owners) {
             stringOwners.add(obj.getAsString());
         }
-        this.owners = stringOwners;
+        this.infoHelper.setOwners(stringOwners);
         return this;
     }
 
     public AbstractRobot withPassword(String password){
-        this.password = password;
+        this.infoHelper.setPassword(password);
         return this;
     }
     public AbstractRobot withDefaultPlugins(List<Plugin> plugins){
@@ -115,7 +138,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return this;
     }
     public AbstractRobot buildProtocol(){
-        this.minecraftProtocol = new MinecraftProtocol(this.name);
+        this.minecraftProtocol = new MinecraftProtocol(this.infoHelper.getName());
         return this;
     }
 
@@ -128,7 +151,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     }
 
     public String getPassword(){
-        return this.password;
+        return this.infoHelper.getPassword();
     }
 
     public ChatMessageManager getMessageManager() {
@@ -137,54 +160,27 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
-        this.serverSession = new TcpClientSession(this.server, this.port, minecraftProtocol);
+        this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol);
 
-        this.messageManager = new ChatMessageManager(this.serverSession);
+        this.messageManager = new ChatMessageManager(this);
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
 
         this.serverSession.addListener((IDisconnectListener) event -> {
-            onQuit(event.getReason().toString());
+            onQuit(new TextComponentSerializer().serialize(event.getReason()));
         });
 
-        this.serverSession.addListener(new SystemChatHandler().addExtraAction((chatPacket -> {
-            PlainTextSerializer componentSerializer = new PlainTextSerializer();
-            String commandMsg = componentSerializer.serialize(chatPacket.getContent());
-            CommandSerializer serializer = new CommandSerializer();
-            CommandResponse meta = serializer.serialize(commandMsg);
+        this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
+        this.serverSession.addListener(new ChatCommandHandler(this.commands));
+        this.serverSession.addListener(new EntityMovePacket());
+        this.serverSession.addListener(new PlayerEmergeHandler());
+        this.serverSession.addListener(new PlayerPositionPacket(this));
 
-            this.commands.executeCommand(meta);
-        })));
-        this.serverSession.addListener(new PlayerChatPacketHandler().addExtraAction((chat) -> {
-            PlainTextSerializer nameSerializer = new PlainTextSerializer();
+        this.serverSession.addListener(new KeepAliveHandler());
 
-            String sender = nameSerializer.serialize(chat.getName());
-            String commandMsg = chat.getContent();
-            CommandSerializer serializer = new CommandSerializer();
-            CommandResponse meta = serializer.serialize(commandMsg, sender);
-
-            this.commands.executeCommand(meta);
-        }));
-
-        this.serverSession.addListener(new AddEntityPacket().addExtraAction((entityPacket -> {
-            if (entityPacket.getType() == EntityType.PLAYER) {
-                Player player = PlayerTracker.getPlayerByUUID(entityPacket.getUuid());
-                if (player != null) {
-                    log.info(ConsoleTokens.colorizeText("[PlayerTracker]: &3A player was detected: &d{}"), player.getProfile().getName());
-                    player.setPosition(entityPacket.getX(), entityPacket.getY(), entityPacket.getZ());
-                }
-            }
-        })));
-        this.serverSession.addListener(new PlayerPositionPacket().addExtraAction((packet->{
-            log.info(ConsoleTokens.colorizeText("&b&lSuccessfully logged-in to server world."));
-            log.info(ConsoleTokens.colorizeText("&7Logged-in At Position &b{}"), packet.getPosition());
-            this.loginPos.from(packet.getPosition());
-        })));
-
-        this.serverSession.addListener(new KeepAliveHandler().addExtraAction((packet) -> {
-            this.serverSession.send(new ServerboundKeepAlivePacket(packet.getPingId()));
-            log.debug("KeepAlive has been sent.");
-        }));
+        if (this.config.isDebugMode()){
+            this.serverSession.addListener(new PacketDebugger());
+        }
 
         this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
@@ -202,7 +198,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
             while (true) {
                 try {
-                    Thread.sleep(100L);
+                    Thread.sleep(20L);
                     if (!this.serverSession.isConnected()){
                         this.connectDuration = System.currentTimeMillis();
                         break;
@@ -221,7 +217,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                     this.serverSession.disconnect("Interrupted");
                     throw new RuntimeException(e);
                 } catch (IllegalArgumentException ignore) {
-                    log.info(ConsoleTokens.colorizeText("&6Unregistered packet error has been triggered!"));
+                    log.warn(ConsoleTokens.colorizeText("&6Unregistered packet error has been triggered!"));
                 }
             }
         } finally {
@@ -233,11 +229,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void scheduleReconnect() {
         try {
-            Thread.sleep(this.ReconnectionDelay);
+            Thread.sleep(this.infoHelper.getReconnectionDelay());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        this.scheduleConnect(5);
+        this.scheduleConnect(0);
     }
 
     public void scheduleConnect(int wait) {
@@ -274,11 +270,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     }
 
     public String getProfileName() {
-        return (this.profileName != null) ? this.profileName: this.name;
+        return (this.infoHelper.getProfileName() != null) ? this.infoHelper.getProfileName(): this.infoHelper.getName();
     }
 
     public AbstractRobot withProfileName(String name) {
-        this.profileName = name;
+        this.infoHelper.setProfileName(name);
         return this;
     }
 

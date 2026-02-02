@@ -2,7 +2,7 @@
 <configuration>
     <appender name="CONSOLE" class="org.angellock.impl.util.JLineAppender">
         <encoder>
-            <pattern>[%d{HH:mm:ss} %level] [%logger{36}]: %msg%n</pattern>
+            <pattern>[%d{HH:mm:ss} %highlight(%4level)] [%logger{36}]: %msg%n</pattern>
         </encoder>
     </appender>
     <root level="info">

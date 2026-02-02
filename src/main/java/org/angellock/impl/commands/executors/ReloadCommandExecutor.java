@@ -15,20 +15,21 @@ public class ReloadCommandExecutor implements ICommandAction {
 
     @Override
     public void onCommand(CommandResponse responseEntity) {
-        int botAmount = BotManager.getBots().size();
+        int botAmount = BotManager.bots().size();
         if (botAmount == 1){
-            String pluginName = responseEntity.getCommandList()[0];
+            String pluginName = responseEntity.getCommandList()[1];
             log.info("Reloading plugin {}", pluginName);
 
             AbstractRobot bot = BotManager
-                    .getBots()
+                    .bots()
                     .values()
                     .iterator()
                     .next();
 
             PluginManager pm = bot.getPluginManager();
-            pm.loadPlugin(bot, new File(pm.getPluginFolder(), pluginName + ".jar"));
+            pm.reloadPlugin(bot, pluginName);
 
         }
     }
+
 }

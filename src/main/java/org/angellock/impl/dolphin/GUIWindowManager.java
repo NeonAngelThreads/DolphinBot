@@ -1,13 +1,9 @@
 package org.angellock.impl.dolphin;
 
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.Start;
 import org.angellock.impl.managers.BotManager;
-import org.angellock.impl.win32terminal.AnsiEscapes;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
 public class GUIWindowManager {
     private final BotManager botManager;
@@ -20,7 +16,7 @@ public class GUIWindowManager {
 
     // manager.getBots()
     public void startGUI(){
-        System.out.println(botManager.getBots().toString());
+        System.out.println(botManager.bots().toString());
         window.initWindow();
     }
 }

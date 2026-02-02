@@ -3,6 +3,7 @@ package org.angellock.impl.managers;
 import com.google.gson.JsonElement;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import lombok.Getter;
 import org.angellock.impl.util.ConsoleTokens;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6ConfigManager"));
     private final Map<String, Object> cache = new HashMap<>();
     private final ResourceHelper configHelper;
+    private boolean debugMode = false;
     public ConfigManager(OptionSet optionList, @Nullable String defaultPath){
         for (OptionSpec<?> option: optionList.specs()){
             String stringOpt = option.options().get(0);
@@ -23,6 +25,9 @@ public class ConfigManager {
         }
         this.configHelper = new RobotConfig(defaultPath, ".json");
         this.loadConfig();
+
+        String s =(String)this.cache.get("enable-packet-debug");
+        this.debugMode = (optionList.has("debug") || Boolean.parseBoolean(s));
     }
 
     public void printConfigSpec() {
@@ -31,7 +36,7 @@ public class ConfigManager {
     public ConfigManager(OptionSet optionList){
         this(optionList, null);
     }
-    public Map<?, ?> getMCBotConfig(){
+    public Map<String, Object> getMCBotConfig(){
         if (this.cache.isEmpty()){
             loadConfig();
         }
@@ -61,5 +66,9 @@ public class ConfigManager {
 
     private void flushConfig(){
         this.cache.clear();
+    }
+
+    public boolean isDebugMode() {
+        return debugMode;
     }
 }

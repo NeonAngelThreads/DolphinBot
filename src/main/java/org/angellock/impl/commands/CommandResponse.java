@@ -17,16 +17,8 @@ public class CommandResponse {
         return commandName;
     }
 
-    public void setCommandName(String[] commandName) {
-        this.commandName = commandName;
-    }
-
     public String getSender() {
         return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
     }
 
     public boolean isInvalid(){
@@ -34,6 +26,6 @@ public class CommandResponse {
     }
 
     public boolean isFromTerminal(){
-        return this.sender == null;
+        return this.sender.equals("<Terminal>");
     }
 }
