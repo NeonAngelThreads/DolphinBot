@@ -1,7 +1,6 @@
 package org.angellock.impl.win32terminal;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import org.angellock.impl.util.ConsoleTokens;
 import org.jline.reader.LineReader;
@@ -13,13 +12,15 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static org.angellock.impl.util.CrossPlatformUtil.loadWindowsKernel32;
+
 public class AnsiEscapes {
     private static final int TERMINAL_PROCESSING = 0x0004;
     private static Terminal winTerminal;
     private static LineReader reader;
 
-    private interface Kernel32 extends Library {
-        Kernel32 INSTANCE = Native.load("kernel32", Kernel32.class);
+    public interface Kernel32 extends Library {
+        Kernel32 INSTANCE = loadWindowsKernel32();
 
         Pointer GetStdHandle(int nStdHandle);
 
@@ -29,6 +30,7 @@ public class AnsiEscapes {
     }
 
     public static void enableAnsiSupport() {
+        if (Kernel32.INSTANCE == null) return;
         Pointer stdHandle = Kernel32.INSTANCE.GetStdHandle(-11);
         int[] consoleMode = new int[1];
         if (Kernel32.INSTANCE.GetConsoleMode(stdHandle, consoleMode) > 0) {
