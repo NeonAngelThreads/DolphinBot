@@ -131,8 +131,10 @@ public class PluginManager extends Manager implements IPluginInjectable{
         List<SessionListener> pluginListeners = target.getListeners();
 
         for (SessionListener listener : pluginListeners) {
-            log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &7Removing Handler Object &l{}"), listener.toString());
-            botInstance.getSession().removeListener(listener);
+            if(botInstance.getSession().getListeners().contains(listener)){
+                log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &7Removing Handler Object &l{}"), listener.toString());
+                botInstance.getSession().removeListener(listener);
+            }
         }
         target.onDisable();
         target.setEnabled(false);

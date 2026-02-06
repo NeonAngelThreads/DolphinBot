@@ -44,6 +44,6 @@ public class LoadCommandExecutor implements ICommandAction {
 
     private static void hotLoad(AbstractRobot bot, String pluginName) {
         PluginManager pm = bot.getPluginManager();
-        pm.loadPlugin(bot, new File(pm.getPluginFolder(), pluginName + ".jar"));
+        pm.loadPlugin(bot, new File(pm.getPluginFolder(), pluginName));
     }
 }

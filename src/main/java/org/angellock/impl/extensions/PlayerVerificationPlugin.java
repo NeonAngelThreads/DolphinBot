@@ -1,9 +1,23 @@
+/*
+ *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *     later version.
+ *
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *     License for more details. You should have received a copy of the GNU General Public License along with this
+ *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *  https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.extensions;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.events.IActions;
 import org.angellock.impl.events.IDisconnectListener;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
@@ -84,34 +98,34 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             @Override
             public void execute() {
                 int var = 0;
-                    try {
-                        var = TimingUtil.getRandomDelay(entityBot.getRandomizer(), var);
-                        Thread.sleep(500L*(1+var));
+                try {
+                    var = TimingUtil.getRandomDelay(entityBot.getRandomizer(), var);
+                    Thread.sleep(500L*(1+var));
 
-                        if (entityBot.getSession().isConnected()){
-                            if (!isBypassed()) {
-                                if(verifyTimes < 2){
-                                    verifyTimes++;
-                                    entityBot.getSession().disconnect("Bypassing");
-                                }
-                                log.info(ConsoleTokens.colorizeText("&7正在进行人机验证..."));
-                                if (System.currentTimeMillis() - entityBot.getConnectTime() > 10700L) {
-                                    log.info(ConsoleTokens.colorizeText("&a机器人验证已完毕."));
-                                    stateMachine.currentState = LoginState.REGISTER;
-                                }
+                    if (entityBot.getSession().isConnected()){
+                        if (!isBypassed()) {
+                            if(verifyTimes < 2){
+                                verifyTimes++;
+                                entityBot.getSession().disconnect("Bypassing");
+                            }
+                            log.info(ConsoleTokens.colorizeText("&7正在进行人机验证..."));
+                            if (System.currentTimeMillis() - entityBot.getConnectTime() > 10700L) {
+                                log.info(ConsoleTokens.colorizeText("&a机器人验证已完毕."));
+                                stateMachine.currentState = LoginState.REGISTER;
                             }
                         }
-                    } catch (InterruptedException e) {
-                        entityBot.getSession().disconnect("Interrupted");
-                        throw new RuntimeException();
                     }
+                } catch (InterruptedException e) {
+                    entityBot.getSession().disconnect("Interrupted");
+                    throw new RuntimeException();
+                }
             }
         };
         Action registerAction = new Action(entityBot) {
             @Override
             public void execute() {
                 entityBot.getPluginManager().loadAllPlugins(entityBot);
-                botInstance.setBypassed(true);
+                entityBot.setBypassed(true);
 
                 log.info(ConsoleTokens.colorizeText("&6=&aRobot verification successfully passed, sending reg command!&6="));
                 sendRegister(entityBot);
@@ -142,7 +156,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
                         if (!hasLoggedIn) {
                             entityBot.sendPacket(new ServerboundChatCommandPacket("login " + entityBot.getPassword()));
-                        }else if (botInstance.getServerGamemode() != GameMode.SURVIVAL){
+                        }else if (entityBot.getServerGamemode() != GameMode.SURVIVAL){
                             stateMachine.currentState = LoginState.JOIN;
                         }
                     } catch (InterruptedException e) {
@@ -166,8 +180,9 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
         getListeners().add((IDisconnectListener) event -> {
             String s = serializer.serialize(event.getReason());
-            if (s.equals("§f请关闭所有外挂后重新进入以完成验证！")){
+            if (s.contains("请关闭所有外挂后重新进入以完成验证！")){
                 stateMachine.raise(KickReason.HUMAN_VERIFICATION);
+                verifyAction.execute();
             }
         });
 
@@ -175,7 +190,13 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             String title = ConsoleTokens.colorizeText(((TextComponent)packet.getTitle()).content().strip());
             log.info(ConsoleTokens.colorizeText("&7[Inventory] &7Container opened, with containerId: &9{}, &6Title: \"&l{}\""), packet.getContainerId(), title);
             entityBot.sendPacket(new ServerboundContainerButtonClickPacket(packet.getContainerId(), 4));
-            entityBot.sendPacket(new ServerboundContainerClickPacket(packet.getContainerId(), 0, 4, ContainerActionType.CLICK_ITEM, (ContainerAction) () -> 0, new ItemStack(0), new HashMap<>()));
+            entityBot.sendPacket(new ServerboundContainerClickPacket(packet.getContainerId(),
+                    0,
+                    4,
+                    ContainerActionType.CLICK_ITEM,
+                    (ContainerAction) () -> 0,
+                    new ItemStack(0), new HashMap<>())
+            );
         })));
 
         SessionListener chatListener = new SystemChatHandler().addExtraAction((packet) -> {

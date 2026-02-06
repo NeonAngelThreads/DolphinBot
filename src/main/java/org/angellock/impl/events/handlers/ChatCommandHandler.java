@@ -16,24 +16,30 @@
 
 package org.angellock.impl.events.handlers;
 
+import org.angellock.impl.commands.CommandResponse;
+import org.angellock.impl.commands.CommandSerializer;
+import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.AbstractEventProcessor;
-import org.angellock.impl.events.types.KeepAliveEvent;
+import org.angellock.impl.util.PlainTextSerializer;
 import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundKeepAlivePacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerChatPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundSystemChatPacket;
 
-import static org.angellock.impl.plugin.PluginManager.event;
+public class ChatCommandHandler extends AbstractEventProcessor<ClientboundPlayerChatPacket> {
 
-public class KeepAliveHandler extends AbstractEventProcessor<ClientboundKeepAlivePacket> {
-
-    public KeepAliveHandler() {
-
-        this.addExtraAction((packet) -> {
-            event().broadcastEvent(new KeepAliveEvent());
+    public ChatCommandHandler(CommandSpec commands) {
+        this.addExtraAction((chat) -> {
+            PlainTextSerializer nameSerializer = new PlainTextSerializer();
+            String sender = nameSerializer.serialize(chat.getName());
+            String commandMsg = chat.getContent();
+            CommandSerializer serializer = new CommandSerializer();
+            CommandResponse meta = serializer.serialize(commandMsg, sender);
+            commands.executeCommand(meta);
         });
     }
 
     @Override
     protected boolean isTargetPacket(Packet packet) {
-        return (packet instanceof ClientboundKeepAlivePacket);
+        return (packet instanceof ClientboundPlayerChatPacket);
     }
 }

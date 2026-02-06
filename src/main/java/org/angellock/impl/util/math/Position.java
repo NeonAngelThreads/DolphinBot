@@ -13,6 +13,12 @@ public class Position {
         Z = z;
     }
 
+    public Position() {
+        X = 0;
+        Y = 0;
+        Z = 0;
+    }
+
     public double getDistance(double x1, double y1, double z1){
         return Math.sqrt((x1-X)*(x1-X) + (y1-Y)*(y1-Y) + (z1-Z)*(z1-Z));
     }
@@ -30,6 +36,12 @@ public class Position {
         this.X = vector3d.getX();
         this.Y = vector3d.getY();
         this.Z = vector3d.getZ();
+    }
+
+    public void from(double x, double y, double z){
+        this.X = x;
+        this.Y = y;
+        this.Z = z;
     }
 
     public double getX() {

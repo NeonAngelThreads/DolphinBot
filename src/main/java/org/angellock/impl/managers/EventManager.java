@@ -14,26 +14,19 @@
  *  https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.handlers;
+package org.angellock.impl.managers;
 
-import org.angellock.impl.events.AbstractEventProcessor;
-import org.angellock.impl.events.types.KeepAliveEvent;
-import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundKeepAlivePacket;
+import org.angellock.impl.events.EventDispatcher;
+import org.angellock.impl.events.bukkit.Event;
 
-import static org.angellock.impl.plugin.PluginManager.event;
+public class EventManager {
+    private final EventDispatcher dispatcher = new EventDispatcher();
 
-public class KeepAliveHandler extends AbstractEventProcessor<ClientboundKeepAlivePacket> {
-
-    public KeepAliveHandler() {
-
-        this.addExtraAction((packet) -> {
-            event().broadcastEvent(new KeepAliveEvent());
-        });
+    public EventDispatcher dispatcher(){
+        return this.dispatcher;
     }
 
-    @Override
-    protected boolean isTargetPacket(Packet packet) {
-        return (packet instanceof ClientboundKeepAlivePacket);
+    public void broadcastEvent(Event event){
+        this.dispatcher.callEvent(event);
     }
 }

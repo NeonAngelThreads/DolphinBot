@@ -1,3 +1,5 @@
+
+## Langrage: [简体中文](README_CN.md) / `English`
 # DolphinBot-Reloaded
 
 <p align="center">
@@ -74,9 +76,11 @@
 - You can send in-game messages or execute commands form the dolphin bot terminal.
 - Built-in commands:
 - 
-  | Terminal Commands         | Description                      |
-  |---------------------------|----------------------------------|
-  | `reload <Plugin Name>`    | Hot-reloading a specified plugin |
+  | Terminal Commands                            | Description                      |
+  |----------------------------------------------|----------------------------------|
+  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin |
+  | `load <PLugin Name> <bot name (optional)>`   | Hot-loading a specified plugin   |
+   
 - For these commands, you can press `TAB` to complete automatically.
 ## Getting Started
 In this section, you will understand below how-tos:  
@@ -117,7 +121,7 @@ In this section, you will understand below how-tos:
         ```
       Command profile will be loaded:
       <p align="center">
-        <img src="assets/dolphinbot-profile.png">
+        <img src="assets/dolphinbot-profile.png" alt="profile list">
       </p>
          
       **Warning:**  command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
@@ -128,7 +132,7 @@ In this section, you will understand below how-tos:
          Config files include functional config `mc.bot.config.json` and profile config `bot.profiles.json`  
          You can also move above profile arguments into config file ``bot.profiles.json`` following below formats, all config values in it will be loaded.
          DolphinBot will apply command-line options first, duplicated options in config file will be ignored.    
-         To specify the path of config file is optional, Use option `-config-file` to locate config directory or file.  
+         To specify the path of config file is optional, Use option `--config-file` to locate config directory or file.  
          For example:  
          ```bash 
          java -jar "DolphinBot-[version].jar" -config-file=path/to/config.json
@@ -174,21 +178,21 @@ In this section, you will understand below how-tos:
          where `enabled_plugins` key represents which plugins should enable on the bot.
          In this case, if you want to load `bot#1` as your single bot, you should add below argument:  
          ```bash
-         java -jar "DolphinBot-[version].jar" -config-file=path/to/config_directory -profiles="bot#1"
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory -profiles="bot#1"
          ```  
          or
          ```bash
-         java -jar "DolphinBot-[version].jar" -profiles="bot#1"
+         java -jar "DolphinBot-[version].jar" --profiles="bot#1"
          ```   
          If you want to start multiple bot simultaneously, specify multiple profile name as a list in option `-profiles`, for
       each profile name, should be split with ";".
 
          **Examples:**  
          ```bash
-         java -jar "DolphinBot-[version].jar" -profiles="bot#1;bot#2"
+         java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2"
          ```  
          ```bash
-         java -jar "DolphinBot-[version].jar" -profiles="bot#1;bot#2;bot#3;..."
+         java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
          ```
        - **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
 
@@ -233,30 +237,34 @@ In this section, you will understand below how-tos:
           "server": "2b2t.xin",
           "port": 25565,
           "auto-reconnecting": true,
+          "enable-skin-recorder": true,
    
           "packet-filter-delay": 3000,
           "msg-send-delay": 3000,
           "max-chunk-view": 12,
    
           "connect-timing-out": 2000,
-          "reconnect-delay": 3000
+          "reconnect-delay": 3000,
+          "enable-packet-debug": false
       }
       ```   
       Config Options:
    
-      | Config                | Description                                                                |
-      |-----------------------|----------------------------------------------------------------------------|
-      | `server`              | For defining server address.                                               |
-      | `port`                | For defining server port.                                                  |
-      | `auto-reconnecting`   | Whether reconnect to server when got kicked or disconnect by some reasons. |
-      | `packet-filter-delay` | Max receiving delay(millis) between every target packet.                   |
-      | `max-chunk-view`      | Max scale of chunk packet receiving.                                       |
-      | `connect-timing-out`  | How long millis does it take to determine a connection time out.           |
-      | `reconnect-delay`     | Min delay(millis) for cooling down when reconnect a server.                |
-      | `msg-send-delay`      | The delay of sending in-game messages.                                     |
+      | Config                 | Description                                                                |
+      |------------------------|----------------------------------------------------------------------------|
+      | `server`               | For defining server address.                                               |
+      | `port`                 | For defining server port.                                                  |
+      | `auto-reconnecting`    | Whether reconnect to server when got kicked or disconnect by some reasons. |
+      | `enable-skin-recorder` | Whether enable skin recorder.                                              |
+      | `packet-filter-delay`  | Max receiving delay(millis) between every target packet.                   |
+      | `max-chunk-view`       | Max scale of chunk packet receiving.                                       |
+      | `connect-timing-out`   | How long millis does it take to determine a connection time out.           |
+      | `reconnect-delay`      | Min delay(millis) for cooling down when reconnect a server.                |
+      | `msg-send-delay`       | The delay of sending in-game messages.                                     |
+      | `enable-packet-debug`  | Whether enable packet debugger.                                            |
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
-You can send `!reload <pluginName>` dolphin command in server chat.
+You can send `!reload <pluginName>` dolphin command in server chat.  
 Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload plugins.
 
 ## FAQ
@@ -274,8 +282,10 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
 
 
 - Can I join the DolphinBot development?  
-    Sure! you can become the **first contributor** of DolphinBot team! you can join at any time freely. 
+    Sure! you can become the **second contributor** of DolphinBot team! you can join at any time freely. 
 
+### Our First Contributor:
+1. huangdihd - (Fixed a critical bug in commit [README.md](README.md)(`#372990a`)
 ## Community
   - Encountered a bug? issues and suggestions are welcome!  
   My Bilibili space:

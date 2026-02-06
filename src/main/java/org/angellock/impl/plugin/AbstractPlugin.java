@@ -3,9 +3,9 @@ package org.angellock.impl.plugin;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.EventDispatcher;
-import org.angellock.impl.events.IListener;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
+import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -22,10 +22,9 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
     private Manifest manifest;
     private boolean enabled = false;
     private Manifest pluginManifest;
-    private final EventDispatcher dispatcher = new EventDispatcher();
     private final List<SessionListener> listeners = new ArrayList<>();
     private AbstractRobot targetBot;
-    private static final Logger log = LoggerFactory.getLogger(AbstractPlugin.class);
+    private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6&lPlugins"));
     protected Thread schedulerThread;
 
     public AbstractPlugin(@Nullable String defaultDataPath){
@@ -44,8 +43,8 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         this.simpleName = this.getClass().getSimpleName();
     }
 
-    public void registerEvent(IListener listener) {
-        this.dispatcher.registerEvents(listener, this);
+    public EventDispatcher getEvents(){
+        return this.targetBot.getPluginManager().event().dispatcher();
     }
 
     public String getSimpleName() {

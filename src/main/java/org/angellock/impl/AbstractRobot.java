@@ -1,23 +1,24 @@
 /*
- * This file is a part of DolphinBot, see <https://github.com/NeonAngelThreads/DolphinBot>
+ *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     Copyright (C) 2025-2026 NeonAngelThreads
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *     later version.
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *     License for more details. You should have received a copy of the GNU General Public License along with this
+ *     program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should
- *     have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc.,
- *      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * Contact with me> Bilibili space: https://space.bilibili.com/386644641
+ *  https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl;
 
 
 import com.google.gson.JsonElement;
+import io.netty.channel.Channel;
 import lombok.Getter;
 import net.kyori.adventure.text.TranslatableComponent;
 import org.angellock.impl.commands.CommandResponse;
@@ -146,8 +147,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return commandManager;
     }
 
-    public BotManager getBotManager() {
-        return botManager;
+    public ConfigManager config() {
+        return this.config;
     }
 
     public String getPassword(){
@@ -167,7 +168,12 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener((IConnectListener) event -> onJoin());
 
         this.serverSession.addListener((IDisconnectListener) event -> {
-            onQuit(new TextComponentSerializer().serialize(event.getReason()));
+            PlainTextSerializer serializer = new PlainTextSerializer();
+            String text = serializer.serialize(event.getReason());
+            if (text.isBlank()) {
+                text = (event.getReason().toString());
+            }
+            onQuit(text);
         });
 
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
@@ -175,9 +181,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new EntityMovePacket());
         this.serverSession.addListener(new PlayerEmergeHandler());
         this.serverSession.addListener(new PlayerPositionPacket(this));
-
         this.serverSession.addListener(new KeepAliveHandler());
-
         if (this.config.isDebugMode()){
             this.serverSession.addListener(new PacketDebugger());
         }
@@ -185,11 +189,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
         this.serverSession.connect(true, false);
-
-//        Channel channel = this.serverSession.getChannel();
-//        final UserConnection user = new UserConnectionImpl(channel, true);
-//        new ProtocolPipelineImpl(user);
-//        channel.pipeline().addBefore("encoder", CommonTransformer.HANDLER_ENCODER_NAME, new MCPEncodeHandler(user)).addBefore("decoder", CommonTransformer.HANDLER_DECODER_NAME, new MCPDecodeHandler(user));
 
         this.connectDuration = System.currentTimeMillis();
         try {
@@ -203,8 +202,10 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                         this.connectDuration = System.currentTimeMillis();
                         break;
                     } else if (connect) {
-                        this.pluginManager.loadAllPlugins(this);
-                        connect = false;
+                        if (System.currentTimeMillis() - this.connectDuration > 100L){
+                            this.pluginManager.loadAllPlugins(this);
+                            connect = false;
+                        }
                     } else if (!shouldWait) {
                         if (this.messageManager.pollMessage()) {
                             shouldWait = true;

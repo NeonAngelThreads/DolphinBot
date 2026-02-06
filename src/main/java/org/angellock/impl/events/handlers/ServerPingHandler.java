@@ -17,23 +17,13 @@
 package org.angellock.impl.events.handlers;
 
 import org.angellock.impl.events.AbstractEventProcessor;
-import org.angellock.impl.events.types.KeepAliveEvent;
 import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundKeepAlivePacket;
+import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundPingPacket;
 
-import static org.angellock.impl.plugin.PluginManager.event;
-
-public class KeepAliveHandler extends AbstractEventProcessor<ClientboundKeepAlivePacket> {
-
-    public KeepAliveHandler() {
-
-        this.addExtraAction((packet) -> {
-            event().broadcastEvent(new KeepAliveEvent());
-        });
-    }
+public class ServerPingHandler extends AbstractEventProcessor<ClientboundPingPacket> {
 
     @Override
     protected boolean isTargetPacket(Packet packet) {
-        return (packet instanceof ClientboundKeepAlivePacket);
+        return packet instanceof ClientboundPingPacket;
     }
 }
