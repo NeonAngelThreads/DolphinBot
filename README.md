@@ -290,5 +290,9 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
   - Encountered a bug? issues and suggestions are welcome!  
   My Bilibili space:
   https://m.bilibili.com/space/386644641
+  - If you like DolphinBot, a **star** helps a lot!
+
+## License
+GPL-3.0 or later, see the [full LICENSE](LICENSE).
 
 ### **By NeonAngelThreads, coding with ❤️**

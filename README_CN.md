@@ -288,5 +288,10 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
   - 遇到bug了吗？欢迎提出问题和建议！    
     我的Bilibili空间：
   https://m.bilibili.com/space/386644641
+  -   
+    **如果你喜欢 DolphinBot，欢迎点一颗小小的 Star！** 
 
-### **作者：NeonAngelThreads，用心编程❤️**
+## 开源协议
+GPL-3.0 或更高版本，请参阅[完整开源许可](LICENSE).
+
+### **By NeonAngelThreads, coding with ❤️**
