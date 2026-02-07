@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class BotInfoHelper {
+public class ProfileObject {
 
     private String password;
     private String name;

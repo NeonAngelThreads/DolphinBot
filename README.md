@@ -51,7 +51,7 @@
    - Supporting to configure the bot clusters, and start at once.
    - Supporting colourful console logging strings expression `colorizeText("&6Hello &lWorld")`.
    - Automatic answer questions in `2b2t.xin` for speeding up login process.
-   - Supporting to reload a plugin while the client is running on server.
+   - Supporting to configure proxy settings for multiple bots.
 
 ## Screenshots:
 ### Running on Windows server 2019:
@@ -63,6 +63,7 @@
    **Features category:**  
    - [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
 - [`Terminal Interactions`]()
+- [`Proxy Settings`]()
 
 **Implemented Event APIs:**
 - [`Programmable State Machine`](PluginDocs.md#3-programmable-login-state-machine)
@@ -86,7 +87,7 @@
 In this section, you will understand below how-tos:  
   - **1. How to directly start a single bot with command-line.**  
   - **2. How to specify bot profile with config file without command-line.**  
-  - **3. How to start multiple bot simultaneously**  
+  - **3. How to start multiple bot simultaneously with proxy settings**  
   - **4. How to configure advanced options**  
   - **5. How to make a custom plugin**  
 
@@ -94,59 +95,74 @@ In this section, you will understand below how-tos:
    Download the jar archive file: `DolphinBot-[version]-full.jar`.  
    Requirements: **Java version >= 17**
 2. **Configuration of the Bot**  
-**Configuring Profile**  
+### Configuring Profile 
    There are two different ways to set bot config:
-   - If you want to quickly start for simplicity and only one bot started, you can use **Command-line setting**  
+   - If you want to quickly start for simplicity, you can use **Command-line setting**  
    - If you would like to start multiple bot at once, and access advanced options, you can use **Config file setting**    
 
    1. **Command-line Setting**  
         In-game profile should be defined on below boot command-line.  
         An example of argument list:
         ```bash
-        java -jar "DolphinBot-[version]-full.jar" -username=[username] -password=[password] -skin-recorder=[enable/disable]
+        java -jar "DolphinBot-[version]-full.jar" --username=[username] --password=[password] --skin-recorder=[enable/disable]
         ```
-      `--username` : in-game displaying name of bot.  
-      `--password` : password for login or register.  
-      `--auto-reconnect` : whether reconnect to server when got kicked or disconnect by some reasons.  
-      `--skin-recorder` : whether automatic capture and save online players' skins.  
-      `--server` : target server address.  
-      `--port` : target server port.  
+      | Command Lines      | Description                                                                |
+      |--------------------|----------------------------------------------------------------------------|
+      | `--username`       | in-game displaying name of bot.                                            |
+      | `--password`       | password for login or register.                                            |
+      | `--auto-reconnect` | whether reconnect to server when got kicked or disconnect by some reasons. |
+       | `--skin-recorder`  | whether automatic capture and save online players' skins.                  |
+      | `--server`         | target server address.                                                     |
+      | `--port`           | target server port.                                                        |
+
       Example:
         ```bash
         java -jar "DolphinBot-[version]-full.jar" --username=[username] --password=[password] --server=0.0.0.0 --port=25565
         ```
-      or
         ```bash
         java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
         ```
-      Command profile will be loaded:
       <p align="center">
         <img src="assets/dolphinbot-profile.png" alt="profile list">
       </p>
          
+      >[!Note] 
       **Warning:**  command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
       command-line, and ignore config file one.  
+   
+      >[!TIP]
       Optionally, you can specify more option by adding argument:  
-      `--owner` : Specifying only who can use this bot.
-   2. **Config File Setting**  
+      `--owner` : Specifying only who can use this bot.  
+   
+      **Example:**   
+      `--owner=Melibertan`, of course, you also can define multiple names. For each owner name, should be split with ";".  
+      **Example:**  
+      `--owner=owner1;owner2;owner3;...`  
+      ### Config File Setting    
          Config files include functional config `mc.bot.config.json` and profile config `bot.profiles.json`  
          You can also move above profile arguments into config file ``bot.profiles.json`` following below formats, all config values in it will be loaded.
          DolphinBot will apply command-line options first, duplicated options in config file will be ignored.    
          To specify the path of config file is optional, Use option `--config-file` to locate config directory or file.  
          For example:  
          ```bash 
-         java -jar "DolphinBot-[version].jar" -config-file=path/to/config.json
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config.json
          ```
          If the path you specified is a directory instead of a file, Dolphin will extract config file as default config in this directory.  
          ```bash
-         java -jar "DolphinBot-[version].jar" -config-file=path/to/config_directory
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory
          ```
          If the `--config-file` parameter is absented, DolphinBot will create a default file on jar directory.  
          ```bash 
          java -jar "DolphinBot-[version].jar"
          ```
-         
-         In the profile config file, you can create `profiles` key in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
+         **multiple bot & proxy settings**  
+         In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
+         >[!NOTE]   
+         Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
+         from different network environments or requiring distinct egress IPs.  
+   
+         To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
+         >[!Warn]  
          **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
          ```json
          {
@@ -155,46 +171,67 @@ In this section, you will understand below how-tos:
                   "name": "Player494",
                   "password": "123example",
                   "owner": ["player_name"],
-         
                   "enabled_plugins": [
                      "QuestionAnswerer",
                      "MessageDisplay",
                      "HumanVerify"
-                  ]
+                  ],
+                  "proxy": {
+                     "enabled": false,
+                     "info": {
+                        "address": "XX.XXX.XXX.XX",
+                        "port": 8081,
+                        "type": "SOCKS4",
+                        "username": "",
+                        "password": ""
+                     }
+                  }
                },
                "bot#2": {
                   "name": "Player495",  
                   "password": "password",
                   "owner": ["player_name", "other_owner"],
-         
                   "enabled_plugins": [
                      "HumanVerify"
-                  ]
+                  ],
+                  "proxy": {
+                     "enabled": false,
+                     "info": {"...": "..."}
+                  }
                },
                "bot#3": {"...": "..."}
             }
          }
          ```
-         where `enabled_plugins` key represents which plugins should enable on the bot.
+          
+         1. `enabled_plugins` field represents which plugins should enable on the bot.   
+         2. `proxy` fields (optional) represents a proxy configurations for each bot, field `enabled` marks whether activate this proxy setting,   
+                and field `info` contains:
+      
+            | field       | Description                                     |
+            |-------------|-------------------------------------------------|
+            | `address`   | Remote IP address or host name of proxy server. |
+            | `port`      | Proxy server port.                              |
+            | `type`      | Proxy mode. (`HTTP`, `SOCKS4`, `SOCKS5`)        |
+         >[!TIP]
+          "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
+   
          In this case, if you want to load `bot#1` as your single bot, you should add below argument:  
          ```bash
-         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory -profiles="bot#1"
-         ```  
-         or
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory --profiles="bot#1"
+         ```
          ```bash
          java -jar "DolphinBot-[version].jar" --profiles="bot#1"
          ```   
-         If you want to start multiple bot simultaneously, specify multiple profile name as a list in option `-profiles`, for
+         If you want to start multiple bot simultaneously, specify multiple profile name as a list in option `--profiles`, for
       each profile name, should be split with ";".
 
-         **Examples:**  
-         ```bash
-         java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2"
-         ```  
+         **Examples:**
          ```bash
          java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
          ```
-       - **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
+      >[!NOTE]
+      > - **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
 
       **Owners:**  
       If you want to limit a bot can be only use by specified player(s) you can put player names into `owner` as list.  
@@ -210,23 +247,21 @@ In this section, you will understand below how-tos:
                      "owner2",
                      "owner3"
                   ],
-
-                  "enabled_plugins": [
-                     "QuestionAnswerer",
-                     "MessageDisplay",
-                     "HumanVerify"
-                  ]
+                  "enabled_plugins": [ "QuestionAnswerer", "MessageDisplay", "HumanVerify" ],
+                  "proxy": {
+                     "enabled": false,
+                     "info": {
+                        "address": "XX.XXX.XXX.XX",
+                        "port": 8081, 
+                        "type": "SOCKS4",
+                        "username": "",
+                        "password": ""
+                     }
+                  }
                }
             }
          }
         ```
-
-      Or you can directly define it by command line.  
-      **Example:**
-      `--owner=Melibertan`, of course, you also can define multiple names:  
-      For each owner name, should be split with ";".  
-      **Example:**
-      `--owner=owner1;owner2;owner3;...`
    2. **Advanced Configurations (optional)**  
       If you want to access more advanced configs, you can edit `mc.bot.config.json`.  
       Every single config option is equilibrium to option that defined by command line, and all config value including
@@ -262,6 +297,7 @@ In this section, you will understand below how-tos:
       | `reconnect-delay`      | Min delay(millis) for cooling down when reconnect a server.                |
       | `msg-send-delay`       | The delay of sending in-game messages.                                     |
       | `enable-packet-debug`  | Whether enable packet debugger.                                            |
+
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
 You can send `!reload <pluginName>` dolphin command in server chat.  
@@ -285,7 +321,7 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
     Sure! you can become the **second contributor** of DolphinBot team! you can join at any time freely. 
 
 ### Our First Contributor:
-1. huangdihd - (Fixed a critical bug in commit [README.md](README.md)(`#372990a`)
+1. huangdihd - (Fixed a critical bug in commit(`#372990a`)
 ## Community
   - Encountered a bug? issues and suggestions are welcome!  
   My Bilibili space:

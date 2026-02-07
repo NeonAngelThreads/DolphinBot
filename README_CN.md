@@ -35,9 +35,9 @@
 </p>
 
 ## 为什么选择 DolphinBot？
-   - **高可靠性**, 网络利用率低，断开连接后自动重连，长时间运行无需担心连接丢失。  
+   - **高可靠性**, 网络利用率低，长时间运行无需担心连接丢失，断开连接后自动重连。  
    - **高可编程性**, DolphinBot 实现了类似 **SpringBoot** 的 **状态机**，让您可以轻松地为不同的服务器配置 **自定义登录流程**。
-   - **高可扩展性**, DolphinBot 嵌入了成熟的 DolphinAPI，其中包含基于 mc 协议库的各种“数据包监听器”、“事件系统”和易于使用的“事件处理程序”，它集成了类似 Bukkit 的插件 API，使您可以在很短的时间内开发自定义插件。
+   - **高可扩展性**, DolphinBot 嵌入了成熟的 DolphinAPI，其中包含基于 mc 协议库的各种`数据包监听器`、`事件系统`和易于使用的`事件处理接口`，它集成了类似 Bukkit 的插件 API，使您可以在很短的时间内开发自定义插件。
      
    - **高级日志系统**，DolphinAPI 还实现了 `TextComponent` 序列化器，用于解析服务器消息的丰富颜色和样式，并提供更多有用的调试信息。
    - **高性能**，DolphinBot允许您在单个Java客户端上启动多个机器人实例，同时保持超低的 CPU 和内存占用率。
@@ -45,23 +45,24 @@
 ### **快捷方式**: [自定义插件开发指南](PluginDocs.md)
 ## 功能特性:
    - 使用 CommandBuilder 的 DolphinAPI，可以轻松注册以 `!` 开头的自定义命令。
-   - 加入服务器后可以直接/load**热注入**插件，和/reload热重载插件。
+   - 加入服务器后支持直接`/load`**热注入**插件，和`/reload`热重载插件。
    - 友好的终端体验，支持丰富颜色和样式。
    - 支持配置机器人集群，并立即启动。
    - 支持彩色控制台日志字符串表达式 `colorizeText("&6Hello &lWorld")`。
    - `2b2t.xin` 中自动回答问题，以加快登录过程。
-   - 支持在客户端于服务器运行时重新加载插件。
+   - 支持自定义登录流程。
 
 ## 截图:
-### Running on Windows server 2019:
+### 在 Windows server 2019 表现效果:
 <p align="center">
    <img src="assets/dolphinbot1.png">
 </p>
 
 ## 介绍:
-   **特色类别:**  
+   **特色功能:**  
    - [`热重载插件`](#hot-swapping-plugins-in-game)
-- [`终端交互`]()
+- [`终端交互`](#终端交互)
+- [`数据包调试器`](#)
 
 **已实现事件 API:**
 - [`可编程状态机`](PluginDocs.md#3-programmable-login-state-machine)
@@ -71,12 +72,12 @@
    - [`玩家事件API`](PluginDocs.md#player-events)
 - [`强制 Unicode 聊天`](PluginDocs.md#unicode-string-helper)
 
-## Interactions in Terminal
-- 您可以通过DolphinBot终端发送游戏消息，或执行命令。
+## 终端交互
+- 您可以通过 DolphinBot 终端发送游戏消息，或执行命令。
 - 内置命令:
 - 
-  | Terminal Commands                            | Description   |
-  |----------------------------------------------|---------------|
+  | 终端命令                        | 用途描述          |
+  |-----------------------------|---------------|
   | `reload <插件名称> <机器人名称（可选）>` | 热重载指定的插件      |
   | `load <插件名称> <机器人名称（可选）>`   | 热加载（热注入）指定的插件 |
    
@@ -102,7 +103,7 @@
         游戏内配置文件应在以下启动命令行中定义。  
         参数列表示例：
         ```bash
-        java -jar "DolphinBot-[version]-full.jar" -username=[username] -password=[password] -skin-recorder=[enable/disable]
+        java -jar "DolphinBot-[version]-full.jar" --username=[username] --password=[password] --skin-recorder=[enable/disable]
         ```
       `--username` : 游戏内显示机器人名称。   
       `--password` : 登录或注册密码。  
@@ -114,7 +115,7 @@
         ```bash
         java -jar "DolphinBot-[version]-full.jar" --username=[username] --password=[password] --server=0.0.0.0 --port=25565
         ```
-      or
+      或者：
         ```bash
         java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
         ```
@@ -122,22 +123,22 @@
       <p align="center">
         <img src="assets/dolphinbot-profile.png" alt="profile list">
       </p>
-
+      [warn]
       **警告：** 命令行参数的权限高于配置文件，这意味着如果选项重复，则只会识别命令行参数，且忽略配置文件中的选项。  
       您还可以通过添加参数来指定更多选项：  
       `--owner` : 仅指定哪些人可以使用此机器人。  
-   2. **Config File Setting**  
+   2. **配置文件设置**  
          配置文件包括功能配置文件 `mc.bot.config.json` 和账户配置文件 `bot.profiles.json`  
          您还可以按照以下格式将上述配置文件参数移至配置文件`bot.profiles.json`中，其中的所有配置值都将被加载。  
          DolphinBot 将首先应用命令行选项，配置文件中重复的选项将被忽略。  
          指定配置文件路径是可选的，使用选项 `--config-file` 来定位配置目录或文件。  
          例如:  
          ```bash 
-         java -jar "DolphinBot-[version].jar" -config-file=path/to/config.json
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config.json
          ```
          如果您指定的路径是目录而不是文件，DolphinBot 会将配置文件提取到该目录中作为默认配置。
          ```bash
-         java -jar "DolphinBot-[version].jar" -config-file=path/to/config_directory
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory
          ```
          如果缺少 `--config-file` 参数，DolphinBot 将在 jar 目录中创建一个默认文件。  
          ```bash 
@@ -176,13 +177,13 @@
          其中 `enabled_plugins` 键表示应该在机器人上启用哪些插件。  
          在这种情况下，如果您想将 `bot#1` 作为唯一的机器人加载，则应添加以下参数：  
          ```bash
-         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory -profiles="bot#1"
+         java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory --profiles="bot#1"
          ```  
          or
          ```bash
          java -jar "DolphinBot-[version].jar" --profiles="bot#1"
          ```   
-         如果要同时启动多个机器人，请在 `-profiles` 选项中指定多个配置文件名称列表，
+         如果要同时启动多个机器人，请在 `--profiles` 选项中指定多个配置文件名称列表，
 
          每个配置文件名称之间应以“;”分隔。
 
@@ -195,7 +196,7 @@
          ```
        - **警告**: 如果没有 `--profiles` 选项，则默认情况下会加载配置文件中的所有机器人。
 
-      **Owners:**  
+      **Owners 参数:**  
         如果你想限制某个机器人只能由指定的玩家使用，你可以将玩家姓名作为列表添加到 `owner` 中。  
       **Example:**
          ```json
@@ -246,7 +247,7 @@
           "enable-packet-debug": false
       }
       ```   
-      Config Options:
+      **配置选项:**
    
       | Config                 | Description              |
       |------------------------|--------------------------|
@@ -268,7 +269,7 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
 ## FAQ
 
 - 我可以为 DolphinBot 制作插件吗？   
-    是的，DolphinBot 有一个易于使用的插件系统，聚合了类似 Bukkit 的 API，以下是[完整的开发指南](PluginDocs.md)
+    当然可以，DolphinBot 有一个易于使用的插件系统，聚合了类似 Bukkit 的 API，以下是[完整的开发指南](PluginDocs.md)
 
 
 - 配置配置文件难吗？  
@@ -282,15 +283,15 @@ Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload pl
 - 我可以参与DolphinBot的开发吗？  
     当然可以！您可以成为 DolphinBot 团队的**第二位贡献者**！您可以随时自由加入。   
 
-### 我们的第一位:
-1. huangdihd - (修复了提交(`#372990a`)中的一个严重错误。我们期待第二位发现bug的贡献者！
+
 ## 社区
   - 遇到bug了吗？欢迎提出问题和建议！    
     我的Bilibili空间：
   https://m.bilibili.com/space/386644641
   -   
     **如果你喜欢 DolphinBot，欢迎点一颗小小的 Star！** 
-
+    ### 我们的第一位 contributor:
+1. huangdihd - (修复了提交(`#372990a`)中的一个bug。我们期待第二位发现bug的贡献者！
 ## 开源协议
 GPL-3.0 或更高版本，请参阅[完整开源许可](LICENSE).
 

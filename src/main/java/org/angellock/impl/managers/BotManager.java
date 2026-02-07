@@ -1,5 +1,23 @@
+/*
+ *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *     later version.
+ *
+ *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *     License for more details. You should have received a copy of the GNU General Public License along with this
+ *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *  https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.managers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.ChatMessageManager;
@@ -9,8 +27,10 @@ import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.strings.JsonStrings;
 import org.angellock.impl.win32terminal.AnsiEscapes;
+import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReader;
@@ -18,13 +38,16 @@ import org.jline.reader.UserInterruptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.*;
 
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
     private static final SystemEventLogger systemEventLogger = new SystemEventLogger();
-    //    private final ScheduledExecutorService terminal = Executors.newScheduledThreadPool(1);
+    private final Gson gson = new GsonBuilder()
+                                    .serializeNulls()
+                                    .create();
     private final ConfigManager botConfigHelper;
     private String globalPluginDir;
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
@@ -88,15 +111,36 @@ public class BotManager extends ResourceHelper {
             pluginList.add(Plugins.getPluginFromString(element.getAsString()));
         }
 
-        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
+        ProxyObject proxySetting = this.gson.fromJson(profile.get("proxy"), ProxyObject.class);
+
+        AbstractRobot botInst;
+        ProxyInfo proxyInfo = null;
+        if (proxySetting != null) {
+            if (proxySetting.isEnabled()){
+                ProxyObject.Info info = proxySetting.getInfo();
+                if (info.isValid()){
+                    log.info(ConsoleTokens.colorizeText("&bProxy setting Enabled: {}"), info);
+
+                    proxyInfo = new ProxyInfo(info.getType(),
+                            new InetSocketAddress(info.getAddress(), info.getPort()),
+                            info.getUsername(),
+                            info.getPassword()
+                    );
+                } else {
+                    log.info(ConsoleTokens.colorizeText("&4The Proxy setting invalid: &c&n&o{}"), info);
+                }
+            }
+
+        }
+        botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
                 .withName(botName)
                 .withPassword(password)
                 .withDefaultPlugins(pluginList)
                 .withProfileName(name)
                 .withBotManager(this)
                 .withOwners(owners)
+                .enableProxy(proxyInfo)
                 .buildProtocol();
-
         bots.put(name, (RobotPlayer) botInst);
     }
 
@@ -109,6 +153,7 @@ public class BotManager extends ResourceHelper {
                 .withPassword(password)
                 .withOwners(owners)
                 .buildProtocol();
+
         for (Plugins plugins: Plugins.values()){
             botInst
                     .getPluginManager()
