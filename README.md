@@ -133,15 +133,15 @@ In this section, you will understand below how-tos:
      <img src="assets/dolphinbot-profile.png" alt="profile list">
    </p>
          
-   > [!NOTE]
-   > **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
+> [!NOTE]
+> **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
    command-line, and ignore config file one.  
    
-   > [!TIP]
-   > Optionally, you can specify more option by adding argument:  
+> [!TIP]
+> Optionally, you can specify more option by adding argument:  
    `--owner` : Specifying only who can use this bot.  
    
-   **Example:**   
+  **Example:**   
    `--owner=Melibertan`, of course, you also can define multiple names. For each owner name, should be split with ";".  
    **Example:**  
    `--owner=owner1;owner2;owner3;...`  
@@ -166,14 +166,14 @@ In this section, you will understand below how-tos:
    **multiple bot & proxy settings**  
       In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
                
-   > [!NOTE]
-   > Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
+> [!NOTE]
+> Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
          from different network environments or requiring distinct egress IPs.  
      
-   To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
+To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
           
-   > [!WARN]
-   > **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
+> [!WARN]
+> **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
 
    ```json
    {
@@ -225,8 +225,8 @@ In this section, you will understand below how-tos:
       | `port`      | Proxy server port.                              |
       | `type`      | Proxy mode. (`HTTP`, `SOCKS4`, `SOCKS5`)        |
 
-   > [!TIP]
-   > "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
+> [!TIP]
+> "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
 
    In this case, if you want to load `bot#1` as your single bot, you should add below argument:  
    ```bash
@@ -243,73 +243,73 @@ each profile name, should be split with ";".
    java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
    ```
 
-   > [!NOTE]
-   > If the `--profiles` option is absented, it will load all bots in profile config by default.  
+> [!NOTE]
+> If the `--profiles` option is absented, it will load all bots in profile config by default.  
 
-   **Owners:**  
-         If you want to limit a bot can be only use by specified player(s) you can put player names into `owner` as list.  
-         **Example:**
-      ```json
-      {
-         "profiles": {
-            "bot#1": {
-               "name": "Player494",
-               "password": "123example",
-               "owner": [
-                  "owner1", 
-                  "owner2",
-                  "owner3"
-               ],
-               "enabled_plugins": [ "QuestionAnswerer", "MessageDisplay", "HumanVerify" ],
-               "proxy": {
-                  "enabled": false,
-                  "info": {
-                     "address": "XX.XXX.XXX.XX",
-                     "port": 8081, 
-                     "type": "SOCKS4",
-                     "username": "",
-                     "password": ""
-                  }
-               }
+**Owners:**  
+   If you want to limit a bot can be only use by specified player(s) you can put player names into `owner` as list.  
+   **Example:**
+```json
+{
+   "profiles": {
+      "bot#1": {
+         "name": "Player494",
+         "password": "123example",
+         "owner": [
+            "owner1", 
+            "owner2",
+            "owner3"
+         ],
+         "enabled_plugins": [ "QuestionAnswerer", "MessageDisplay", "HumanVerify" ],
+         "proxy": {
+            "enabled": false,
+            "info": {
+               "address": "XX.XXX.XXX.XX",
+               "port": 8081, 
+               "type": "SOCKS4",
+               "username": "",
+               "password": ""
             }
          }
       }
-      ```
-2. **Advanced Configurations (optional)**  
-      If you want to access more advanced configs, you can edit `mc.bot.config.json`.  
-      Every single config option is equilibrium to option that defined by command line, and all config value including
-      unrecognized option will be parsed, so you can add your customize config options.  
-      An example for configuring this file:
-      ```json
-       {
-          "server": "2b2t.xin",
-          "port": 25565,
-          "auto-reconnecting": true,
-          "enable-skin-recorder": true,
+   }
+}
+```
+### Advanced Configurations (optional)
+   If you want to access more advanced configs, you can edit `mc.bot.config.json`.  
+   Every single config option is equilibrium to option that defined by command line, and all config value including
+   unrecognized option will be parsed, so you can add your customize config options.  
+   An example for configuring this file:
+   ```json
+   {
+      "server": "2b2t.xin",
+      "port": 25565,
+      "auto-reconnecting": true,
+      "enable-skin-recorder": true,
    
-          "packet-filter-delay": 3000,
-          "msg-send-delay": 3000,
-          "max-chunk-view": 12,
+      "packet-filter-delay": 3000,
+      "msg-send-delay": 3000,
+      "max-chunk-view": 12,
    
-          "connect-timing-out": 2000,
-          "reconnect-delay": 3000,
-          "enable-packet-debug": false
-       }
-      ```   
-      Config Options:
+      "connect-timing-out": 2000,
+      "reconnect-delay": 3000,
+      "enable-packet-debug": false
+   }
+   ```   
+   ### Config Options:
    
-      | Config                 | Description                                                                |
-      |------------------------|----------------------------------------------------------------------------|
-      | `server`               | For defining server address.                                               |
-      | `port`                 | For defining server port.                                                  |
-      | `auto-reconnecting`    | Whether reconnect to server when got kicked or disconnect by some reasons. |
-      | `enable-skin-recorder` | Whether enable skin recorder.                                              |
-      | `packet-filter-delay`  | Max receiving delay(millis) between every target packet.                   |
-      | `max-chunk-view`       | Max scale of chunk packet receiving.                                       |
-      | `connect-timing-out`   | How long millis does it take to determine a connection time out.           |
-      | `reconnect-delay`      | Min delay(millis) for cooling down when reconnect a server.                |
-      | `msg-send-delay`       | The delay of sending in-game messages.                                     |
-      | `enable-packet-debug`  | Whether enable packet debugger.                                            |
+   | Config                 | Description                                                                |
+   |------------------------|----------------------------------------------------------------------------|
+   | `server`               | For defining server address.                                               |
+   | `port`                 | For defining server port.                                                  |
+   | `auto-reconnecting`    | Whether reconnect to server when got kicked or disconnect by some reasons. |
+   | `enable-skin-recorder` | Whether enable skin recorder.                                              |
+   | `packet-filter-delay`  | Max receiving delay(millis) between every target packet.                   |
+   | `max-chunk-view`       | Max scale of chunk packet receiving.                                       |
+   | `connect-timing-out`   | How long millis does it take to determine a connection time out.           |
+   | `reconnect-delay`      | Min delay(millis) for cooling down when reconnect a server.                |
+   | `msg-send-delay`       | The delay of sending in-game messages.                                     |
+   | `enable-packet-debug`  | Whether enable packet debugger.                                            |
 
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
