@@ -1,7 +1,7 @@
 {
   "profiles": {
     "bot#1": {
-      "name": "爱丽丝的DolphinBot1",
+      "name": "DolphinBot1",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -14,7 +14,7 @@
       "proxy": {
         "enabled": true,
         "info": {
-          "address": "45.78.199.53",
+          "address": "",
           "port": 7777,
           "type": "SOCKS4",
           "username": "",
@@ -23,7 +23,7 @@
       }
     },
     "bot#2": {
-      "name": "爱丽丝的DolphinBot2",
+      "name": "DolphinBot2",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -35,7 +35,7 @@
       "proxy": {
         "enabled": true,
         "info": {
-          "address": "47.91.89.3",
+          "address": "",
           "port": 40000,
           "type": "SOCKS4",
           "username": "",

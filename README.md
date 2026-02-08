@@ -36,9 +36,7 @@
      <a href="https://github.com/NeonAngelThreads/DolphinBot/blob/master/PluginDocs.md">📖Docs</a>
      ·
      <a href="https://github.com/NeonAngelThreads/DolphinBot/issues">🐛Submit Suggestion/Bug</a>
-        
-  </p>
-</p>
+</p> 
 
 ## Why DolphinBot?
    - **High reliability**, low network utilization, auto-reconnect when disconnected, long term running with no worries for losing connection.  
@@ -67,8 +65,9 @@
 ## Introduction:
    **Features category:**  
    - [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
-- [`Terminal Interactions`]()
-- [`Proxy Settings`]()
+- [`Terminal Interactions`](#interactions-in-terminal)
+- [`Packet Debugger`](#config-file-setting)
+- [`Proxy Settings`](#config-file-setting)
 
 **Implemented Event APIs:**
 - [`Programmable State Machine`](PluginDocs.md#3-programmable-login-state-machine)
@@ -98,6 +97,7 @@ In this section, you will understand below how-tos:
 
 1. **Download the Client**  
    Download the jar archive file: `DolphinBot-[version]-full.jar`.  
+
 > [!NOTE]
 > Requirements: **Java version >= 17**
 
@@ -133,14 +133,12 @@ In this section, you will understand below how-tos:
         <img src="assets/dolphinbot-profile.png" alt="profile list">
       </p>
          
-      > [!NOTE] 
-      > 
-      > **Warning:**  command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
+      > [!NOTE]
+      **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
       command-line, and ignore config file one.  
    
       > [!TIP]
-      > 
-      > Optionally, you can specify more option by adding argument:  
+      Optionally, you can specify more option by adding argument:  
       `--owner` : Specifying only who can use this bot.  
    
       **Example:**   
@@ -166,15 +164,16 @@ In this section, you will understand below how-tos:
          ```
          **multiple bot & proxy settings**  
          In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
-         > [!NOTE]   
-         > 
+         
+         > [!NOTE]
          > Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
          from different network environments or requiring distinct egress IPs.  
    
          To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
-         > [!Warn]  
-         > 
-         > **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
+          
+         > [!WARN]
+         > **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.  
+
          ```json
          {
             "profiles": {
@@ -224,6 +223,7 @@ In this section, you will understand below how-tos:
             | `address`   | Remote IP address or host name of proxy server. |
             | `port`      | Proxy server port.                              |
             | `type`      | Proxy mode. (`HTTP`, `SOCKS4`, `SOCKS5`)        |
+
          > [!TIP]
          > "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
    
@@ -241,8 +241,9 @@ In this section, you will understand below how-tos:
          ```bash
          java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
          ```
+
       > [!NOTE]
-      > - **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
+      > **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
 
       **Owners:**  
       If you want to limit a bot can be only use by specified player(s) you can put player names into `owner` as list.  
