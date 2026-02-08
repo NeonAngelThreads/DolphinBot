@@ -134,11 +134,11 @@ In this section, you will understand below how-tos:
       </p>
          
       > [!NOTE]
-      **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
+    **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
       command-line, and ignore config file one.  
    
       > [!TIP]
-      Optionally, you can specify more option by adding argument:  
+   Optionally, you can specify more option by adding argument:  
       `--owner` : Specifying only who can use this bot.  
    
       **Example:**   
@@ -166,13 +166,13 @@ In this section, you will understand below how-tos:
          In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
          
          > [!NOTE]
-         > Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
+   Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
          from different network environments or requiring distinct egress IPs.  
    
          To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
           
          > [!WARN]
-         > **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.  
+   **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.  
 
          ```json
          {
@@ -243,7 +243,7 @@ In this section, you will understand below how-tos:
          ```
 
       > [!NOTE]
-      > **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
+   **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
 
       **Owners:**  
       If you want to limit a bot can be only use by specified player(s) you can put player names into `owner` as list.  
