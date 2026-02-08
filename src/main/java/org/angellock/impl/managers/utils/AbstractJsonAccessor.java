@@ -16,13 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractJsonAccessor extends Manager implements IAccessible{
-    protected Gson Helper = new Gson();
+    protected final Gson Helper;
     protected Path configPath;
 
-
-//    public Path getDataFilePath() {
-//        return Paths.get((this.configPath != null) ? this.configPath : (super.getBaseConfigRoot() + getFileName() + ".json"));
-//    }
+    public AbstractJsonAccessor() {
+        Helper = (new GsonBuilder()).disableHtmlEscaping().create();
+    }
 
     public abstract String getFileName();
     @Override
@@ -33,8 +32,7 @@ public abstract class AbstractJsonAccessor extends Manager implements IAccessibl
         } catch (IOException e) {
             return null;
         }
-        Gson Helper = (new GsonBuilder()).create();
-        return Helper.fromJson(reader, JsonObject.class).asMap();
+        return this.Helper.fromJson(reader, JsonObject.class).asMap();
     }
 
     public Map<String, JsonElement> readJSONContent(){
@@ -44,7 +42,6 @@ public abstract class AbstractJsonAccessor extends Manager implements IAccessibl
     public void writeDataTo(HashMap<String, Object> data, Path filePath) throws IOException {
         OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(filePath.toString()), StandardCharsets.UTF_8);
         osw.write(this.Helper.toJson(data));
-
         osw.flush();
         osw.close();
     }

@@ -18,26 +18,18 @@ package org.angellock.impl;
 
 
 import com.google.gson.JsonElement;
-import io.netty.channel.Channel;
 import lombok.Getter;
-import net.kyori.adventure.text.TranslatableComponent;
-import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.CommandSerializer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.IDisconnectListener;
 import org.angellock.impl.events.handlers.*;
-import org.angellock.impl.events.packets.AddEntityPacket;
 import org.angellock.impl.events.packets.EntityMovePacket;
 import org.angellock.impl.events.packets.PlayerPositionPacket;
 import org.angellock.impl.events.packets.debugger.PacketDebugger;
-import org.angellock.impl.events.types.EntityEmergedEvent;
-import org.angellock.impl.events.types.EntityMovedEvent;
-import org.angellock.impl.events.types.JoinedGameEvent;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
-import org.angellock.impl.managers.BotInfoHelper;
+import org.angellock.impl.managers.ProfileObject;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.managers.TerminalCommandManager;
@@ -46,22 +38,14 @@ import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlainTextSerializer;
-import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
+import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.network.Session;
-import org.geysermc.mcprotocollib.network.event.session.*;
-import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.network.tcp.TcpClientSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
-import org.geysermc.mcprotocollib.protocol.data.status.handler.ServerPingTimeHandler;
-import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundKeepAlivePacket;
-import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundPongPacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundMoveEntityPosPacket;
-import org.geysermc.mcprotocollib.protocol.packet.status.serverbound.ServerboundStatusRequestPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +68,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     private ChatMessageManager messageManager;
     private BotManager botManager;
     protected Position loginPos = new Position();
-    protected @Getter BotInfoHelper infoHelper = new BotInfoHelper();
+    protected ProxyInfo proxyInfo;
+    protected @Getter ProfileObject infoHelper = new ProfileObject();
 
     protected final TerminalCommandManager commandManager = new TerminalCommandManager();
     protected final CommandSpec commands = new CommandSpec(this);
@@ -105,6 +90,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.infoHelper.setTIME_OUT(Integer.parseInt(this.config.getConfigValue("connect-timing-out")));
         this.infoHelper.setReconnectionDelay(Integer.parseInt(this.config.getConfigValue("reconnect-delay")));
 
+    }
+
+    public AbstractRobot enableProxy(ProxyInfo proxyInfo){
+        this.proxyInfo = proxyInfo;
+        return this;
     }
 
     public AbstractRobot withName(String userName){
@@ -161,7 +151,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
-        this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol);
+        if (this.proxyInfo != null) {
+            this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol, this.proxyInfo);
+        } else {
+            this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol);
+        }
 
         this.messageManager = new ChatMessageManager(this);
 

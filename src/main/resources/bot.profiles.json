@@ -1,7 +1,7 @@
 {
   "profiles": {
     "bot#1": {
-      "name": "DolphinTest",
+      "name": "爱丽丝的DolphinBot1",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -10,10 +10,20 @@
         "QuestionAnswerer",
         "MessageDisplay",
         "HumanVerify"
-      ]
+      ],
+      "proxy": {
+        "enabled": true,
+        "info": {
+          "address": "45.78.199.53",
+          "port": 7777,
+          "type": "SOCKS4",
+          "username": "",
+          "password": ""
+        }
+      }
     },
     "bot#2": {
-      "name": "DolphinThread1",
+      "name": "爱丽丝的DolphinBot2",
       "password": "default_password",
       "owner": [
         "Melibertan"
@@ -21,7 +31,17 @@
       "enabled_plugins": [
         "HumanVerify",
         "MessageDisplay"
-      ]
+      ],
+      "proxy": {
+        "enabled": true,
+        "info": {
+          "address": "47.91.89.3",
+          "port": 40000,
+          "type": "SOCKS4",
+          "username": "",
+          "password": ""
+        }
+      }
     }
   }
 }
