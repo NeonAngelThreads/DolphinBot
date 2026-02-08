@@ -98,7 +98,9 @@ In this section, you will understand below how-tos:
 
 1. **Download the Client**  
    Download the jar archive file: `DolphinBot-[version]-full.jar`.  
-   Requirements: **Java version >= 17**
+> [!NOTE]
+> Requirements: **Java version >= 17**
+
 2. **Configuration of the Bot**  
 ### Configuring Profile 
    There are two different ways to set bot config:
@@ -223,7 +225,6 @@ In this section, you will understand below how-tos:
             | `port`      | Proxy server port.                              |
             | `type`      | Proxy mode. (`HTTP`, `SOCKS4`, `SOCKS5`)        |
          > [!TIP]
-         > 
          > "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
    
          In this case, if you want to load `bot#1` as your single bot, you should add below argument:  
@@ -241,7 +242,6 @@ In this section, you will understand below how-tos:
          java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
          ```
       > [!NOTE]
-      > 
       > - **Warning**: If the `--profiles` option is absented, it will load all bots in profile config by default.
 
       **Owners:**  
