@@ -98,7 +98,7 @@ In this section, you will understand below how-tos:
 1. **Download the Client**  
    Download the jar archive file: `DolphinBot-[version]-full.jar`.  
 
-> [!NOTE]
+> [!IMPORTANT]
 > Requirements: **Java version >= 17**
 
 2. **Configuration of the Bot**  
@@ -134,7 +134,7 @@ In this section, you will understand below how-tos:
    </p>
          
 > [!NOTE]
-> **Warning:**  Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
+> Command-line has high authority than config file, meaning that if options are duplicated, will only recognize 
    command-line, and ignore config file one.  
    
 > [!TIP]
@@ -153,67 +153,67 @@ In this section, you will understand below how-tos:
       To specify the path of config file is optional, Use option `--config-file` to locate config directory or file.  
       For example:  
    ```bash 
-      java -jar "DolphinBot-[version].jar" --config-file=path/to/config.json
+   java -jar "DolphinBot-[version].jar" --config-file=path/to/config.json
    ```
    If the path you specified is a directory instead of a file, Dolphin will extract config file as default config in this directory.  
    ```bash
-      java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory
+   java -jar "DolphinBot-[version].jar" --config-file=path/to/config_directory
    ```
    If the `--config-file` parameter is absented, DolphinBot will create a default file on jar directory.  
    ```bash 
-      java -jar "DolphinBot-[version].jar"
+   java -jar "DolphinBot-[version].jar"
    ```
    **multiple bot & proxy settings**  
       In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
                
 > [!NOTE]
-> Some servers may prohibit multiple bots started on same IP, proxy settings is aimed to help you to run multiple bots 
-         from different network environments or requiring distinct egress IPs.  
+> Some servers may prohibit multiple bots started on same IP, the proxy settings is aimed to help you to run multiple bots 
+from different network environments or requiring distinct egress IPs.  
      
 To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
-          
-> [!WARN]
-> **Warning**: Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
-
-   ```json
-   {
-      "profiles": {
-         "bot#1": {
-            "name": "Player494",
-            "password": "123example",
-            "owner": ["player_name"],
-            "enabled_plugins": [
-               "QuestionAnswerer",
-               "MessageDisplay",
-               "HumanVerify"
-            ],
-            "proxy": {
-               "enabled": false,
-               "info": {
-                  "address": "XX.XXX.XXX.XX",
-                  "port": 8081,
-                  "type": "SOCKS4",
-                  "username": "",
-                  "password": ""
-               }
+        
+> [!WARNING]
+> Defining multiple bots may trigger the anti-bot or anti-cheat, and some servers with strict policy may prohibit it.
+    
+```json
+{
+   "profiles": {
+      "bot#1": {
+         "name": "Player494",
+         "password": "123example",
+         "owner": ["player_name"],
+         "enabled_plugins": [
+            "QuestionAnswerer",
+            "MessageDisplay",
+            "HumanVerify"
+         ],
+         "proxy": {
+            "enabled": false,
+            "info": {
+               "address": "XX.XXX.XXX.XX",
+               "port": 8081,
+               "type": "SOCKS4",
+               "username": "",
+               "password": ""
             }
-         },
-         "bot#2": {
-            "name": "Player495",  
-            "password": "password",
-            "owner": ["player_name", "other_owner"],
-            "enabled_plugins": [
-               "HumanVerify"
-            ],
-            "proxy": {
-               "enabled": false,
-               "info": {"...": "..."}
-            }
-         },
-         "bot#3": {"...": "..."}
-      }
+         }
+      },
+      "bot#2": {
+         "name": "Player495",  
+         "password": "password",
+         "owner": ["player_name", "other_owner"],
+         "enabled_plugins": [
+            "HumanVerify"
+         ],
+         "proxy": {
+            "enabled": false,
+            "info": {"...": "..."}
+         }
+      },
+      "bot#3": {"...": "..."}
    }
-   ```
+}
+```
           
    1. `enabled_plugins` field represents which plugins should enable on the bot.   
    2. `proxy` fields (optional) represents a proxy configurations for each bot, field `enabled` marks whether activate this proxy setting,   
@@ -226,7 +226,7 @@ To configure proxy settings for each bot, you need to edit `proxy` field. An exa
       | `type`      | Proxy mode. (`HTTP`, `SOCKS4`, `SOCKS5`)        |
 
 > [!TIP]
-> "username", "password" is optional, if the remote proxy server require to auth, you need to add these.
+> "username", "password" is optional, if the remote proxy server require to auth, then you need to add these.
 
    In this case, if you want to load `bot#1` as your single bot, you should add below argument:  
    ```bash

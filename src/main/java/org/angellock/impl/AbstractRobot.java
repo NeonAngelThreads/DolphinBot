@@ -228,11 +228,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        this.scheduleConnect(0);
+        this.scheduleConnect();
     }
 
-    public void scheduleConnect(int wait) {
-        this.reconnectScheduler.schedule(() -> this.connect(), wait, TimeUnit.SECONDS);
+    public void scheduleConnect() {
+        this.reconnectScheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
     }
 
     public void setBypassed(boolean bypassed) {

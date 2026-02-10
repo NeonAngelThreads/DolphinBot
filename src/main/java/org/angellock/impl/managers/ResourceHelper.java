@@ -39,7 +39,7 @@ public abstract class ResourceHelper extends AbstractJsonAccessor {
             InputStream in = Start.class.getClassLoader().getResourceAsStream(getFullFileName());
             if (in != null) {
                 OutputStream out = new FileOutputStream(outFile);
-                byte[] buf = new byte[512];
+                byte[] buf = new byte[1024];
                 int len;
                 while((len = in.read(buf)) > 0) {
                     out.write(buf, 0, len);
