@@ -23,8 +23,20 @@ import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.math.Position;
+import org.cloudburstmc.math.immutable.vector.ImmutableVector3d;
+import org.cloudburstmc.math.vector.Vector3d;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.InteractAction;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.PlayerAction;
+import org.geysermc.mcprotocollib.protocol.data.game.level.particle.positionsource.BlockPositionSource;
+import org.geysermc.mcprotocollib.protocol.data.game.level.particle.positionsource.PositionSource;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundPlaceRecipePacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.*;
 
 import java.util.Optional;
+import java.util.Vector;
 
 public class RobotPlayer extends AbstractRobot {
     private long connectTime;
@@ -76,7 +88,7 @@ public class RobotPlayer extends AbstractRobot {
     @Override
     public void onPreLogin() {
         this.connectTime = System.currentTimeMillis();
-        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3"+ this.infoHelper.getServer()+':'+this.infoHelper.getPort() +". &bWaiting for server establishing the connection..."));
+        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3{}:{}. &bWaiting for server establishing the connection..."), this.infoHelper.getServer(), this.infoHelper.getPort());
     }
 
     @Override
@@ -87,5 +99,12 @@ public class RobotPlayer extends AbstractRobot {
     @Override
     public Position getPosition() {
         return this.loginPos;
+    }
+
+    @Override
+    public void interactBlock(double x, double y, double z, int s) {
+        this.sendPacket(new ServerboundSwingPacket(Hand.MAIN_HAND));
+        this.sendPacket(new ServerboundUseItemOnPacket(Vector3i.from(x, y, z), Direction.SOUTH, Hand.MAIN_HAND, 0f,0f,0f,false, (int)(System.currentTimeMillis())));
+
     }
 }

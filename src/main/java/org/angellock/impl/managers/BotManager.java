@@ -193,7 +193,7 @@ public class BotManager extends ResourceHelper {
 
     public void startAll(){
         for (RobotPlayer bot: bots.values()){
-            bot.scheduleConnect(0);
+            bot.scheduleConnect();
             while (bot.getServerGamemode() == GameMode.ADVENTURE){
                 try {
                     Thread.sleep(5000L);

@@ -7,4 +7,5 @@ public interface IPlayer extends IWalkable {
     double getDistanceFromOthers(IPlayer player);
 
     Position getPosition();
+    void interactBlock(double x, double y, double z, int s);
 }

@@ -33,6 +33,11 @@ public class Player implements IPlayer{
         return position;
     }
 
+    @Override
+    public void interactBlock(double x, double y, double z, int s) {
+
+    }
+
     public void setPosition(Position position) {
         this.position = position;
     }
@@ -54,4 +59,6 @@ public class Player implements IPlayer{
     public double getDistanceFromOthers(IPlayer player) {
         return position.getDistance(player.getPosition());
     }
+
+
 }
