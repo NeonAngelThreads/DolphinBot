@@ -20,6 +20,8 @@ public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends 
     protected long time_elapse = System.currentTimeMillis();
     private final long DELAY;
     protected List<IActions<T>> actionList = new ArrayList<>();
+
+    private final boolean showWarn = true;//ConfigManager.getCoreSettings().getDebugSettings().isEnablePacketDebug();
     protected IActions<T> preAction = (T) -> {
     };
 
@@ -61,8 +63,10 @@ public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends 
 
     @Override
     public void packetError(PacketErrorEvent event) {
-        log.warn(ConsoleTokens.colorizeText("&eA packet error was detected: &7At event &6" + event));
-        log.error(ConsoleTokens.colorizeText("&7" + event.getCause().toString()));
+        if (this.showWarn) {
+            log.warn(ConsoleTokens.colorizeText("&eA packet error was detected: &7At event &6" + event));
+            log.error(ConsoleTokens.colorizeText("&7" + event.getCause().toString()));
+        }
         event.setSuppress(true);
     }
 

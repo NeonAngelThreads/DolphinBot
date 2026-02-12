@@ -16,29 +16,20 @@
 
 package org.angellock.impl;
 
-import org.angellock.impl.commands.CommandBuilder;
-import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.math.Position;
-import org.cloudburstmc.math.immutable.vector.ImmutableVector3d;
-import org.cloudburstmc.math.vector.Vector3d;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.InteractAction;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.PlayerAction;
-import org.geysermc.mcprotocollib.protocol.data.game.level.particle.positionsource.BlockPositionSource;
-import org.geysermc.mcprotocollib.protocol.data.game.level.particle.positionsource.PositionSource;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundPlaceRecipePacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.*;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSwingPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemOnPacket;
 
 import java.util.Optional;
-import java.util.Vector;
 
-public class RobotPlayer extends AbstractRobot {
+public class RobotPlayer extends AbstractRobot implements IPlayer {
     private long connectTime;
     private long lastMsgTime = 0L;
     private final long msgDelay;
@@ -46,7 +37,7 @@ public class RobotPlayer extends AbstractRobot {
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
         super(configManager, pluginManager);
 
-        this.msgDelay = Long.parseLong(Optional.ofNullable(this.config.getConfigValue("msg-send-delay")).orElse("3000"));
+        this.msgDelay = Long.parseLong(Optional.ofNullable(this.globalConfig.getConfigValue("msg-send-delay")).orElse("3000"));
     }
 
     @Override
@@ -69,7 +60,7 @@ public class RobotPlayer extends AbstractRobot {
         long millis = System.currentTimeMillis() - this.connectTime;
         log.info(ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
         log.info(ConsoleTokens.colorizeText("&l&4Disconnected from the server! &6Reason: &d&n{}"), reason);
-        if (this.config.getConfigValue("auto-reconnecting").equals("true")){
+        if (this.globalConfig.getConfigValue("auto-reconnecting").equals("true")) {
             log.info(ConsoleTokens.colorizeText("&9Trying to reconnect to the server..."));
 
             this.getPluginManager().disableAllPlugins(this);
@@ -88,7 +79,7 @@ public class RobotPlayer extends AbstractRobot {
     @Override
     public void onPreLogin() {
         this.connectTime = System.currentTimeMillis();
-        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3{}:{}. &bWaiting for server establishing the connection..."), this.infoHelper.getServer(), this.infoHelper.getPort());
+        log.info(ConsoleTokens.colorizeText("&l&bAttempt to join to the server &3{}:{}. &bWaiting for server establishing the connection..."), this.config().getServer(), this.config().getPort());
     }
 
     @Override

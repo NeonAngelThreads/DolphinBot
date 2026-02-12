@@ -87,7 +87,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
         getTerminalCommands().registerCommand(new TerminalCommand("respawn", new RespawnExecutor()));
 
-        if (robotEntity.config().isDebugMode()) {
+        if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
             getEvents().registerEvents(new PlayerListener(), this);
         }
         robotEntity.getRegisteredCommands().register(new CommandBuilder().withName("reload").allowedUsers(robotEntity.getInfoHelper().getOwners()).build((response) -> {
@@ -173,7 +173,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     }
 
     public void joinGame(AbstractRobot player){
-        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getChunkLoad(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.LEFT_HAND, true, true));
+        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.LEFT_HAND, true, true));
 
         player.sendPacket(new ServerboundSetCarriedItemPacket(1));
         player.sendPacket(new ServerboundUseItemPacket(

@@ -1,14 +1,18 @@
 {
   "server": "2b2t.xin",
   "port": 25565,
-  "auto-reconnecting": true,
-  "enable-skin-recorder": true,
-
-  "packet-filter-delay": 3000,
+  "auto-reconnect": true,
+  "packet-filter-delay": 0,
   "msg-send-delay": 3000,
   "max-chunk-view": 12,
 
   "connect-timing-out": 2000,
   "reconnect-delay": 1000,
-  "enable-packet-debug": false
+  "debug-settings": {
+    "enable-packet-debug": false,
+    "packet-warning": true
+  },
+  "other": {
+    "enable-skin-recorder": true
+  }
 }

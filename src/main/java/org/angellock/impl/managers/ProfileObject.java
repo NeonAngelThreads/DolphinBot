@@ -7,16 +7,8 @@ import java.util.List;
 
 @Data
 public class ProfileObject {
-
-    private String password;
-    private String name;
     private String profileName;
+    private String name;
+    private String password;
     protected List<String> owners = new ArrayList<>();
-
-    protected String server;
-    protected int port;
-
-    protected long ReconnectionDelay;
-    protected int TIME_OUT;
-
 }

@@ -1,10 +1,7 @@
 package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.events.EventDispatcher;
-import org.angellock.impl.events.bukkit.Event;
 import org.angellock.impl.managers.EventManager;
-import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
@@ -37,10 +34,9 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
     public PluginManager(@Nullable File pluginDir) {
         if (pluginDir == null || !pluginDir.exists() || !pluginDir.isDirectory()){
-            log.warn(ConsoleTokens.colorizeText("&eThe plugin folder was invalid or not existed: &c" + pluginDir
-                    + "&6Trying to locate the fallback directory: &d" + getBaseConfigRoot()));
+            log.warn(ConsoleTokens.colorizeText("&eThe plugin folder was invalid or not existed: &c{}, &6Trying to locate the fallback directory: &d{}"),
+                    pluginDir, getBaseConfigRoot());
             this.pluginFolder = new File(getBaseConfigRoot(), "plugins");
-
         }
         else {
             this.pluginFolder = pluginDir;

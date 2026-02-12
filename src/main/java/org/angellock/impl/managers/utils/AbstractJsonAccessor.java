@@ -1,9 +1,6 @@
 package org.angellock.impl.managers.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -20,23 +17,26 @@ public abstract class AbstractJsonAccessor extends Manager implements IAccessibl
     protected Path configPath;
 
     public AbstractJsonAccessor() {
-        Helper = (new GsonBuilder()).disableHtmlEscaping().create();
+        Helper = (new GsonBuilder())
+                .disableHtmlEscaping()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
+                .create();
     }
 
     public abstract String getFileName();
     @Override
-    public Map<String, JsonElement> readDataFrom(Path filePath) {
+    public JsonObject readDataFrom(Path filePath) {
         BufferedReader reader;
         try {
             reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8);
         } catch (IOException e) {
             return null;
         }
-        return this.Helper.fromJson(reader, JsonObject.class).asMap();
+        return this.Helper.fromJson(reader, JsonObject.class);
     }
 
     public Map<String, JsonElement> readJSONContent(){
-        return this.readDataFrom(this.configPath);
+        return this.readDataFrom(this.configPath).asMap();
     }
     @Override
     public void writeDataTo(HashMap<String, Object> data, Path filePath) throws IOException {

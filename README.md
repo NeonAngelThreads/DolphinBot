@@ -1,5 +1,4 @@
-
-## Langrage: [简体中文](README_CN.md) / `English`
+## Language: [简体中文](README_CN.md) / `English`
 # DolphinBot-Reloaded
 
 <p align="center">
@@ -17,6 +16,9 @@
   <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
     <img src="https://img.shields.io/github/v/release/NeonAngelThreads/DolphinBot" alt="Release"/>
   </a>
+  <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
+        <img src="https://img.shields.io/github/downloads/neonangelthreads/dolphinbot/total" alt="downloads"/>
+  </a>
    <br>
    <a href="https://github.com/NeonAngelThreads/DolphinBot/commits/master/">
       <img src="https://img.shields.io/github/last-commit/NeonAngelThreads/DolphinBot" alt="commits"/>
@@ -28,10 +30,9 @@
   <a href="https://github.com/NeonAngelThreads/DolphinBot/tree/master/src/main">
      <img src="https://img.shields.io/github/languages/code-size/NeonAngelThreads/DolphinBot" alt="GitHub code size"/>
   </a>
-  <br>
-     <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
-        <img src="https://img.shields.io/github/downloads/neonangelthreads/dolphinbot/total" alt="downloads"/>
-     </a>
+  <a href="https://app.codacy.com/gh/NeonAngelThreads/DolphinBot/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
+     <img src="https://app.codacy.com/project/badge/Grade/ec90e9d4d7ef4023b124c4609b41a961"/>
+  </a>
   <p align="center">
      <a href="https://github.com/NeonAngelThreads/DolphinBot/blob/master/PluginDocs.md">📖Docs</a>
      ·
@@ -167,8 +168,8 @@ In this section, you will understand below how-tos:
       In the profile config file, you can create `profiles` field in `bot.profiles.json` to specify multiple bot profiles to log to a server.  
                
 > [!NOTE]
-> Some servers may prohibit multiple bots started on same IP, the proxy settings is aimed to help you to run multiple bots 
-from different network environments or requiring distinct egress IPs.  
+> Some servers may prohibit multiple bots started on same IP, the proxy settings is aimed to help you to run multiple bots
+> from different network environments or requiring distinct egress IPs.  
      
 To configure proxy settings for each bot, you need to edit `proxy` field. An example shown below:
         
@@ -285,15 +286,18 @@ each profile name, should be split with ";".
       "server": "2b2t.xin",
       "port": 25565,
       "auto-reconnecting": true,
-      "enable-skin-recorder": true,
-   
-      "packet-filter-delay": 3000,
+  "packet-filter-delay": 0,
       "msg-send-delay": 3000,
       "max-chunk-view": 12,
-   
-      "connect-timing-out": 2000,
-      "reconnect-delay": 3000,
-      "enable-packet-debug": false
+  "connect-timing-out": 2000,
+  "reconnect-delay": 1000,
+  "debug-settings": {
+    "enable-packet-debug": false,
+    "packet-warning": true
+  },
+  "other": {
+    "enable-skin-recorder": true
+  }
    }
    ```   
    ### Config Options:
@@ -310,6 +314,7 @@ each profile name, should be split with ";".
    | `reconnect-delay`      | Min delay(millis) for cooling down when reconnect a server.                |
    | `msg-send-delay`       | The delay of sending in-game messages.                                     |
    | `enable-packet-debug`  | Whether enable packet debugger.                                            |
+   | `packet-warning`       | Showing packet errors or not.                                              |
 
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.

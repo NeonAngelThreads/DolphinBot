@@ -99,7 +99,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             public void execute() {
                 int var = 0;
                 try {
-                    var = TimingUtil.getRandomDelay(entityBot.getRandomizer(), var);
+                    var = TimingUtil.getRandomDelay(TimingUtil.getRandomizer(), var);
                     Thread.sleep(500L*(1+var));
 
                     if (entityBot.getSession().isConnected()){

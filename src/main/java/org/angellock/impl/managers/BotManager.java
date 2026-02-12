@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.ChatMessageManager;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.SystemEventLogger;
 import org.angellock.impl.extensions.Plugins;
@@ -29,12 +28,9 @@ import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.strings.JsonStrings;
-import org.angellock.impl.win32terminal.AnsiEscapes;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.jetbrains.annotations.Nullable;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +71,7 @@ public class BotManager extends ResourceHelper {
         String commandLinePlayerName = (String)this.botConfigHelper.getConfigValue("username");
         String commandLinePWD = (String)this.botConfigHelper.getConfigValue("password");
         String commandLineOwner = (String)this.botConfigHelper.getConfigValue("owner");
-        if (commandLinePlayerName != null && commandLinePWD != null) {
+        if (commandLinePlayerName != null) {
             this.registerBot(commandLinePlayerName, commandLinePWD, commandLineOwner);
             return this;
         }
@@ -115,23 +111,21 @@ public class BotManager extends ResourceHelper {
 
         AbstractRobot botInst;
         ProxyInfo proxyInfo = null;
-        if (proxySetting != null) {
-            if (proxySetting.isEnabled()){
-                ProxyObject.Info info = proxySetting.getInfo();
-                if (info.isValid()){
-                    log.info(ConsoleTokens.colorizeText("&bProxy setting Enabled: {}"), info);
+        if (proxySetting != null && proxySetting.isEnabled()) {
+            ProxyObject.Info info = proxySetting.getInfo();
+            if (info.isValid()) {
+                log.info(ConsoleTokens.colorizeText("&bProxy setting Enabled: {}"), info);
 
-                    proxyInfo = new ProxyInfo(info.getType(),
-                            new InetSocketAddress(info.getAddress(), info.getPort()),
-                            info.getUsername(),
-                            info.getPassword()
-                    );
-                } else {
-                    log.info(ConsoleTokens.colorizeText("&4The Proxy setting invalid: &c&n&o{}"), info);
-                }
+                proxyInfo = new ProxyInfo(info.getType(),
+                        new InetSocketAddress(info.getAddress(), info.getPort()),
+                        info.getUsername(),
+                        info.getPassword()
+                );
+            } else {
+                log.info(ConsoleTokens.colorizeText("&4The Proxy setting invalid: &c&n&o{}"), info);
             }
-
         }
+
         botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
                 .withName(botName)
                 .withPassword(password)

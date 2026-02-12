@@ -22,16 +22,18 @@ import lombok.Getter;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.handlers.*;
+import org.angellock.impl.events.handlers.ChatCommandHandler;
+import org.angellock.impl.events.handlers.KeepAliveHandler;
+import org.angellock.impl.events.handlers.PlayerEmergeHandler;
+import org.angellock.impl.events.handlers.ServerChatCommandHandler;
 import org.angellock.impl.events.packets.EntityMovePacket;
 import org.angellock.impl.events.packets.PlayerPositionPacket;
 import org.angellock.impl.events.packets.debugger.PacketDebugger;
-import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
-import org.angellock.impl.managers.ProfileObject;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
+import org.angellock.impl.managers.ProfileObject;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.plugin.PluginManager;
@@ -49,19 +51,21 @@ import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures, IPlayer {
+public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures {
     protected TcpClientSession serverSession;
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
-    protected final Random randomizer = new Random();
     protected final PluginManager pluginManager;
     protected MinecraftProtocol minecraftProtocol;
-    protected ConfigManager config;
+    protected ConfigManager globalConfig;
     protected long connectDuration;
     protected boolean isByPassedVerification = true;
     protected GameMode serverGamemode = GameMode.ADVENTURE;
@@ -75,20 +79,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected final CommandSpec commands = new CommandSpec(this);
 
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
-        this.config = configManager;
-        String playerName = this.config.getConfigValue("username");
-        String serverAddress = this.config.getConfigValue("server");
-        int serverPort = Integer.parseInt(this.config.getConfigValue("port"));
-        this.connectDuration = Long.parseLong(this.config.getConfigValue("reconnect-delay"));
-        this.infoHelper.setPassword(this.config.getConfigValue("password"));
+        this.globalConfig = configManager;
+        this.infoHelper.setName(this.globalConfig.getConfigValue("username"));
+        this.infoHelper.setPassword(this.globalConfig.getConfigValue("password"));
 
         this.pluginManager = pluginManager;
-
-        this.infoHelper.setServer(serverAddress);
-        this.infoHelper.setName(playerName);
-        this.infoHelper.setPort(serverPort);
-        this.infoHelper.setTIME_OUT(Integer.parseInt(this.config.getConfigValue("connect-timing-out")));
-        this.infoHelper.setReconnectionDelay(Integer.parseInt(this.config.getConfigValue("reconnect-delay")));
 
     }
 
@@ -137,8 +132,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return commandManager;
     }
 
-    public ConfigManager config() {
-        return this.config;
+    public DolphinConfig config() {
+        return this.globalConfig.config();
     }
 
     public String getPassword(){
@@ -152,9 +147,9 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public void connect(){
         onPreLogin();
         if (this.proxyInfo != null) {
-            this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol, this.proxyInfo);
+            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol, this.proxyInfo);
         } else {
-            this.serverSession = new TcpClientSession(this.infoHelper.getServer(), this.infoHelper.getPort(), minecraftProtocol);
+            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol);
         }
 
         this.messageManager = new ChatMessageManager(this);
@@ -176,7 +171,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new PlayerEmergeHandler());
         this.serverSession.addListener(new PlayerPositionPacket(this));
         this.serverSession.addListener(new KeepAliveHandler());
-        if (this.config.isDebugMode()){
+        if (this.config().getDebugSettings().isEnablePacketDebug()) {
             this.serverSession.addListener(new PacketDebugger());
         }
 
@@ -224,7 +219,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void scheduleReconnect() {
         try {
-            Thread.sleep(this.infoHelper.getReconnectionDelay());
+            Thread.sleep(this.config().getReconnectDelay());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -253,9 +248,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return pluginManager;
     }
 
-    public Random getRandomizer() {
-        return randomizer;
-    }
     public long getConnectTime() {
         return connectDuration;
     }

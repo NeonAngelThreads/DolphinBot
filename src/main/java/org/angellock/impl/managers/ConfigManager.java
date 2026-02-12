@@ -16,10 +16,10 @@
 
 package org.angellock.impl.managers;
 
-import com.google.gson.JsonElement;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import lombok.Getter;
+import org.angellock.impl.DolphinConfig;
 import org.angellock.impl.util.ConsoleTokens;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -30,52 +30,57 @@ import java.util.Map;
 
 public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6ConfigManager"));
-    private final Map<String, Object> cache = new HashMap<>();
-    private final ResourceHelper configHelper;
-    private boolean debugMode = false;
-    private int chunkLoad = 2;
+    private final Map<String, Object> commandLineOptions = new HashMap<>();
+    @Getter
+    private static DolphinConfig coreSettings;
+    private final RobotConfig configHelper;
     public ConfigManager(OptionSet optionList, @Nullable String defaultPath){
+        this.configHelper = new RobotConfig(defaultPath, ".json");
+
         for (OptionSpec<?> option: optionList.specs()){
             String stringOpt = option.options().get(0);
             Object valueObject = optionList.valueOf(option);
-            this.cache.put(stringOpt, valueObject);
+            this.commandLineOptions.put(stringOpt, valueObject);
         }
-        this.configHelper = new RobotConfig(defaultPath, ".json");
-        this.loadConfig();
-
-        String s = (String)this.cache.get("enable-packet-debug");
-        this.debugMode = (optionList.has("debug") || Boolean.parseBoolean(s));
-        this.chunkLoad = Integer.parseInt((String)this.cache.get("max-chunk-view"));
+        coreSettings = this.configHelper.loadBotConfig(this.commandLineOptions);
     }
 
     public void printConfigSpec() {
-        log.info(ConsoleTokens.standardizeText(ConsoleTokens.GREEN + "Below argument options are enabled: " + ConsoleTokens.DARK_AQUA + cache));
+        log.info(ConsoleTokens.colorizeText("&2Below command line options are enabled: &3{}"), commandLineOptions);
+        log.info(ConsoleTokens.colorizeText("&bLoaded DolphinBot config file: &3{}"), this.config());
     }
     public ConfigManager(OptionSet optionList){
         this(optionList, null);
     }
+
+    @Deprecated
     public Map<String, Object> getMCBotConfig(){
-        if (this.cache.isEmpty()){
+        if (this.commandLineOptions.isEmpty()) {
             loadConfig();
         }
-        return this.cache;
+        return this.commandLineOptions;
+    }
+
+    public DolphinConfig config() {
+        return coreSettings;
     }
 
     public String getConfigValue(String key) {
-        return (String) this.cache.get(key);
+        return (String) this.commandLineOptions.get(key);
     }
 
     private void loadConfig(){
-        Map<String, JsonElement> defaultConfig = this.configHelper.readJSONContent();
-        if (defaultConfig == null){
-            return;
-        }
-        for (String item: defaultConfig.keySet()){
-            if (this.cache.get(item) == null){
-
-                this.cache.put(item, defaultConfig.get(item).getAsString());
-            }
-        }
+        coreSettings = this.configHelper.loadBotConfig();
+//        Map<String, JsonElement> defaultConfig = this.configHelper.readJSONContent();
+////        if (defaultConfig == null){
+////            return;
+////        }
+//        for (String item: this.commandLineOptions.keySet()){
+//            if (this.commandLineOptions.get(item) == null){
+//
+//                this.commandLineOptions.put(item, defaultConfig.get(item).getAsString());
+//            }
+//        }
     }
     public void reloadConfig(){
         this.flushConfig();
@@ -83,14 +88,7 @@ public class ConfigManager {
     }
 
     private void flushConfig(){
-        this.cache.clear();
+        this.commandLineOptions.clear();
     }
 
-    public boolean isDebugMode() {
-        return debugMode;
-    }
-
-    public int getChunkLoad() {
-        return chunkLoad;
-    }
 }

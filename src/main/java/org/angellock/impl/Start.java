@@ -116,7 +116,7 @@ public class Start {
                 if (exit){
                     System.exit(0);
                 } else {
-                    log.warn("To exit the DolphinBot, press Ctrl + C again.");
+                    log.warn("To exit DolphinBot, press Ctrl + C again.");
                     exit = true;
                 }
             } catch (Throwable e) {
