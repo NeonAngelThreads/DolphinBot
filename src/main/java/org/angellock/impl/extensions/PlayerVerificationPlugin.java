@@ -1,24 +1,26 @@
 /*
- *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
- *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
- *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
- *     later version.
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- *     License for more details. You should have received a copy of the GNU General Public License along with this
- *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  https://space.bilibili.com/386644641
+ * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.events.IDisconnectListener;
+import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
@@ -127,7 +129,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
                 entityBot.getPluginManager().loadAllPlugins(entityBot);
                 entityBot.setBypassed(true);
 
-                log.info(ConsoleTokens.colorizeText("&6=&aRobot verification successfully passed, sending reg command!&6="));
+                log.info(ConsoleTokens.colorizeText("&aRobot verification successfully passed, sending reg command!"));
                 sendRegister(entityBot);
                 verifyTimes = 0;
             }
@@ -213,7 +215,11 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         getListeners().add(
                 new LoginHandler().addExtraAction((loginPacket) -> {
                     entityBot.setServerGamemode(loginPacket.getCommonPlayerSpawnInfo().getGameMode());
-                    getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
+                    getLogger().info(TranslatableBundle.getFormattedMessage(
+                            EnumSystemEvents.SERVER_PLAYER_GAMEMODE,
+                            entityBot.getProfileName(),
+                            loginPacket.getCommonPlayerSpawnInfo().getGameMode().name()
+                    ));
                 })
         );
 

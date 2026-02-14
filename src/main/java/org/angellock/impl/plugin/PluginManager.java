@@ -1,5 +1,22 @@
+/*
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
+ *
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.plugin;
 
+import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.managers.EventManager;
 import org.angellock.impl.managers.utils.Manager;
@@ -19,6 +36,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     private final Map<String, AbstractPlugin> registeredPlugins = new HashMap<>();
     private final Map<String, File> loadedExternalPlugin = new HashMap<>();
     private final Collection<Plugin> enabled_base_plugin = new ArrayList<>();
+    @Getter
     private final File pluginFolder;
     private static final PluginLoader loader = new PluginLoader();
 
@@ -29,18 +47,11 @@ public class PluginManager extends Manager implements IPluginInjectable{
     }
 
     public PluginManager(@Nullable String pluginDir) {
-        this(new File((pluginDir == null)? "" : pluginDir));
+        this(pluginDir == null ? null : new File(pluginDir));
     }
 
     public PluginManager(@Nullable File pluginDir) {
-        if (pluginDir == null || !pluginDir.exists() || !pluginDir.isDirectory()){
-            log.warn(ConsoleTokens.colorizeText("&eThe plugin folder was invalid or not existed: &c{}, &6Trying to locate the fallback directory: &d{}"),
-                    pluginDir, getBaseConfigRoot());
-            this.pluginFolder = new File(getBaseConfigRoot(), "plugins");
-        }
-        else {
-            this.pluginFolder = pluginDir;
-        }
+        this.pluginFolder = Objects.requireNonNullElseGet(pluginDir, () -> new File(getBaseConfigRoot(), "plugins"));
     }
 
     public static PluginLoader loader(){
@@ -49,10 +60,6 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
     public static EventManager event(){
         return eventManager;
-    }
-
-    public File getPluginFolder() {
-        return pluginFolder;
     }
 
     public String[] listPlugins(){
@@ -117,7 +124,9 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
     }
     public void disableAllPlugins(AbstractRobot botInstance){
+        log.info("{}", this.registeredPlugins.keySet());
         for (String plugin : this.registeredPlugins.keySet()){
+            log.info(ConsoleTokens.colorizeText("&7Disabling plugin &9{}"), plugin);
             this.disable(botInstance, plugin);
         }
     }

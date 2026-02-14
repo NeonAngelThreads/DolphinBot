@@ -3,16 +3,18 @@
   "port": 25565,
   "auto-reconnect": true,
   "packet-filter-delay": 0,
-  "msg-send-delay": 3000,
+  "msg-send-delay": 0,
   "max-chunk-view": 12,
+  "Anti-AFK": true,
+  "language": "zh",
 
   "connect-timing-out": 2000,
-  "reconnect-delay": 1000,
+  "reconnect-delay": 5000,
   "debug-settings": {
     "enable-packet-debug": false,
     "packet-warning": true
   },
   "other": {
-    "enable-skin-recorder": true
+    "enable-skin-recorder": false
   }
 }

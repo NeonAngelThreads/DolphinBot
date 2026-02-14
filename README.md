@@ -285,20 +285,22 @@ each profile name, should be split with ";".
    {
       "server": "2b2t.xin",
       "port": 25565,
-      "auto-reconnecting": true,
+  "auto-reconnect": true,
   "packet-filter-delay": 0,
-      "msg-send-delay": 3000,
+  "msg-send-delay": 0,
       "max-chunk-view": 12,
+  "anti-AFK": true,
+  "language": "zh",
   "connect-timing-out": 2000,
-  "reconnect-delay": 1000,
+  "reconnect-delay": 5000,
   "debug-settings": {
     "enable-packet-debug": false,
     "packet-warning": true
   },
   "other": {
-    "enable-skin-recorder": true
+    "enable-skin-recorder": false
   }
-   }
+}
    ```   
    ### Config Options:
    
@@ -315,6 +317,8 @@ each profile name, should be split with ";".
    | `msg-send-delay`       | The delay of sending in-game messages.                                     |
    | `enable-packet-debug`  | Whether enable packet debugger.                                            |
    | `packet-warning`       | Showing packet errors or not.                                              |
+   | `language`             | The UI locale settings. (Supports `zh`, `en` languages currently)          |
+   | `anti-AFK`             | Whether bypassing AFK（Away From Keyboard) detection.                       |
 
 ## Hot Swapping Plugins In-Game
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.

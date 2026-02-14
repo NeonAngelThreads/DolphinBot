@@ -1,5 +1,22 @@
+/*
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
+ *
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.ingame;
 
+import lombok.Getter;
 import org.geysermc.mcprotocollib.auth.GameProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,17 +26,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerTracker {
+    @Getter
     private final static Map<UUID, Player> onlinePlayers = new HashMap<>();
+    @Getter
     private final static Map<Integer, UUID> UUIDMapping = new HashMap<>();
     private final static Map<String, UUID> playerUUIDMapping = new HashMap<>();
-
-    public static Map<UUID, Player> getOnlinePlayers() {
-        return onlinePlayers;
-    }
-
-    public static Map<Integer, UUID> getUUIDMapping() {
-        return UUIDMapping;
-    }
+    @Getter
+    private static UUID lastLogout;
+    private static long logoutElapse;
 
     public @Nullable
     static Player getPlayerById(int entityID) {
@@ -28,6 +42,10 @@ public class PlayerTracker {
             return onlinePlayers.get(uuid);
         }
         return null;
+    }
+
+    public static boolean canRemove(UUID playerID) {
+        return onlinePlayers.get(playerID) != null;
     }
 
     public static Player getPlayerByUUID(UUID uuid) {
@@ -53,7 +71,16 @@ public class PlayerTracker {
         }
     }
 
+    public static void delPlayer(@NotNull UUID player) {
+        onlinePlayers.remove(player);
+    }
+
     public static Map<String, UUID> getPlayerUUIDMapping() {
         return playerUUIDMapping;
+    }
+
+    public static void recordLastLogout(UUID lastLogout) {
+        logoutElapse = System.currentTimeMillis();
+        PlayerTracker.lastLogout = lastLogout;
     }
 }

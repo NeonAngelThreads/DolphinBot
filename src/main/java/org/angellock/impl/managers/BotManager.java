@@ -1,17 +1,17 @@
 /*
- *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
- *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
- *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
- *     later version.
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- *     License for more details. You should have received a copy of the GNU General Public License along with this
- *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  https://space.bilibili.com/386644641
+ * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.managers;
@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.SystemEventLogger;
+import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.plugin.PluginManager;
@@ -34,29 +34,40 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.*;
 
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
-    private static final SystemEventLogger systemEventLogger = new SystemEventLogger();
+    private static final TranslatableBundle systemEventLogger = new TranslatableBundle();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
                                     .create();
     private final ConfigManager botConfigHelper;
-    private String globalPluginDir;
+    private static File globalPluginDir;
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
         super(defaultPath, fileType);
         this.botConfigHelper = botConfigHelper;
     }
 
-    public BotManager globalPluginManager(String pluginDir){
-        this.globalPluginDir = pluginDir;
+    public BotManager globalPluginManager(@Nullable String pluginDir) {
+        return globalPluginManager(pluginDir == null ? null : new File(pluginDir));
+    }
+
+    public BotManager globalPluginManager(@Nullable File pluginDir) {
+        if (pluginDir == null || !pluginDir.exists() || !pluginDir.isDirectory()) {
+            log.warn(ConsoleTokens.colorizeText("&eThe plugin folder was invalid or not existed: &c{}, &6Trying to locate the fallback directory: &d{}plugins."),
+                    pluginDir, getBaseConfigRoot());
+            globalPluginDir = new File(getBaseConfigRoot(), "plugins");
+        } else {
+            globalPluginDir = pluginDir;
+        }
         return this;
     }
 
-    public static SystemEventLogger getSystemEventLogger() {
+    public static TranslatableBundle getSystemEventLogger() {
         return systemEventLogger;
     }
 
@@ -126,7 +137,7 @@ public class BotManager extends ResourceHelper {
             }
         }
 
-        botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
+        botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(globalPluginDir))
                 .withName(botName)
                 .withPassword(password)
                 .withDefaultPlugins(pluginList)
@@ -142,7 +153,7 @@ public class BotManager extends ResourceHelper {
         String[] owners = this.escapeArrayCommandLine(owner);
         log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), username, password, Arrays.toString(owners));
 
-        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(this.globalPluginDir))
+        AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(globalPluginDir))
                 .withName(username)
                 .withPassword(password)
                 .withOwners(owners)

@@ -1,36 +1,36 @@
 /*
- *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
- *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
- *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
- *     later version.
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- *     License for more details. You should have received a copy of the GNU General Public License along with this
- *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  https://space.bilibili.com/386644641
+ * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.managers;
 
-import org.angellock.impl.commands.*;
-import org.angellock.impl.commands.executors.ReloadCommandExecutor;
+import lombok.Getter;
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.commands.AbstractCommand;
+import org.angellock.impl.commands.CommandResponse;
+import org.angellock.impl.commands.ICommandCompleter;
 import org.angellock.impl.commands.terminal.TerminalCommand;
-import org.angellock.impl.events.SystemEventLogger;
-import org.angellock.impl.events.dolphin.CommandNotFoundEvent;
 import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
 public class TerminalCommandManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&9TerminalCommandSystem"));
+    @Getter
     public static HashMap<String, TerminalCommand> registeredCommand = new HashMap<>();
 
     public void registerCommand(TerminalCommand command){
@@ -44,15 +44,11 @@ public class TerminalCommandManager {
         return registeredCommand.get(commandName.toLowerCase());
     }
 
-    public static HashMap<String, TerminalCommand> getRegisteredCommand() {
-        return registeredCommand;
-    }
-
     public static Logger log() {
         return log;
     }
 
-    public boolean callCommand(String msg){
+    public boolean callCommand(String msg, AbstractRobot bot) {
         String[] commandList = msg
                 .replaceFirst("/", "")
                 .strip()
@@ -62,7 +58,7 @@ public class TerminalCommandManager {
             AbstractCommand cmd = registeredCommand.get(commandList[0].toLowerCase());
             if (cmd != null){
                 CommandResponse commandResponse = new CommandResponse(commandList, "<Terminal>");
-                cmd.activate(commandResponse);
+                cmd.activate(commandResponse, bot);
                 return true;
             }
         }

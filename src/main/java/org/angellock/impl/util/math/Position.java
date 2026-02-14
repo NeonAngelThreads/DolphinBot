@@ -1,7 +1,29 @@
+/*
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
+ *
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://space.bilibili.com/386644641
+ */
+
 package org.angellock.impl.util.math;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.cloudburstmc.math.vector.Vector3d;
 
+@Setter
+@Getter
+@ToString
 public class Position {
     private double X;
     private double Y;
@@ -44,27 +66,4 @@ public class Position {
         this.Z = z;
     }
 
-    public double getX() {
-        return X;
-    }
-
-    public void setX(double x) {
-        X = x;
-    }
-
-    public double getY() {
-        return Y;
-    }
-
-    public void setY(double y) {
-        Y = y;
-    }
-
-    public double getZ() {
-        return Z;
-    }
-
-    public void setZ(double z) {
-        Z = z;
-    }
 }

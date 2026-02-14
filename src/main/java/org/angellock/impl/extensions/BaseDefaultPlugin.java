@@ -1,33 +1,38 @@
 /*
- *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
- *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
- *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
- *     later version.
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- *     License for more details. You should have received a copy of the GNU General Public License along with this
- *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  https://space.bilibili.com/386644641
+ * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
 import org.angellock.impl.commands.executors.LoadCommandExecutor;
+import org.angellock.impl.commands.executors.PearlWarpExecutor;
 import org.angellock.impl.commands.executors.ReloadCommandExecutor;
 import org.angellock.impl.commands.executors.RespawnExecutor;
 import org.angellock.impl.commands.terminal.TerminalCommand;
+import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
+import org.angellock.impl.listeners.JoinGameListener;
 import org.angellock.impl.listeners.PlayerListener;
+import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
@@ -49,11 +54,19 @@ import java.util.UUID;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
     protected static final Logger log = LoggerFactory.getLogger("BotEntity");
-    private static final String VERSION = "0.0.0";
+    private static final String VERSION = "1.2.5";
     private static final String NAME = "Base-default-plugin";
     private long lastTitleTime;
     private String lastTitle;
     private String lastMsg;
+
+    private int blockSequence = 0;
+
+    private String onlineSuffix = TranslatableBundle.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
+    private String crackedSuffix = TranslatableBundle.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
+
+    private Thread tickThread = null;
+    private boolean captureSkins;
 
     @Override
     public String getPluginName() {
@@ -73,24 +86,33 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     @Override
     public void onDisable() {
         log.info("disabling plugin: {}, {}", super.getName(), this.getVersion());
+        this.getListeners().clear();
+        if (this.tickThread != null) {
+            this.tickThread.interrupt();
+        }
     }
 
     @Override
     public void onLoad() {
         log.info("loading plugin: {}, {}", super.getName(), this.getVersion());
+        this.captureSkins = ConfigManager.getCoreSettings().getOther().isEnableSkinRecorder();
     }
 
     @Override
     public void onEnable(AbstractRobot robotEntity) {
 
+        getEvents().registerListeners(new JoinGameListener(), this);
+
         getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
         getTerminalCommands().registerCommand(new TerminalCommand("respawn", new RespawnExecutor()));
 
+        getTerminalCommands().registerCommand(new TerminalCommand("warp", new PearlWarpExecutor()));
+
         if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
-            getEvents().registerEvents(new PlayerListener(), this);
+            getEvents().registerListeners(new PlayerListener(), this);
         }
-        robotEntity.getRegisteredCommands().register(new CommandBuilder().withName("reload").allowedUsers(robotEntity.getInfoHelper().getOwners()).build((response) -> {
+        robotEntity.getRegisteredCommands().register(new CommandBuilder().withName("reload").allowedUsers(robotEntity.getInfoHelper().getOwners()).build((response, bot) -> {
             long timeElapse = System.currentTimeMillis();
             robotEntity.getPluginManager().reloadPlugin(robotEntity, response.getCommandList()[1].toLowerCase());
             long time = (System.currentTimeMillis() - timeElapse);
@@ -98,9 +120,13 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         }));
 
         getListeners().add(new LoginHandler().addExtraAction(packet -> {
-            log.info(ConsoleTokens.colorizeText("&l&bSuccessfully logged-in to server world."));
+            log.info(ConsoleTokens.colorizeText(""));
             this.joinGame(robotEntity);
         }));
+
+        getListeners().add(new BlockChangedAckHandler().addExtraAction((packet -> {
+            this.blockSequence = packet.getSequence();
+        })));
 
         getListeners().add(new SystemChatHandler().addExtraAction((packet) -> {
             TextComponentSerializer componentSerializer = new TextComponentSerializer();
@@ -147,29 +173,36 @@ public class BaseDefaultPlugin extends AbstractPlugin {
                 return;
             }
             UUID logoutPlayer = packet.getProfileIds().get(0);
-            if (PlayerTracker.getPlayerByUUID(logoutPlayer) == null) {
+            if (!PlayerTracker.canRemove(logoutPlayer)) {
                 return;
             }
             Player player = PlayerTracker.getPlayerByUUID(logoutPlayer);
-
-            log.info(ConsoleTokens.colorizeText("&7[&4-&7]") + this.getLogMsg(player.getProfile()));
+            if (player != null) {
+                PlayerTracker.delPlayer(logoutPlayer);
+                log.info(ConsoleTokens.colorizeText("&7[&4-&7]") + this.getLogMsg(player.getProfile()));
+            }
         })));
+
+        if (robotEntity.config().isAntiAFK()) {
+            this.tickThread = new Thread(new RunnableAFKAction(robotEntity));
+            this.tickThread.start();
+        }
 
     }
 
     public String getLogMsg(GameProfile player){
 
         List<GameProfile.Property> playerProperty = player.getProperties();
-        String state = (playerProperty.isEmpty()) ? " &7[&4盗版&7] " : " &7[&a正版&7] ";
+        String state = (playerProperty.isEmpty()) ? this.crackedSuffix : this.onlineSuffix;
         String playerName = player.getName();
         UUID playerUUID = player.getId();
+        if (!playerProperty.isEmpty() && this.captureSkins) {
+            log.info(ConsoleTokens.colorizeText("&e{} 的正版皮肤: &7{}"), playerName, playerProperty);
+        }
+        //TODO Move this code to skin recorder class
 
         return ConsoleTokens.colorizeText("&b" + playerName + state + "&7" + playerUUID);
 
-//        if(!playerProperty.isEmpty()){
-//            log.info(ConsoleTokens.standardizeText(ConsoleTokens.YELLOW + playerName + "的正版皮肤: " + ConsoleTokens.GRAY + playerProperty));
-//        }
-        //TODO Move this code to skin recorder class
     }
 
     public void joinGame(AbstractRobot player){

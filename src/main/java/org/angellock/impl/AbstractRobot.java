@@ -1,17 +1,17 @@
 /*
- *  DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
- *  Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
  *
- *     This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
- *     License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
- *     later version.
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
  *
- *     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- *     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- *     License for more details. You should have received a copy of the GNU General Public License along with this
- *     program.  If not, see <https://www.gnu.org/licenses/>.
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  https://space.bilibili.com/386644641
+ * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl;
@@ -19,13 +19,12 @@ package org.angellock.impl;
 
 import com.google.gson.JsonElement;
 import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.handlers.ChatCommandHandler;
-import org.angellock.impl.events.handlers.KeepAliveHandler;
-import org.angellock.impl.events.handlers.PlayerEmergeHandler;
-import org.angellock.impl.events.handlers.ServerChatCommandHandler;
+import org.angellock.impl.events.TranslatableBundle;
+import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.events.packets.EntityMovePacket;
 import org.angellock.impl.events.packets.PlayerPositionPacket;
 import org.angellock.impl.events.packets.debugger.PacketDebugger;
@@ -40,7 +39,6 @@ import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlainTextSerializer;
-import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.network.Session;
@@ -63,18 +61,22 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected TcpClientSession serverSession;
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
+    @Getter
     protected final PluginManager pluginManager;
     protected MinecraftProtocol minecraftProtocol;
     protected ConfigManager globalConfig;
     protected long connectDuration;
     protected boolean isByPassedVerification = true;
-    protected GameMode serverGamemode = GameMode.ADVENTURE;
+    @Setter
+    protected @Getter GameMode serverGamemode = GameMode.ADVENTURE;
+    @Getter
     private ChatMessageManager messageManager;
+    @Getter
     private BotManager botManager;
-    protected Position loginPos = new Position();
     protected ProxyInfo proxyInfo;
     protected @Getter ProfileObject infoHelper = new ProfileObject();
 
+    @Getter
     protected final TerminalCommandManager commandManager = new TerminalCommandManager();
     protected final CommandSpec commands = new CommandSpec(this);
 
@@ -128,20 +130,12 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return this;
     }
 
-    public TerminalCommandManager getCommandManager() {
-        return commandManager;
-    }
-
     public DolphinConfig config() {
         return this.globalConfig.config();
     }
 
     public String getPassword(){
         return this.infoHelper.getPassword();
-    }
-
-    public ChatMessageManager getMessageManager() {
-        return messageManager;
     }
 
     public void connect(){
@@ -156,21 +150,14 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
 
-        this.serverSession.addListener((IDisconnectListener) event -> {
-            PlainTextSerializer serializer = new PlainTextSerializer();
-            String text = serializer.serialize(event.getReason());
-            if (text.isBlank()) {
-                text = (event.getReason().toString());
-            }
-            onQuit(text);
-        });
+        this.serverSession.addListener(new DisconnectReasonHandler(this));
 
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
         this.serverSession.addListener(new ChatCommandHandler(this.commands));
         this.serverSession.addListener(new EntityMovePacket());
         this.serverSession.addListener(new PlayerEmergeHandler());
-        this.serverSession.addListener(new PlayerPositionPacket(this));
-        this.serverSession.addListener(new KeepAliveHandler());
+        this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
+        //this.serverSession.addListener(new KeepAliveHandler());
         if (this.config().getDebugSettings().isEnablePacketDebug()) {
             this.serverSession.addListener(new PacketDebugger());
         }
@@ -204,13 +191,13 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                     }
                 }
                 catch (InterruptedException e){
-                    this.serverSession.disconnect("Interrupted");
                     throw new RuntimeException(e);
-                } catch (IllegalArgumentException ignore) {
-                    log.warn(ConsoleTokens.colorizeText("&6Unregistered packet error has been triggered!"));
+                } catch (IllegalArgumentException e) {
+                    TranslatableBundle.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
                 }
             }
         } finally {
+            this.serverSession.disconnect("Interrupted");
             scheduleReconnect();
         }
     }
@@ -218,6 +205,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public abstract boolean canSendMessages();
 
     public void scheduleReconnect() {
+        TranslatableBundle.infoTranslatableOf(EnumSystemEvents.RECONNECT);
         try {
             Thread.sleep(this.config().getReconnectDelay());
         } catch (InterruptedException e) {
@@ -244,10 +232,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return this.serverSession;
     }
 
-    public PluginManager getPluginManager() {
-        return pluginManager;
-    }
-
     public long getConnectTime() {
         return connectDuration;
     }
@@ -263,14 +247,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public AbstractRobot withProfileName(String name) {
         this.infoHelper.setProfileName(name);
         return this;
-    }
-
-    public GameMode getServerGamemode() {
-        return serverGamemode;
-    }
-
-    public void setServerGamemode(GameMode serverGamemode) {
-        this.serverGamemode = serverGamemode;
     }
 
     public Map<UUID, Player> getOnlinePlayers() {

@@ -223,7 +223,7 @@ by Implementing `IListener` interface, and annotate `@EventHandler` on methods y
 import org.angellock.impl.events.EventPriority;
 import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.types.PlayerMoveEvent;
+import org.angellock.impl.events.game.PlayerMoveEvent;
 import org.angellock.impl.ingame.Player;
 
 public class MyListener implements IListener {
@@ -260,7 +260,7 @@ The only thing you need to do is make `ExamplePlugin` to also implement the `ILi
 ```java
 import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.types.EntityEmergedEvent;
+import org.angellock.impl.events.game.EntityEmergedEvent;
 import org.angellock.impl.providers.AbstractPlugin;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
@@ -382,7 +382,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     And `.register()` method receives a `Command` object
   instance, a `Command` instance should be constructed by the `CommandBuilder`:
     ```java
-  Command command = new CommandBuilder().withName('commandName').build((response) -> {});
+  Command command = new CommandBuilder().withName('commandName').build((response, botInstance) -> {});
   ```
   `CommandBuilder` has multiple optional chaining methods other from `.withName()`, including:
     - `.withName(String cmd)`: Specify command name for executing.
@@ -394,7 +394,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
   ```java
     @Override
     public void onEnable(AbstractRobot abstractRobot) {
-        getCommands().register(new CommandBuilder().withName("test").allowedUsers("PlayerName").build((response) -> {
+        getCommands().register(new CommandBuilder().withName("test").allowedUsers("PlayerName").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             
             getLogger().info(Arrays.toString(subCommand));
@@ -407,7 +407,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     ```java
      @Override
      public void onEnable(AbstractRobot abstractRobot) {
-        getCommands().register(new CommandBuilder().withName("uid").allowedUsers("Melibertan").build((response) -> {
+        getCommands().register(new CommandBuilder().withName("uid").allowedUsers("Melibertan").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             String commandSender = response.getSender(); // get player who have sent this command.
         }));
