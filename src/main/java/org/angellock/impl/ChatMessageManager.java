@@ -18,6 +18,7 @@ package org.angellock.impl;
 
 import lombok.Getter;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatPacket;
@@ -59,14 +60,18 @@ public class ChatMessageManager{
     private void sendMessagePacket(String message){
         if (!this.isCommand(message)) {
             MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
-            log.info(ConsoleTokens.colorizeText("&7Sending in-game chat message: &b&l&o{}"), message);
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
             this.instance.sendPacket(msgPacket);
         } else {
-            boolean valid = this.instance.commandManager.callCommand(message, instance);
-            if(!valid){
-                MinecraftPacket cmd = new ServerboundChatCommandPacket(message.replaceFirst("/", ""));
-                log.info(ConsoleTokens.colorizeText("&6Sending chat Command: &b&l&o{}"), message);
-                this.instance.sendPacket(cmd);
+            try {
+                boolean valid = this.instance.commandManager.callCommand(message, instance);
+                if (!valid) {
+                    MinecraftPacket cmd = new ServerboundChatCommandPacket(message.replaceFirst("/", ""));
+                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
+                    this.instance.sendPacket(cmd);
+                }
+            } catch (Exception e) {
+                log.warn("An exception occurred: &7{}", e.getMessage());
             }
         }
     }

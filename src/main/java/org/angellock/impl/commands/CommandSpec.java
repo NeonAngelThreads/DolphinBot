@@ -16,6 +16,7 @@
 
 package org.angellock.impl.commands;
 
+import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.util.ConsoleTokens;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ import java.util.Map;
 
 public class CommandSpec {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&9&lDolphinCommandExecutor"));
-    private final Map<String, Command> registeredCommands = new HashMap<>();
+    private final @Getter Map<String, Command> registeredCommands = new HashMap<>();
     private final AbstractRobot bot;
 
     public CommandSpec(AbstractRobot bot) {

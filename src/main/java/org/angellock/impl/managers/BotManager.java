@@ -21,12 +21,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.extensions.Plugins;
-import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.ProxyObject;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.strings.JsonStrings;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
@@ -41,7 +41,7 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
-    private static final TranslatableBundle systemEventLogger = new TranslatableBundle();
+    private static final TranslatableUtil systemEventLogger = new TranslatableUtil();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
                                     .create();
@@ -67,7 +67,7 @@ public class BotManager extends ResourceHelper {
         return this;
     }
 
-    public static TranslatableBundle getSystemEventLogger() {
+    public static TranslatableUtil getSystemEventLogger() {
         return systemEventLogger;
     }
 
@@ -113,7 +113,7 @@ public class BotManager extends ResourceHelper {
         log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), botName, password, JsonStrings.toListString(owners));
 
         List<JsonElement> plugins = profile.get("enabled_plugins").getAsJsonArray().asList();
-        List<Plugin> pluginList = new ArrayList<>();
+        List<AbstractPlugin> pluginList = new ArrayList<>();
         for(JsonElement element: plugins){
             pluginList.add(Plugins.getPluginFromString(element.getAsString()));
         }

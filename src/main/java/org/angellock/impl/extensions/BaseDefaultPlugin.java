@@ -21,12 +21,9 @@ import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
-import org.angellock.impl.commands.executors.LoadCommandExecutor;
-import org.angellock.impl.commands.executors.PearlWarpExecutor;
-import org.angellock.impl.commands.executors.ReloadCommandExecutor;
-import org.angellock.impl.commands.executors.RespawnExecutor;
+import org.angellock.impl.commands.executors.*;
 import org.angellock.impl.commands.terminal.TerminalCommand;
-import org.angellock.impl.events.TranslatableBundle;
+import org.angellock.impl.commands.terminal.TerminalCommandBuilder;
 import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
@@ -36,6 +33,7 @@ import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
+import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.auth.GameProfile;
 import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
@@ -62,8 +60,8 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     private int blockSequence = 0;
 
-    private String onlineSuffix = TranslatableBundle.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
-    private String crackedSuffix = TranslatableBundle.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
+    private String onlineSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
+    private String crackedSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
 
     private Thread tickThread = null;
     private boolean captureSkins;
@@ -106,8 +104,22 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
         getTerminalCommands().registerCommand(new TerminalCommand("respawn", new RespawnExecutor()));
-
         getTerminalCommands().registerCommand(new TerminalCommand("warp", new PearlWarpExecutor()));
+
+        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+                .withName("license")
+                .withAliases("lic", "l")
+                .withDescription("A command to show the license")
+                .withProvider(this)
+                .build(new LicenseExecutor())
+        );
+        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+                .withName("help")
+                .withAliases("h", "?", "？")
+                .withDescription("Show help.")
+                .withProvider(this)
+                .build(new HelpExecutor())
+        );
 
         if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
             getEvents().registerListeners(new PlayerListener(), this);

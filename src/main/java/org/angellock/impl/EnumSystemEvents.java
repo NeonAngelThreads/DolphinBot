@@ -21,6 +21,12 @@ import lombok.Getter;
 @Getter
 public enum EnumSystemEvents {
     COMMAND_NOT_FOUND("command.notfound"),
+    COMMAND_NAME("command.name"),
+    COMMAND_ALIASES("command.aliases"),
+    COMMAND_PROVIDER("command.provider"),
+    COMMAND_USAGE("command.usage"),
+    COMMAND_DESCRIPTION("command.description"),
+    PLUGIN_LISTENER_LOAD("plugin.listener.load"),
     RECONNECT("server.reconnect"),
     CONNECT("server.connect"),
     DISCONNECT("server.disconnect"),
@@ -28,8 +34,13 @@ public enum EnumSystemEvents {
     DOLPHIN_TIMING_RESET("dolphin.timing.reset"),
     SERVER_PLAYER_GAMEMODE("server.player.gamemode"),
     SERVER_WORLD_JOIN("server.world.join"),
+    CHAT_MESSAGE_SEND("chat.message.send"),
+    CHAT_COMMAND_SEND("chat.command.send"),
     SERVER_CONNECTION_ESTABLISHED("server.connection.established"),
     LOGIN_STATEMACHINE_TRANSIT("dolphin.statemachine.login.transit"),
+    PLUGIN_LOAD_COMMANDS("plugin.load.command"),
+    PLUGIN_LOAD_TERMINAL_COMMANDS("plugin.load.terminal.command"),
+    PLUGIN_LOAD_COMPLETE("plugin.load.complete"),
     PLAYER_INFO_CRACKED("info.cracked"),
     PLAYER_INFO_ONLINE("info.online");
 

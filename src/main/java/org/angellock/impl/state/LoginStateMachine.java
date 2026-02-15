@@ -18,7 +18,7 @@ package org.angellock.impl.state;
 
 import it.unimi.dsi.fastutil.Pair;
 import org.angellock.impl.EnumSystemEvents;
-import org.angellock.impl.events.TranslatableBundle;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.IReason;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class LoginStateMachine extends StateMachine<String> {
         if (!key.isEmpty()) {
             LoginState nextState = this.transitionMap.get(Pair.of(this.currentState.name(), key));
             if (nextState != null) {
-                TranslatableBundle.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
+                TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
                 this.currentState = nextState;
                 Action action = this.currentState.getAction();
                 if (action != null) {

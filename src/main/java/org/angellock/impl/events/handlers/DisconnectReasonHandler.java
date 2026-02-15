@@ -34,7 +34,8 @@ public class DisconnectReasonHandler implements IDisconnectListener {
         PlainTextSerializer serializer = new PlainTextSerializer();
         String text = serializer.serialize(event.getReason());
         if (text.isBlank()) {
-            text = ((TranslatableComponent) event.getReason()).key();
+            TranslatableComponent component = ((TranslatableComponent) event.getReason());
+            text = String.format("%s: %s", component.key(), serializer.serialize(component.arguments().get(0).asComponent()));
         }
         this.bot.onQuit(text);
     }

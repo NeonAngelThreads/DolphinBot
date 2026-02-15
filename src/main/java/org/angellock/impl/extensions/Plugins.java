@@ -16,7 +16,7 @@
 
 package org.angellock.impl.extensions;
 
-import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -34,15 +34,15 @@ public enum Plugins {
         this.pluginInstance = pluginType;
     }
 
-    public Plugin getPlugin(){
+    public AbstractPlugin getPlugin() {
         try {
-            return (Plugin) this.pluginInstance.getConstructor().newInstance();
+            return (AbstractPlugin) this.pluginInstance.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             return null;
         }
     }
 
-    public static Plugin getPluginFromString(String pluginName){
+    public static AbstractPlugin getPluginFromString(String pluginName) {
         for (Plugins plugins: Plugins.values()){
             if(plugins.pluginName.equalsIgnoreCase(pluginName)){
                 return plugins.getPlugin();

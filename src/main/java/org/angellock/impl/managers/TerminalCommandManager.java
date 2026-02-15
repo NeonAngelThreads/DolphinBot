@@ -33,7 +33,12 @@ public class TerminalCommandManager {
     @Getter
     public static HashMap<String, TerminalCommand> registeredCommand = new HashMap<>();
 
+    private static HashMap<String, TerminalCommand> aliasCommand = new HashMap<>();
+
     public void registerCommand(TerminalCommand command){
+        for (String alias : command.getAliases()) {
+            aliasCommand.put(alias, command);
+        }
         registeredCommand.put(command.getName().toLowerCase(), command);
     }
     public void registerCommand(TerminalCommand command, ICommandCompleter completer){
@@ -51,15 +56,21 @@ public class TerminalCommandManager {
     public boolean callCommand(String msg, AbstractRobot bot) {
         String[] commandList = msg
                 .replaceFirst("/", "")
-                .strip()
+                //.strip()
                 .split(" ");
 
         if (commandList.length > 0){
             AbstractCommand cmd = registeredCommand.get(commandList[0].toLowerCase());
+            CommandResponse commandResponse = new CommandResponse(commandList, "<Terminal>");
             if (cmd != null){
-                CommandResponse commandResponse = new CommandResponse(commandList, "<Terminal>");
                 cmd.activate(commandResponse, bot);
                 return true;
+            } else {
+                AbstractCommand aliaCmd = aliasCommand.get(commandList[0]);
+                if (aliaCmd != null) {
+                    aliaCmd.activate(commandResponse, bot);
+                    return true;
+                }
             }
         }
         return false;

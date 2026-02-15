@@ -27,6 +27,7 @@ public abstract class AbstractCommand {
     @Getter
     protected final String name;
     protected ICommandAction action;
+    @Getter
     @Setter
     protected String description;
     @Getter
@@ -45,10 +46,6 @@ public abstract class AbstractCommand {
 
     public void setAliases(String[] aliases) {
         this.aliases = List.of(aliases);
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public boolean isAnAliasOf(String alias) {

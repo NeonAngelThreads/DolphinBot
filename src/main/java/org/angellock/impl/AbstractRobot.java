@@ -22,9 +22,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
-import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.TranslatableBundle;
-import org.angellock.impl.events.handlers.*;
+import org.angellock.impl.events.handlers.ChatCommandHandler;
+import org.angellock.impl.events.handlers.DisconnectReasonHandler;
+import org.angellock.impl.events.handlers.PlayerEmergeHandler;
+import org.angellock.impl.events.handlers.ServerChatCommandHandler;
 import org.angellock.impl.events.packets.EntityMovePacket;
 import org.angellock.impl.events.packets.PlayerPositionPacket;
 import org.angellock.impl.events.packets.debugger.PacketDebugger;
@@ -34,11 +35,11 @@ import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.managers.ProfileObject;
 import org.angellock.impl.managers.TerminalCommandManager;
-import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
-import org.angellock.impl.util.PlainTextSerializer;
+import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.network.Session;
@@ -59,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures {
     protected TcpClientSession serverSession;
+    @Getter
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
     @Getter
@@ -117,7 +119,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.infoHelper.setPassword(password);
         return this;
     }
-    public AbstractRobot withDefaultPlugins(List<Plugin> plugins){
+
+    public AbstractRobot withDefaultPlugins(List<AbstractPlugin> plugins) {
         this.pluginManager.getDefaultPlugins().addAll(plugins);
         return this;
     }
@@ -193,11 +196,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                 catch (InterruptedException e){
                     throw new RuntimeException(e);
                 } catch (IllegalArgumentException e) {
-                    TranslatableBundle.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
                 }
             }
         } finally {
-            this.serverSession.disconnect("Interrupted");
+            this.serverSession.disconnect("Connection was Interrupted");
             scheduleReconnect();
         }
     }
@@ -205,7 +208,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public abstract boolean canSendMessages();
 
     public void scheduleReconnect() {
-        TranslatableBundle.infoTranslatableOf(EnumSystemEvents.RECONNECT);
+        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.RECONNECT);
         try {
             Thread.sleep(this.config().getReconnectDelay());
         } catch (InterruptedException e) {
