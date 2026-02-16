@@ -18,9 +18,12 @@ package org.angellock.impl.plugin;
 
 import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.managers.EventManager;
+import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -35,7 +38,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     private final FilenameFilter pluginFilePattern = (d,name)->name.endsWith(".jar");
     private final Map<String, AbstractPlugin> registeredPlugins = new HashMap<>();
     private final Map<String, File> loadedExternalPlugin = new HashMap<>();
-    private final Collection<Plugin> enabled_base_plugin = new ArrayList<>();
+    private final Collection<AbstractPlugin> enabled_base_plugin = new ArrayList<>();
     @Getter
     private final File pluginFolder;
     private static final PluginLoader loader = new PluginLoader();
@@ -78,14 +81,25 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
     }
 
+    public void listRegisterInfo(AbstractRobot botInstance) {
+        Set<String> pl = botInstance.getRegisteredCommands().getRegisteredCommands().keySet();
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
+
+        Set<String> tCommand = TerminalCommandManager.registeredCommand.keySet();
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
+        List<SessionListener> listeners = botInstance.getSession().getListeners();
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
+    }
+
     public void loadAllPlugins(AbstractRobot botInstance){
         if(!this.registeredPlugins.isEmpty()){
-            for (Plugin plugin: this.registeredPlugins.values()){
+            for (AbstractPlugin plugin : this.registeredPlugins.values()) {
                 enable(plugin, botInstance);
             }
+            listRegisterInfo(botInstance);
             return;
         }
-        for (Plugin aDefault : this.enabled_base_plugin) {
+        for (AbstractPlugin aDefault : this.enabled_base_plugin) {
             enable(aDefault, botInstance);
         }
 
@@ -115,20 +129,20 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
         File[] individualPlugins = subDir.listFiles(this.pluginFilePattern);
         if(individualPlugins == null){
-            log.error(ConsoleTokens.colorizeText("&4The plugin folder was invalid or not found by removed, plugins will not be loaded. &8At: " + subDir.getPath()));
+            log.error(ConsoleTokens.colorizeText("&4The plugin folder was invalid or not found, plugins will not be loaded. &8At: " + subDir.getPath()));
             return;
         }
         for (File InnerPlugin: individualPlugins){
             this.loadPlugin(botInstance, InnerPlugin);
         }
-
+        listRegisterInfo(botInstance);
     }
     public void disableAllPlugins(AbstractRobot botInstance){
-        log.info("{}", this.registeredPlugins.keySet());
         for (String plugin : this.registeredPlugins.keySet()){
-            log.info(ConsoleTokens.colorizeText("&7Disabling plugin &9{}"), plugin);
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_DISABLE, plugin));
             this.disable(botInstance, plugin);
         }
+        botInstance.getSession().getListeners().clear();
     }
     @Override
     public void disable(AbstractRobot botInstance, String pluginName){
@@ -137,7 +151,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
         for (SessionListener listener : pluginListeners) {
             if(botInstance.getSession().getListeners().contains(listener)){
-                log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &7Removing Handler Object &l{}"), listener.toString());
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_DISABLE, listener.toString()));
                 botInstance.getSession().removeListener(listener);
             }
         }
@@ -145,7 +159,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         target.setEnabled(false);
     }
 
-    public void enable(Plugin plugin, AbstractRobot provider){
+    public void enable(AbstractPlugin plugin, AbstractRobot provider) {
         plugin.onLoad();
         if (!plugin.isEnabled()){
             plugin.setEnabled(true);
@@ -153,16 +167,15 @@ public class PluginManager extends Manager implements IPluginInjectable{
             plugin.onEnables(provider);
 
             List<SessionListener> listeners = plugin.getListeners();
-            log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &eRegistering Listener From Plugin &6{}"), plugin.getName());
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
 
             for (SessionListener listener : listeners) {
                 if (!provider.getSession().getListeners().contains(listener)) {
-                    log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &eInjecting Event Handler Object &l&7{}"), listener.toString());
+                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_LOAD, listener.toString()));
                     provider.getSession().addListener(listener);
                 }
-
             }
-            log.info(ConsoleTokens.colorizeText("&aSuccessfully registered plugin &2{}, &dversion: &5{}, &bdescription: &3{}"), plugin.getName(), plugin.getVersion(), plugin.getDescription());
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMPLETE, plugin.getName(), plugin.getVersion(), plugin.getDescription()));
         }
     }
 
@@ -170,7 +183,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         Plugin plugin = loader.loadPluginClass(target);
         if (plugin != null) {
             log.info(ConsoleTokens.colorizeText("&2Registering plugin: &b" + plugin.getName()));
-            enable(plugin, botInstance);
+            enable((AbstractPlugin) plugin, botInstance);
             this.loadedExternalPlugin.put(plugin.getName().toLowerCase(), target);
         }else {
             log.error(ConsoleTokens.colorizeText("Failed to register the plugin &4" + target));
@@ -185,7 +198,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
     }
 
-    public Collection<Plugin> getDefaultPlugins() {
+    public Collection<AbstractPlugin> getDefaultPlugins() {
         return enabled_base_plugin;
     }
 }

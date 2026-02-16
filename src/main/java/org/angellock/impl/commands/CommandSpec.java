@@ -16,8 +16,11 @@
 
 package org.angellock.impl.commands;
 
+import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +31,7 @@ import java.util.Map;
 
 public class CommandSpec {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&9&lDolphinCommandExecutor"));
-    private final Map<String, Command> registeredCommands = new HashMap<>();
+    private final @Getter Map<String, Command> registeredCommands = new HashMap<>();
     private final AbstractRobot bot;
 
     public CommandSpec(AbstractRobot bot) {
@@ -46,7 +49,7 @@ public class CommandSpec {
 
     public void executeCommand(CommandResponse response) {
         if (response != null) {
-            log.info("CommandList: {}, sender: {}", Arrays.toString(response.getCommandList()), response.getSender());
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_DETECTED, Arrays.toString(response.getCommandList()), response.getSender()));
             Command cmd = this.getCommand(response.getCommandList()[0]);
             if (cmd != null) {
                 boolean success = cmd.activate(response, bot);

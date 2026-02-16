@@ -24,7 +24,6 @@ import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.network.event.session.PacketErrorEvent;
 import org.geysermc.mcprotocollib.network.event.session.SessionAdapter;
 import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends SessionAdapter {
+public abstract class AbstractEventProcessor<T extends Packet> extends SessionAdapter {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&l&9PacketHandlers"));
     protected long time_elapse = System.currentTimeMillis();
     private final long DELAY;
@@ -55,26 +54,23 @@ public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends 
     public AbstractEventProcessor(IActions<T> action){
         this(action, 0);
     }
-
     @Override
     public void packetReceived(Session session, Packet packet){
-        if (System.currentTimeMillis() - this.time_elapse < this.DELAY){
-            return;
-        }
         try {
             if(packet != null && this.isTargetPacket(packet)){
-                T packet1 = (T) packet;
-                this.preAction.onAction(packet1);
-                for (IActions<T> reacts : this.actionList) {
-                    reacts.onAction(packet1);
-                }
+                this.onReceivePacket((T) packet);
             }
-        } catch (ClassCastException omit) {
-            return;
-        } catch (IllegalArgumentException e) {
-            log.warn(ConsoleTokens.colorizeText("&6 {}"), e.getLocalizedMessage());
+        } catch (ClassCastException | IllegalArgumentException e) {
+            log.warn(ConsoleTokens.colorizeText("&7 {}"), e.getLocalizedMessage());
         } catch (Throwable throwable) {
             log.warn(ConsoleTokens.colorizeText("&8 {}"), throwable.toString());
+        }
+    }
+
+    public void onReceivePacket(T packet) {
+        this.preAction.onAction(packet);
+        for (IActions<T> reacts : this.actionList) {
+            reacts.onAction(packet);
         }
     }
 
@@ -84,7 +80,7 @@ public abstract class AbstractEventProcessor<T extends MinecraftPacket> extends 
             log.warn(ConsoleTokens.colorizeText("&eA packet error was detected: &7At event &6" + event));
             log.error(ConsoleTokens.colorizeText("&7" + event.getCause().toString()));
         }
-        event.setSuppress(true);
+        event.setSuppress(false);
     }
 
     protected void dispatch(Event event) {

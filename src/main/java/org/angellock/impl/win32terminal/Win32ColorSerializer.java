@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 public abstract class Win32ColorSerializer implements Serializable {
     private static final Pattern foreground_pattern = Pattern.compile("[&§]([0-9a-flonNRU])");
     private static final Ansi RESET_ALL = Ansi.ansi().reset();
+
+    private static final Ansi.Color[] simpleColors = new Ansi.Color[] {Ansi.Color.BLACK, Ansi.Color.BLUE, Ansi.Color.GREEN, Ansi.Color.CYAN, Ansi.Color.RED, Ansi.Color.MAGENTA, Ansi.Color.YELLOW, Ansi.Color.WHITE, Ansi.Color.BLACK, Ansi.Color.BLUE};
     private static final Ansi[] colorList = new Ansi[]{Ansi.ansi().fgBlack(), Ansi.ansi().fgBlue(), Ansi.ansi().fgGreen(), Ansi.ansi().fgCyan(), Ansi.ansi().fgRed(), Ansi.ansi().fgMagenta(), Ansi.ansi().fgYellow(), Ansi.ansi().fg(Ansi.Color.WHITE), Ansi.ansi().fgBrightBlack(), Ansi.ansi().fgBrightBlue()};
     public static String serialize(String text){
 
@@ -61,5 +63,9 @@ public abstract class Win32ColorSerializer implements Serializable {
             case 'm' -> text.a(Ansi.Attribute.STRIKETHROUGH_ON).a(text);
             default -> text;
         };
+    }
+
+    public static Ansi serializeBackgroundColor(int code){
+        return new Ansi().bg(simpleColors[code]);
     }
 }

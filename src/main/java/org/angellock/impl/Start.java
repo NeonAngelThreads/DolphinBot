@@ -24,6 +24,7 @@ import org.angellock.impl.dolphin.GUIWindowManager;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.win32terminal.AnsiEscapes;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReader;
@@ -95,7 +96,7 @@ public class Start {
         } else {
             AnsiEscapes.printArt(ARCHIVE_VERSION);
             config.printConfigSpec();
-            log.info(ConsoleTokens.colorizeText("&8Loading bots..."));
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.DOLPHIN_BOTS_LOAD));
             botManager.startAll();
         }
 
@@ -104,23 +105,24 @@ public class Start {
     private static void getTerminal(AbstractRobot dolphinBot) {
         LineReader reader = AnsiEscapes.getReader();
         terminalInput = new Thread(() -> {
-            try {
-                while (true) {
+            while (true) {
+                try {
                     String s = reader.readLine(ConsoleTokens.colorizeText("&lTerminal>&b"));
                     ChatMessageManager messageManager = dolphinBot.getMessageManager();
                     if (messageManager != null) {
                         dolphinBot.getMessageManager().putMessage(s);
                     }
+                } catch (UserInterruptException w) {
+                    if (exit) {
+                        System.exit(0);
+                    } else {
+                        log.warn("To exit DolphinBot, press Ctrl + C again.");
+                        exit = true;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getMessage());
                 }
-            } catch (UserInterruptException w) {
-                if (exit){
-                    System.exit(0);
-                } else {
-                    log.warn("To exit DolphinBot, press Ctrl + C again.");
-                    exit = true;
-                }
-            } catch (Throwable e) {
-                log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getLocalizedMessage());
             }
         });
         terminalInput.start();

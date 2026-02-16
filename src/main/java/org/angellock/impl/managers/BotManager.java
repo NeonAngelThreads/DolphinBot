@@ -19,14 +19,16 @@ package org.angellock.impl.managers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.extensions.Plugins;
-import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.ProxyObject;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.strings.JsonStrings;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
@@ -41,7 +43,8 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
-    private static final TranslatableBundle systemEventLogger = new TranslatableBundle();
+    @Getter
+    private static final TranslatableUtil systemEventLogger = new TranslatableUtil();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
                                     .create();
@@ -65,10 +68,6 @@ public class BotManager extends ResourceHelper {
             globalPluginDir = pluginDir;
         }
         return this;
-    }
-
-    public static TranslatableBundle getSystemEventLogger() {
-        return systemEventLogger;
     }
 
     public String[] escapeArrayCommandLine(String option) {
@@ -113,7 +112,7 @@ public class BotManager extends ResourceHelper {
         log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), botName, password, JsonStrings.toListString(owners));
 
         List<JsonElement> plugins = profile.get("enabled_plugins").getAsJsonArray().asList();
-        List<Plugin> pluginList = new ArrayList<>();
+        List<AbstractPlugin> pluginList = new ArrayList<>();
         for(JsonElement element: plugins){
             pluginList.add(Plugins.getPluginFromString(element.getAsString()));
         }
@@ -125,7 +124,7 @@ public class BotManager extends ResourceHelper {
         if (proxySetting != null && proxySetting.isEnabled()) {
             ProxyObject.Info info = proxySetting.getInfo();
             if (info.isValid()) {
-                log.info(ConsoleTokens.colorizeText("&bProxy setting Enabled: {}"), info);
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PROXY_CONFIG_LOAD, info));
 
                 proxyInfo = new ProxyInfo(info.getType(),
                         new InetSocketAddress(info.getAddress(), info.getPort()),
@@ -133,7 +132,7 @@ public class BotManager extends ResourceHelper {
                         info.getPassword()
                 );
             } else {
-                log.info(ConsoleTokens.colorizeText("&4The Proxy setting invalid: &c&n&o{}"), info);
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PROXY_CONFIG_INVALID, info));
             }
         }
 

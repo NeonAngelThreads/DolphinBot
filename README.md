@@ -60,7 +60,7 @@
 ## Screenshots:
 ### Running on Windows server 2019:
 <p align="center">
-   <img src="assets/dolphinbot1.png">
+   <img src="assets/dev2.png">
 </p>
 
 ## Introduction:
@@ -82,10 +82,13 @@
 - You can send in-game messages or execute commands form the dolphin bot terminal.
 - Built-in commands:
 - 
-  | Terminal Commands                            | Description                      |
-  |----------------------------------------------|----------------------------------|
-  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin |
-  | `load <PLugin Name> <bot name (optional)>`   | Hot-loading a specified plugin   |
+  |              Terminal Commands               | Description                                         |
+  |:--------------------------------------------:|-----------------------------------------------------|
+  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin                    |
+  |  `load <PLugin Name> <bot name (optional)>`  | Hot-loading a specified plugin                      |
+  |                  `respawn`                   | Respawn the bot when in game.                       |
+  |          `license`    (`l`, `lic`)           | Show the license on the terminal                    |
+  |               `help`   (`h`, `?`)              | Show the Command menu and usages for each command   |
    
 - For these commands, you can press `TAB` to complete automatically.
 ## Getting Started
@@ -281,14 +284,14 @@ each profile name, should be split with ";".
    Every single config option is equilibrium to option that defined by command line, and all config value including
    unrecognized option will be parsed, so you can add your customize config options.  
    An example for configuring this file:
-   ```json
-   {
-      "server": "2b2t.xin",
-      "port": 25565,
+```json
+{
+  "server": "2b2t.xin",
+  "port": 25565,
   "auto-reconnect": true,
   "packet-filter-delay": 0,
   "msg-send-delay": 0,
-      "max-chunk-view": 12,
+  "max-chunk-view": 12,
   "anti-AFK": true,
   "language": "zh",
   "connect-timing-out": 2000,
@@ -301,7 +304,7 @@ each profile name, should be split with ";".
     "enable-skin-recorder": false
   }
 }
-   ```   
+```   
    ### Config Options:
    
    | Config                 | Description                                                                |

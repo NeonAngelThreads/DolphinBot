@@ -20,7 +20,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
@@ -32,6 +31,7 @@ import org.angellock.impl.state.LoginStateMachine;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.TimingUtil;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
@@ -215,7 +215,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         getListeners().add(
                 new LoginHandler().addExtraAction((loginPacket) -> {
                     entityBot.setServerGamemode(loginPacket.getCommonPlayerSpawnInfo().getGameMode());
-                    getLogger().info(TranslatableBundle.getFormattedMessage(
+                    getLogger().info(TranslatableUtil.getFormattedMessage(
                             EnumSystemEvents.SERVER_PLAYER_GAMEMODE,
                             entityBot.getProfileName(),
                             loginPacket.getCommonPlayerSpawnInfo().getGameMode().name()

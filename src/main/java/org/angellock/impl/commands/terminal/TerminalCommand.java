@@ -16,22 +16,21 @@
 
 package org.angellock.impl.commands.terminal;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.angellock.impl.commands.ICommandCompleter;
+import org.angellock.impl.plugin.AbstractPlugin;
 
+@Setter
+@Getter
 public class TerminalCommand extends AbstractCommand {
     protected ICommandCompleter completer;
-
-    public ICommandCompleter getCompleter() {
-        return completer;
-    }
-
-    public void setCompleter(ICommandCompleter completer) {
-        this.completer = completer;
-    }
+    protected AbstractPlugin provider;
+    protected String usage;
 
     public TerminalCommand(String name, ICommandAction executor) {
         super(name, executor);

@@ -79,6 +79,11 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         return this.targetBot.getRegisteredCommands();
     }
 
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
     public TerminalCommandManager getTerminalCommands(){
         return this.targetBot.getCommandManager();
     }

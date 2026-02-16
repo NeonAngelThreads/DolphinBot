@@ -14,11 +14,10 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events;
+package org.angellock.impl.util;
 
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.managers.ConfigManager;
-import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,15 +25,15 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class TranslatableBundle {
+public class TranslatableUtil {
     private static final Logger log = LoggerFactory.getLogger("EventLogger");
     public static ResourceBundle bundle;
 
-    public TranslatableBundle() {
+    public TranslatableUtil() {
         this(ConfigManager.getCoreSettings().getLanguage());
     }
 
-    public TranslatableBundle(Locale locale) {
+    public TranslatableUtil(Locale locale) {
         bundle = ResourceBundle.getBundle("locale", locale);
     }
 

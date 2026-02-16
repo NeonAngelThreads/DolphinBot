@@ -16,18 +16,38 @@
 
 package org.angellock.impl.commands;
 
+import org.angellock.impl.plugin.AbstractPlugin;
+
 public abstract class AbstractBuilder<T> {
     protected String commandName = "";
     protected String description;
+    protected AbstractPlugin provider;
+
+    protected String usage;
 
     protected String[] aliases = new String[0];
+
+    public AbstractBuilder<T> withName(String name) {
+        this.commandName = name;
+        return this;
+    }
+
+    public AbstractBuilder<T> withUsage(String name) {
+        this.usage = name;
+        return this;
+    }
+
+    public AbstractBuilder<T> withProvider(AbstractPlugin plugin) {
+        this.provider = plugin;
+        return this;
+    }
 
     public AbstractBuilder<T> withDescription(String description){
         this.description = description;
         return this;
     }
 
-    public AbstractBuilder<T> withAliases(String[] aliases){
+    public AbstractBuilder<T> withAliases(String... aliases) {
         this.aliases = aliases;
         return this;
     }

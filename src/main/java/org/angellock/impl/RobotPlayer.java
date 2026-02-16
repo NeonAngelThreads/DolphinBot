@@ -17,11 +17,11 @@
 package org.angellock.impl;
 
 import lombok.Setter;
-import org.angellock.impl.events.TranslatableBundle;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.math.Position;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
@@ -58,19 +58,19 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
 
     @Override
     public void onJoin() {
-        log.info(ConsoleTokens.colorizeText("&7[{}] &2Connection was established!"), this.getProfileName());
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
     }
 
     @Override
     public void onQuit(String reason) {
         long millis = System.currentTimeMillis() - this.connectTime;
         log.info(ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
-        TranslatableBundle.infoTranslatableOf(EnumSystemEvents.DISCONNECT, reason);
+        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DISCONNECT, reason);
         this.getPluginManager().disableAllPlugins(this);
         this.getSession().getChannel().close();
         this.getSession().getChannel().deregister();
         this.getSession().getChannel().closeFuture();
-        TranslatableBundle.infoTranslatableOf(EnumSystemEvents.DOLPHIN_TIMING_RESET);
+        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DOLPHIN_TIMING_RESET);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     @Override
     public void onPreLogin() {
         this.connectTime = System.currentTimeMillis();
-        TranslatableBundle.infoTranslatableOf(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort()));
+        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort()));
     }
 
     @Override

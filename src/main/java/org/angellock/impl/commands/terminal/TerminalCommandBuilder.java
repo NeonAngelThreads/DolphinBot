@@ -25,7 +25,8 @@ public class TerminalCommandBuilder extends AbstractBuilder<TerminalCommand> {
         TerminalCommand command = new TerminalCommand(this.commandName, action);
         command.setAliases(this.aliases);
         command.setDescription(this.description);
-
+        command.setProvider(this.provider);
+        command.setUsage(this.usage);
         return command;
     }
 }
