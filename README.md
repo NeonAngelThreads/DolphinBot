@@ -82,10 +82,13 @@
 - You can send in-game messages or execute commands form the dolphin bot terminal.
 - Built-in commands:
 - 
-  | Terminal Commands                            | Description                      |
-  |----------------------------------------------|----------------------------------|
-  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin |
-  | `load <PLugin Name> <bot name (optional)>`   | Hot-loading a specified plugin   |
+  |              Terminal Commands               | Description                                         |
+  |:--------------------------------------------:|-----------------------------------------------------|
+  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin                    |
+  |  `load <PLugin Name> <bot name (optional)>`  | Hot-loading a specified plugin                      |
+  |                  `respawn`                   | Respawn the bot when in game.                       |
+  |          `license`    (`l`, `lic`)           | Show the license on the terminal                    |
+  |               `help`   (`h`, `?`)              | Show the Command menu and usages for each command   |
    
 - For these commands, you can press `TAB` to complete automatically.
 ## Getting Started
