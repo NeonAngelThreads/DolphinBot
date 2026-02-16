@@ -9,7 +9,7 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
@@ -152,19 +152,13 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.messageManager = new ChatMessageManager(this);
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
-
         this.serverSession.addListener(new DisconnectReasonHandler(this));
-
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
         this.serverSession.addListener(new ChatCommandHandler(this.commands));
         this.serverSession.addListener(new EntityMovePacket());
         this.serverSession.addListener(new PlayerEmergeHandler());
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
-        //this.serverSession.addListener(new KeepAliveHandler());
-        if (this.config().getDebugSettings().isEnablePacketDebug()) {
-            this.serverSession.addListener(new PacketDebugger());
-        }
-
+        if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
         this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
         this.serverSession.connect(true, false);
