@@ -19,7 +19,9 @@ package org.angellock.impl.managers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.AbstractPlugin;
@@ -41,6 +43,7 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
+    @Getter
     private static final TranslatableUtil systemEventLogger = new TranslatableUtil();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
@@ -65,10 +68,6 @@ public class BotManager extends ResourceHelper {
             globalPluginDir = pluginDir;
         }
         return this;
-    }
-
-    public static TranslatableUtil getSystemEventLogger() {
-        return systemEventLogger;
     }
 
     public String[] escapeArrayCommandLine(String option) {
@@ -125,7 +124,7 @@ public class BotManager extends ResourceHelper {
         if (proxySetting != null && proxySetting.isEnabled()) {
             ProxyObject.Info info = proxySetting.getInfo();
             if (info.isValid()) {
-                log.info(ConsoleTokens.colorizeText("&bProxy setting Enabled: {}"), info);
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PROXY_CONFIG_LOAD, info));
 
                 proxyInfo = new ProxyInfo(info.getType(),
                         new InetSocketAddress(info.getAddress(), info.getPort()),
@@ -133,7 +132,7 @@ public class BotManager extends ResourceHelper {
                         info.getPassword()
                 );
             } else {
-                log.info(ConsoleTokens.colorizeText("&4The Proxy setting invalid: &c&n&o{}"), info);
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PROXY_CONFIG_INVALID, info));
             }
         }
 

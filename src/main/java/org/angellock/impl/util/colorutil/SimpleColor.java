@@ -16,9 +16,11 @@
 
 package org.angellock.impl.util.colorutil;
 
+import lombok.Getter;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.IComparable;
 
+@Getter
 public class SimpleColor implements IComparable<ConsoleTokens> {
     private short R;
     private short G;
@@ -35,18 +37,6 @@ public class SimpleColor implements IComparable<ConsoleTokens> {
     }
     public SimpleColor(){
         this(0, 0, 0);
-    }
-
-    public short getR() {
-        return R;
-    }
-
-    public short getG() {
-        return G;
-    }
-
-    public short getB() {
-        return B;
     }
 
     public static SimpleColor parseColorFromHex(String hexString){

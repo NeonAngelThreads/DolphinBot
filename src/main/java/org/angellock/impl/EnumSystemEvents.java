@@ -47,7 +47,13 @@ public enum EnumSystemEvents {
     PLUGIN_LOAD_TERMINAL_COMMANDS("plugin.load.terminal.command"),
     PLUGIN_LOAD_COMPLETE("plugin.load.complete"),
     PLAYER_INFO_CRACKED("info.cracked"),
-    PLAYER_INFO_ONLINE("info.online");
+    PLAYER_INFO_ONLINE("info.online"),
+    CHAT_COMMAND_DETECTED("chat.command.detected"),
+    PROXY_CONFIG_INVALID("proxy.config.invalid"),
+    DOLPHIN_BOTS_LOAD("dolphin.bot.load"),
+    PROXY_CONFIG_LOAD("proxy.config.load"),
+    CONFIG_FILE_LOADED("bot.config.file.loaded"),
+    COMMANDLINE_LOADED("commandline.enabled");
 
     private final String spaceName;
 

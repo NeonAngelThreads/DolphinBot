@@ -88,7 +88,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         Set<String> tCommand = TerminalCommandManager.registeredCommand.keySet();
         log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
         List<SessionListener> listeners = botInstance.getSession().getListeners();
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, tCommand.size()));
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
     }
 
     public void loadAllPlugins(AbstractRobot botInstance){

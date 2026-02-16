@@ -25,6 +25,8 @@ import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +54,14 @@ public class SystemTabCompleter implements Completer {
         for (TerminalCommand cmd : commands.values()) {
             for (String alias : cmd.getAliases()) {
                 if (alias.contains(line)) {
-                    list.add(new Candidate("/" + alias));
+                    list.add(new Candidate( "/" + alias, new AttributedStringBuilder()
+                            .style(AttributedStyle.BOLD.foreground(AttributedStyle.RED).background(AttributedStyle.BLUE)).append(alias).append("    ")
+                            .toAnsi(),
+                            cmd.getName(),
+                            null,
+                            null,
+                            null,
+                            true));
                 }
             }
         }

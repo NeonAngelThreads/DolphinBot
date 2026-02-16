@@ -20,7 +20,9 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import lombok.Getter;
 import org.angellock.impl.DolphinConfig;
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.TranslatableUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +48,8 @@ public class ConfigManager {
     }
 
     public void printConfigSpec() {
-        log.info(ConsoleTokens.colorizeText("&2Below command line options are enabled: &3{}"), commandLineOptions);
-        log.info(ConsoleTokens.colorizeText("&bLoaded DolphinBot config file: &3{}"), this.config());
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMANDLINE_LOADED, commandLineOptions));
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONFIG_FILE_LOADED, this.config()));
     }
     public ConfigManager(OptionSet optionList){
         this(optionList, null);
@@ -71,16 +73,6 @@ public class ConfigManager {
 
     private void loadConfig(){
         coreSettings = this.configHelper.loadBotConfig();
-//        Map<String, JsonElement> defaultConfig = this.configHelper.readJSONContent();
-////        if (defaultConfig == null){
-////            return;
-////        }
-//        for (String item: this.commandLineOptions.keySet()){
-//            if (this.commandLineOptions.get(item) == null){
-//
-//                this.commandLineOptions.put(item, defaultConfig.get(item).getAsString());
-//            }
-//        }
     }
     public void reloadConfig(){
         this.flushConfig();

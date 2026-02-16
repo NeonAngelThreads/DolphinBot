@@ -60,7 +60,7 @@
 ## Screenshots:
 ### Running on Windows server 2019:
 <p align="center">
-   <img src="assets/dolphinbot1.png">
+   <img src="assets/dev2.png">
 </p>
 
 ## Introduction:
@@ -281,14 +281,14 @@ each profile name, should be split with ";".
    Every single config option is equilibrium to option that defined by command line, and all config value including
    unrecognized option will be parsed, so you can add your customize config options.  
    An example for configuring this file:
-   ```json
-   {
-      "server": "2b2t.xin",
-      "port": 25565,
+```json
+{
+  "server": "2b2t.xin",
+  "port": 25565,
   "auto-reconnect": true,
   "packet-filter-delay": 0,
   "msg-send-delay": 0,
-      "max-chunk-view": 12,
+  "max-chunk-view": 12,
   "anti-AFK": true,
   "language": "zh",
   "connect-timing-out": 2000,
@@ -301,7 +301,7 @@ each profile name, should be split with ";".
     "enable-skin-recorder": false
   }
 }
-   ```   
+```   
    ### Config Options:
    
    | Config                 | Description                                                                |

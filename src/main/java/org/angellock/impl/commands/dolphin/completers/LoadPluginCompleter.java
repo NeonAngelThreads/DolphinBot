@@ -38,7 +38,7 @@ public class LoadPluginCompleter implements ICommandCompleter {
         List<String> list = new ArrayList<>();
         if (cmdList[0].equalsIgnoreCase("load")) {
             for (String plugin : plugins) {
-                if (plugin.contains(cmdList[1])) {
+                if (cmdList.length == 1 || plugin.contains(cmdList[1])) {
                     list.add(plugin);
                 }
             }

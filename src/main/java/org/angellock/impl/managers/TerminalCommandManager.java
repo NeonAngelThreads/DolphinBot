@@ -56,7 +56,7 @@ public class TerminalCommandManager {
     public boolean callCommand(String msg, AbstractRobot bot) {
         String[] commandList = msg
                 .replaceFirst("/", "")
-                //.strip()
+                .strip()
                 .split(" ");
 
         if (commandList.length > 0){
