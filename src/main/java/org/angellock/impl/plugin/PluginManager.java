@@ -96,6 +96,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
             for (AbstractPlugin plugin : this.registeredPlugins.values()) {
                 enable(plugin, botInstance);
             }
+            listRegisterInfo(botInstance);
             return;
         }
         for (AbstractPlugin aDefault : this.enabled_base_plugin) {
@@ -134,10 +135,11 @@ public class PluginManager extends Manager implements IPluginInjectable{
         for (File InnerPlugin: individualPlugins){
             this.loadPlugin(botInstance, InnerPlugin);
         }
+        listRegisterInfo(botInstance);
     }
     public void disableAllPlugins(AbstractRobot botInstance){
         for (String plugin : this.registeredPlugins.keySet()){
-            log.info(ConsoleTokens.colorizeText("&7Disabling plugin &9{}"), plugin);
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_DISABLE, plugin));
             this.disable(botInstance, plugin);
         }
         botInstance.getSession().getListeners().clear();
@@ -149,7 +151,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
         for (SessionListener listener : pluginListeners) {
             if(botInstance.getSession().getListeners().contains(listener)){
-                log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &7Removing Handler Object &l{}"), listener.toString());
+                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_DISABLE, listener.toString()));
                 botInstance.getSession().removeListener(listener);
             }
         }
@@ -165,11 +167,11 @@ public class PluginManager extends Manager implements IPluginInjectable{
             plugin.onEnables(provider);
 
             List<SessionListener> listeners = plugin.getListeners();
-            log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &eRegistering Listener From Plugin &6{}"), plugin.getName());
+            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
 
             for (SessionListener listener : listeners) {
                 if (!provider.getSession().getListeners().contains(listener)) {
-                    log.info(ConsoleTokens.colorizeText("&7[&bEventBus&7] &eInjecting Event Handler Object &l&7{}"), listener.toString());
+                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_LOAD, listener.toString()));
                     provider.getSession().addListener(listener);
                 }
             }
