@@ -85,7 +85,6 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     @Override
     public void onDisable() {
-        log.info("disabling plugin: {}, {}", super.getName(), this.getVersion());
         this.getListeners().clear();
         if (this.tickThread != null) {
             this.tickThread.interrupt();
@@ -94,7 +93,6 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     @Override
     public void onLoad() {
-        log.info("loading plugin: {}, {}", super.getName(), this.getVersion());
         this.captureSkins = ConfigManager.getCoreSettings().getOther().isEnableSkinRecorder();
     }
 
