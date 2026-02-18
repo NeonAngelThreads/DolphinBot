@@ -9,39 +9,27 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.state;
+package org.angellock.impl.api.message;
 
-public enum LoginState {
-    
-    LOGIN(0),
-    REGISTER(1),
-    VERIFY(2),
-    IDLE(3),
-    DISCONNECTED(4),
-    JOIN(5);
+import java.util.HashMap;
+import java.util.Map;
 
-    private final int stateValue;
-    private Action action;
+public abstract class BotMessage implements INotify{
+    private final Map<String, Object> messageMap;
 
-    private LoginState(int stateValue) {
-        this.stateValue = stateValue;
+    public BotMessage(Map<String, Object> messageMap) {
+        this.messageMap = messageMap;
     }
-
-    public LoginState withAction(Action action) {
-        this.action = action;
+    public BotMessage addItem(String key, Object value){
+        this.messageMap.put(key, value);
         return this;
     }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public int getStateValue() {
-        return stateValue;
+    public Map<String, Object> message() {
+        return this.messageMap;
     }
 }

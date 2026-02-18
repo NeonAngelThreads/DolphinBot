@@ -14,39 +14,13 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.game;
+package org.angellock.impl.extensions.listeners;
 
-import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
-import org.angellock.impl.util.math.Position;
+import org.angellock.impl.events.IActions;
 
-public class JoinedGameEvent extends AbstractEvent {
-    private static final HandlerMapper HANDLERS = new HandlerMapper();
-
-    private final Position position;
-
-    private final RobotPlayer robot;
-
-    public JoinedGameEvent(Position position, RobotPlayer robot) {
-        this.position = position;
-        this.robot = robot;
-    }
-
+public class JoinMessageInformant implements IActions {
     @Override
-    public HandlerMapper getMapper() {
-        return HANDLERS;
-    }
+    public void onAction(Object packet) {
 
-    public static HandlerMapper getHandlers() {
-        return HANDLERS;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public RobotPlayer getRobot() {
-        return robot;
     }
 }

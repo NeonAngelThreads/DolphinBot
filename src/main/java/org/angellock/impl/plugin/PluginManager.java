@@ -43,7 +43,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     private final File pluginFolder;
     private static final PluginLoader loader = new PluginLoader();
 
-    private static final EventManager eventManager = new EventManager();
+    private final EventManager eventManager = new EventManager();
 
     public PluginManager(){
         this((File) null);
@@ -61,7 +61,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         return loader;
     }
 
-    public static EventManager event(){
+    public EventManager event(){
         return eventManager;
     }
 
@@ -84,7 +84,6 @@ public class PluginManager extends Manager implements IPluginInjectable{
     public void listRegisterInfo(AbstractRobot botInstance) {
         Set<String> pl = botInstance.getRegisteredCommands().getRegisteredCommands().keySet();
         log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
-
         Set<String> tCommand = TerminalCommandManager.registeredCommand.keySet();
         log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
         List<SessionListener> listeners = botInstance.getSession().getListeners();

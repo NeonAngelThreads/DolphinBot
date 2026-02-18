@@ -20,9 +20,12 @@ import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.CommandSerializer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.AbstractEventProcessor;
+import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlainTextSerializer;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundSystemChatPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SystemChatHandler extends AbstractEventProcessor<ClientboundSystemChatPacket> {
     @Override

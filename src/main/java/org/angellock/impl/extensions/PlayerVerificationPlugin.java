@@ -20,17 +20,22 @@ import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.events.IDisconnectListener;
+import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.events.handlers.TitlePacketHandler;
+import org.angellock.impl.extensions.actions.JoinAction;
+import org.angellock.impl.extensions.actions.LoginAction;
+import org.angellock.impl.extensions.actions.RegisterAction;
+import org.angellock.impl.extensions.actions.VerifyAction;
+import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.plugin.AbstractPlugin;
-import org.angellock.impl.state.Action;
-import org.angellock.impl.state.LoginState;
-import org.angellock.impl.state.LoginStateMachine;
+import org.angellock.impl.api.state.StateAction;
+import org.angellock.impl.api.state.LoginState;
+import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
-import org.angellock.impl.util.TimingUtil;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
@@ -51,10 +56,7 @@ import java.time.Instant;
 import java.util.HashMap;
 
 public class PlayerVerificationPlugin extends AbstractPlugin {
-    protected int verifyTimes = 0;
-    private boolean hasLoggedIn = false;
-    private boolean inQueue = false;
-    private AbstractRobot botInstance;
+
     protected static final Logger log = LoggerFactory.getLogger("AutoLogin");
 
     @Override
@@ -74,8 +76,6 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
     @Override
     public void onDisable() {
-        this.hasLoggedIn = false;
-        this.inQueue = false;
         this.schedulerThread = null;
         this.getListeners().clear();
     }
@@ -85,87 +85,15 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
     }
 
-    public void sendRegister(AbstractRobot entityBot){
-        entityBot.sendPacket(new ServerboundChatCommandPacket("reg " + entityBot.getPassword() +" "+ entityBot.getPassword()));
-    }
-
     @Override
     public void onEnable(AbstractRobot entityBot) {
-        this.botInstance = entityBot;
-        this.hasLoggedIn = false;
 
         LoginStateMachine stateMachine = new LoginStateMachine(LoginState.IDLE);
 
-        Action verifyAction = new Action(entityBot) {
-            @Override
-            public void execute() {
-                int var = 0;
-                try {
-                    var = TimingUtil.getRandomDelay(TimingUtil.getRandomizer(), var);
-                    Thread.sleep(500L*(1+var));
-
-                    if (entityBot.getSession().isConnected()){
-                        if (!isBypassed()) {
-                            if(verifyTimes < 2){
-                                verifyTimes++;
-                                entityBot.getSession().disconnect("Bypassing");
-                            }
-                            log.info(ConsoleTokens.colorizeText("&7正在进行人机验证..."));
-                            if (System.currentTimeMillis() - entityBot.getConnectTime() > 10700L) {
-                                log.info(ConsoleTokens.colorizeText("&a机器人验证已完毕."));
-                                stateMachine.currentState = LoginState.REGISTER;
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    entityBot.getSession().disconnect("Interrupted");
-                    throw new RuntimeException();
-                }
-            }
-        };
-        Action registerAction = new Action(entityBot) {
-            @Override
-            public void execute() {
-                entityBot.getPluginManager().loadAllPlugins(entityBot);
-                entityBot.setBypassed(true);
-
-                log.info(ConsoleTokens.colorizeText("&aRobot verification successfully passed, sending reg command!"));
-                sendRegister(entityBot);
-                verifyTimes = 0;
-            }
-        };
-        Action joinAction = new Action(entityBot) {
-            @Override
-            public void execute() {
-                entityBot.sendPacket(new ServerboundSetCarriedItemPacket(2));
-                entityBot.sendPacket(new ServerboundUseItemPacket(
-                        Hand.MAIN_HAND,
-                        (int) Instant.now().toEpochMilli(),
-                        0,
-                        0
-                ));
-                inQueue = true;
-            }
-        };
-        Action loginAction = new Action(entityBot) {
-            @Override
-            public void execute() {
-                    try {
-                        Thread.sleep((inQueue) ? 10000L : 2500L);
-                        if (!entityBot.getSession().isConnected()){
-                            return;
-                        }
-
-                        if (!hasLoggedIn) {
-                            entityBot.sendPacket(new ServerboundChatCommandPacket("login " + entityBot.getPassword()));
-                        }else if (entityBot.getServerGamemode() != GameMode.SURVIVAL){
-                            stateMachine.currentState = LoginState.JOIN;
-                        }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-            }
-        };
+        StateAction verifyAction = new VerifyAction(stateMachine, entityBot);
+        StateAction registerAction = new RegisterAction(entityBot);
+        StateAction joinAction = new JoinAction(entityBot);
+        StateAction loginAction = new LoginAction(stateMachine, entityBot);
 
         stateMachine
                 .source(LoginState.IDLE).whenReceive("§c§l离线玩家请注册").goal(LoginState.REGISTER, registerAction)
@@ -173,7 +101,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
                     .whenReceive("§c§l离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
                 .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
                 .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
-                .source(LoginState.LOGIN).whenReceive("§a§l登陆成功").goal(LoginState.JOIN, joinAction)
+                .source(LoginState.LOGIN).whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)
                 .source(LoginState.JOIN).whenReceive("Position in queue").goal(LoginState.IDLE, null)
                 .resetOnlyWhen(KickReason.HUMAN_VERIFICATION)
                 .build();
@@ -225,13 +153,4 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
         getListeners().add(titleListener);
     }
-
-    public void resetVerify(){
-        this.botInstance.setBypassed(false);
-    }
-
-    private boolean isBypassed(){
-        return this.botInstance.isByPassedVerification();
-    }
-
 }

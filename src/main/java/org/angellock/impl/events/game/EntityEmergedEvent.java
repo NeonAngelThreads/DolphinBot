@@ -17,11 +17,11 @@
 package org.angellock.impl.events.game;
 
 import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
-public class EntityEmergedEvent extends Event {
+public class EntityEmergedEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     private final EntityType entity;
     private final Position position;

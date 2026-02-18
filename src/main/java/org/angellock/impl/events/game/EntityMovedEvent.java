@@ -17,10 +17,10 @@
 package org.angellock.impl.events.game;
 
 import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.util.math.Position;
 
-public class EntityMovedEvent extends Event{
+public class EntityMovedEvent extends AbstractEvent {
     private final int entityId;
     private final Position position;
 

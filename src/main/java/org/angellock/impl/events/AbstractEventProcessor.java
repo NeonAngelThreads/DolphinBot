@@ -17,7 +17,7 @@
 package org.angellock.impl.events;
 
 import org.angellock.impl.events.bukkit.ActiveListener;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.Session;
@@ -83,7 +83,7 @@ public abstract class AbstractEventProcessor<T extends Packet> extends SessionAd
         event.setSuppress(false);
     }
 
-    protected void dispatch(Event event) {
+    protected void dispatch(AbstractEvent event) {
         HandlerMapper mapper = event.getMapper();
         for (ActiveListener listener : mapper.getRegisteredListenersInOrder()) {
             try {

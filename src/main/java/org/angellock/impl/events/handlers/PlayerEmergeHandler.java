@@ -16,6 +16,8 @@
 
 package org.angellock.impl.events.handlers;
 
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.events.game.EntityEmergedEvent;
 import org.angellock.impl.events.packets.AddEntityPacket;
 import org.angellock.impl.ingame.Player;
@@ -23,16 +25,14 @@ import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
-import static org.angellock.impl.plugin.PluginManager.event;
-
 public class PlayerEmergeHandler extends AddEntityPacket {
-    public PlayerEmergeHandler() {
+    public PlayerEmergeHandler(AbstractRobot bot) {
         this.addExtraAction((entityPacket -> {
             if (entityPacket.getType() == EntityType.PLAYER) {
                 Player player = PlayerTracker.getPlayerByUUID(entityPacket.getUuid());
                 if (player != null) {
                     //log.info(ConsoleTokens.colorizeText("[PlayerTracker]: &3A player was detected: &d{}"), player.getProfile().getName());
-                    event().broadcastEvent(new EntityEmergedEvent(EntityType.PLAYER, new Position(entityPacket.getX(), entityPacket.getY(), entityPacket.getZ())));
+                    bot.getPluginManager().event().broadcastEvent(new EntityEmergedEvent(EntityType.PLAYER, new Position(entityPacket.getX(), entityPacket.getY(), entityPacket.getZ())));
                     player.setPosition(entityPacket.getX(), entityPacket.getY(), entityPacket.getZ());
                 }
             }

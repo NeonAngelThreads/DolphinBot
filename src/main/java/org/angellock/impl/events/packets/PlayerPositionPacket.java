@@ -27,7 +27,7 @@ import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.play
 public class PlayerPositionPacket extends AbstractEventProcessor<ClientboundPlayerPositionPacket> {
     public PlayerPositionPacket(RobotPlayer robot) {
         this.addExtraAction((packet->{
-            PluginManager.event().broadcastEvent(new JoinedGameEvent(new Position(packet.getX(), packet.getY(), packet.getZ()), robot));
+            robot.getPluginManager().event().broadcastEvent(new JoinedGameEvent(new Position(packet.getX(), packet.getY(), packet.getZ()), robot));
         }));
     }
 

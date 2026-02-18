@@ -17,7 +17,7 @@
 package org.angellock.impl.managers;
 
 import org.angellock.impl.events.EventDispatcher;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 
 public class EventManager {
     private final EventDispatcher dispatcher = new EventDispatcher();
@@ -26,7 +26,7 @@ public class EventManager {
         return this.dispatcher;
     }
 
-    public void broadcastEvent(Event event){
+    public void broadcastEvent(AbstractEvent event){
         this.dispatcher.callEvent(event);
     }
 }

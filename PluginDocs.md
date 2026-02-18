@@ -111,15 +111,16 @@ Define what state should transit to, and what action(s) should be done in this n
 
 These methods aiming to build the chain calling style for simplicity.  
 **Here is an example:**
+
 ```java
 
-import org.angellock.impl.state.LoginStateMachine;
+import org.angellock.impl.api.state.LoginStateMachine;
 
 @Override
 public void onEnable(AbstractRobot entityBot) {
-    
+
     LoginStateMachine loginStateMachine = new LoginStateMachine();
-    
+
     loginStateMachine
             .source(LoginState.IDLE).whenReceive("请登录").goal(LoginState.LOGIN, loginAction) // from IDLE transit to LOGIN
             .source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction) // From LOGIN state transit to JOIN
@@ -142,21 +143,21 @@ in order to make the state machine running correctly on next time join to the se
 
 ### How to build an advanced login process?
 If you want to add multiple branches to a state node to build a more powerful and advanced login process,
-you can simply add `.and()` branch statement in that state node. **For example:**  
+you can simply add `.and()` branch statement in that state node. **For example:**
 
 ```java
 
-import org.angellock.impl.state.LoginStateMachine;
+import org.angellock.impl.api.state.LoginStateMachine;
 
 @Override
 public void onEnable(AbstractRobot entityBot) {
-    
+
     LoginStateMachine loginStateMachine = new LoginStateMachine();
 
     stateMachine
             .source(LoginState.IDLE).whenReceive("请进行机器人验证").goal(LoginState.VERIFY, verifyAction)
-                                    .and() // branch
-                                    .whenReceive("请登录").goal(LoginState.LOGIN, loginAction)
+            .and() // branch
+            .whenReceive("请登录").goal(LoginState.LOGIN, loginAction)
             .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
             .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
             .source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction)
@@ -309,13 +310,15 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
 
 - Available Event Listeners:
 
-  | Event Listener     | Only Triggered When                                       |
-    |--------------------|-----------------------------------------------------------|
-  | PlayerMoveEvent    | Triggered when a nearby player moves                      |
-  | EntityEmergedEvent | An entity generated, player emerged, or projectile thrown |
-  | PlayerChatEvent    | When a player send a in-game message.                     |
-- Please Note That:
-    - Every single handling method should annotate with `@EventHandler`.
+  | Event Listener       | Only Triggered When                                       |
+    |----------------------|-----------------------------------------------------------|
+  | PlayerMoveEvent      | Triggered when a nearby player moves                      |
+  | EntityEmergedEvent   | An entity generated, player emerged, or projectile thrown |
+  | PlayerChatEvent      | When a player send a in-game message.                     |
+|  MessageDispatchEvent | Customized Message payloads send from other bot by user   |
+
+> [!NOTE]
+> - Every single handling method should annotate with `@EventHandler`.
     - All handling method should be public.
     - Remember to register the all listener classes.
 
@@ -415,9 +418,69 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     ```
     For each plugin has individual command system, and every command system is base on `SystemChatPacket` and `PlayerChatPacket` listening.  
     The command sender and command list is serialized by `CommandSerializer`.
-- ### 4.3. Message Manager:
+- ### 4.3.Chat Message Manager:
     In-game chat messages sends is managed by `MessageManager`.  
-    For each bot individual has a message manager. 
+    For each bot has a message manager.  
+    Message manager aimed to send in-game chat message and chat commands.
+- 
+    You can use `.sendCommand(String stringCommand)` to send command.  
+-   Each unsent message and command is stored in a Queue, these message and command will be sent in a specified delay (you can change it in config file.).
+## Dolphin Message API:
+Message APIs are aimed to help you to connect one or more bot between bots, that is, you can notify notifications to a bot on some situation, once a bot received the message, you can specify what action should be done by the bot.
+
+1. To use the dolphin message API, you need to register an event listener containing a method to handle the incoming message.  
+2. Register it on you custom plugin.  
+3. Then, you need to broadcast the message payload content from a bot.  
+
+**Here is a simple example:**   
+**Step 1:**    
+Defining a message listener on a receiver bot:  
+ExampleMessageListener.java
+```java
+import org.angellock.impl.events.IListener;
+import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
+
+public class ExampleMessageListener implements IListener {
+    @EventHandler
+    public void onMessage(MessageBroadcastEvent event){
+        log.info("message payload: {}", event.getMessage());
+        // Do something...
+    }
+}
+```
+Step 2:
+
+```java
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.plugin.AbstractPlugin;
+
+public class MessagePlugin extends AbstractPlugin {
+    @Override
+    public void onEnable(AbstractRobot robot){
+        getEvents().registerListeners(new ExampleMessageListener(), this);
+    }
+}
+```
+Step 3:
+Defining a message sender plugin in sender bot.
+
+```java
+import org.angellock.impl.api.message.BotMessage;
+import org.angellock.impl.plugin.AbstractPlugin;
+
+public class SendMsgPlugin extends AbstractPlugin {
+    @Override
+    public void onEnable(AbstractRobot robot) {
+        if (...){ // when the sending condition is meet
+            BotManager.getBotByName("bot#1") // you can specify on which bot you want to send to. (you define on config file)
+                    .callHandleableEvent(new MessageBroadcastEvent("something you want to send"));
+            
+            // alternately, you can use DispatchMessage() to distribute messages to all bots.
+            entityBot.getBotManager().distributeMessage("something.");
+        }
+    }
+}
+```
 ## Player Events:
 DolphinAPI also implemented player event system, allowing you to detect and predict online players on server.  
    - `Player` class:  

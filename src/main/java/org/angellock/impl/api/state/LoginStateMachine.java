@@ -9,12 +9,12 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.state;
+package org.angellock.impl.api.state;
 
 import it.unimi.dsi.fastutil.Pair;
 import org.angellock.impl.EnumSystemEvents;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class LoginStateMachine extends StateMachine<String> {
 
     private static final Logger log = LoggerFactory.getLogger(LoginStateMachine.class);
-    public LoginState currentState;
+    private LoginState currentState;
     private final LoginState initialState;
     private String message;
     private IReason resetCondition;
@@ -67,7 +67,7 @@ public class LoginStateMachine extends StateMachine<String> {
         return this;
     }
 
-    public LoginStateMachine goal(LoginState nextState, Action action) {
+    public LoginStateMachine goal(LoginState nextState, StateAction action) {
         this.msgCache.add(this.message);
         this.transitionMap.put(Pair.of(this.currentState.name(), this.message), nextState.withAction(action));
         return this;
@@ -89,7 +89,7 @@ public class LoginStateMachine extends StateMachine<String> {
             if (nextState != null) {
                 TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
                 this.currentState = nextState;
-                Action action = this.currentState.getAction();
+                StateAction action = this.currentState.getAction();
                 if (action != null) {
                     action.execute();
                     return true;

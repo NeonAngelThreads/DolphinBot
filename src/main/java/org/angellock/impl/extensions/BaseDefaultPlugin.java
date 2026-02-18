@@ -25,6 +25,8 @@ import org.angellock.impl.commands.executors.*;
 import org.angellock.impl.commands.terminal.TerminalCommand;
 import org.angellock.impl.commands.terminal.TerminalCommandBuilder;
 import org.angellock.impl.events.handlers.*;
+import org.angellock.impl.extensions.executors.ChatReloadExecutor;
+import org.angellock.impl.extensions.handlers.*;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.listeners.JoinGameListener;
@@ -32,6 +34,7 @@ import org.angellock.impl.listeners.PlayerListener;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.PlayerInfoHelper;
 import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.auth.GameProfile;
@@ -51,20 +54,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
-    protected static final Logger log = LoggerFactory.getLogger("BotEntity");
     private static final String VERSION = "1.2.5";
     private static final String NAME = "Base-default-plugin";
-    private long lastTitleTime;
-    private String lastTitle;
-    private String lastMsg;
-
-    private int blockSequence = 0;
-
-    private String onlineSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
-    private String crackedSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
-
     private Thread tickThread = null;
-    private boolean captureSkins;
+    private PlayerInfoHelper helper;
 
     @Override
     public String getPluginName() {
@@ -91,7 +84,8 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     @Override
     public void onLoad() {
-        this.captureSkins = ConfigManager.getCoreSettings().getOther().isEnableSkinRecorder();
+        boolean captureSkins = ConfigManager.getCoreSettings().getOther().isEnableSkinRecorder();
+        this.helper = new PlayerInfoHelper(captureSkins);
     }
 
     @Override
@@ -122,96 +116,25 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
             getEvents().registerListeners(new PlayerListener(), this);
         }
-        robotEntity.getRegisteredCommands().register(new CommandBuilder().withName("reload").allowedUsers(robotEntity.getInfoHelper().getOwners()).build((response, bot) -> {
-            long timeElapse = System.currentTimeMillis();
-            robotEntity.getPluginManager().reloadPlugin(robotEntity, response.getCommandList()[1].toLowerCase());
-            long time = (System.currentTimeMillis() - timeElapse);
-            robotEntity.getMessageManager().putMessage("[INFO]操作已成功完成。耗时" + time + "ms");
-        }));
+        getCommands().register(
+                new CommandBuilder()
+                        .withName("reload")
+                        .allowedUsers(
+                                robotEntity.getInfoHelper().getOwners()
+                        ).build(new ChatReloadExecutor())
+        );
 
-        getListeners().add(new LoginHandler().addExtraAction(packet -> {
-            log.info(ConsoleTokens.colorizeText(""));
-            this.joinGame(robotEntity);
-        }));
-
-        getListeners().add(new BlockChangedAckHandler().addExtraAction((packet -> {
-            this.blockSequence = packet.getSequence();
-        })));
-
-        getListeners().add(new SystemChatHandler().addExtraAction((packet) -> {
-            TextComponentSerializer componentSerializer = new TextComponentSerializer();
-            String msg = componentSerializer.serialize(packet.getContent());
-            if (!msg.equals(this.lastMsg)) {
-                this.lastMsg = msg;
-                log.info(robotEntity.getProfileName()+" "+ConsoleTokens.colorizeText(msg));
-            }
-        }));
-
-        getListeners().add(new PlayerChatPacketHandler().addExtraAction((packet) -> {
-            TextComponentSerializer componentSerializer = new TextComponentSerializer();
-            String msg = packet.getContent();
-            String player = componentSerializer.serialize(packet.getName());
-            log.info(ConsoleTokens.colorizeText("&6{}&7>> {}"), player, ConsoleTokens.colorizeText(msg));
-
-        }));
-
-        getListeners().add(new PlayerLogInfoHandler.UpdateHandler().addExtraAction((updatePacket) -> {
-            PlayerListEntry[] players = updatePacket.getEntries();
-
-            for (PlayerListEntry player : players) {
-                GameProfile playerProfile = player.getProfile();
-                PlayerTracker.putPlayer(new Player(playerProfile));
-                if (playerProfile != null) {
-                    log.info(ConsoleTokens.colorizeText("&7[&a+&7]") + this.getLogMsg(playerProfile));
-                }
-            }
-        }));
-
-        getListeners().add(new TitlePacketHandler().addExtraAction((titleTextPacket)-> {
-            String currentText = ((TextComponent) titleTextPacket.getText()).content();
-            if (!currentText.equals(this.lastTitle) || System.currentTimeMillis() - this.lastTitleTime > 1500) {
-                TextComponentSerializer serializer = new TextComponentSerializer();
-                String titleMsg = serializer.serialize(titleTextPacket.getText());
-                log.info(ConsoleTokens.colorizeText("&7&l[&6FromTitle&7] &R" + titleMsg));
-                this.lastTitleTime = System.currentTimeMillis();
-                this.lastTitle = currentText;
-            }
-        }));
-
-        getListeners().add(new PlayerLogInfoHandler.RemoveHandler().addExtraAction((packet -> {
-            if(packet.getProfileIds().isEmpty()) {
-                return;
-            }
-            UUID logoutPlayer = packet.getProfileIds().get(0);
-            if (!PlayerTracker.canRemove(logoutPlayer)) {
-                return;
-            }
-            Player player = PlayerTracker.getPlayerByUUID(logoutPlayer);
-            if (player != null) {
-                PlayerTracker.delPlayer(logoutPlayer);
-                log.info(ConsoleTokens.colorizeText("&7[&4-&7]") + this.getLogMsg(player.getProfile()));
-            }
-        })));
+        getListeners().add(new LoginHandler().addExtraAction(packet -> this.joinGame(robotEntity)));
+        getListeners().add(new SystemChatDisplay(robotEntity));
+        getListeners().add(new PlayerChatDisplay());
+        getListeners().add(new PlayerUpdateHandler(this.helper));
+        getListeners().add(new TitleMessageDisplay());
+        getListeners().add(new PlayerRemoveHandler(this.helper));
 
         if (robotEntity.config().isAntiAFK()) {
             this.tickThread = new Thread(new RunnableAFKAction(robotEntity));
             this.tickThread.start();
         }
-
-    }
-
-    public String getLogMsg(GameProfile player){
-
-        List<GameProfile.Property> playerProperty = player.getProperties();
-        String state = (playerProperty.isEmpty()) ? this.crackedSuffix : this.onlineSuffix;
-        String playerName = player.getName();
-        UUID playerUUID = player.getId();
-        if (!playerProperty.isEmpty() && this.captureSkins) {
-            log.info(ConsoleTokens.colorizeText("&e{} 的正版皮肤: &7{}"), playerName, playerProperty);
-        }
-        //TODO Move this code to skin recorder class
-
-        return ConsoleTokens.colorizeText("&b" + playerName + state + "&7" + playerUUID);
 
     }
 

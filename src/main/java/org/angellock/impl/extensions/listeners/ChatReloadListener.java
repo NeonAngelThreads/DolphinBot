@@ -9,18 +9,15 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.extensions.handlers;
+package org.angellock.impl.extensions.listeners;
 
-import org.angellock.impl.events.IActions;
+import org.angellock.impl.events.IListener;
 
-public class JoinMessageInformant implements IActions {
-    @Override
-    public void onAction(Object packet) {
+public class ChatReloadListener implements IListener {
 
-    }
 }

@@ -9,42 +9,29 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.game;
+package org.angellock.impl.events.dolphin;
 
+import lombok.Getter;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
-import org.angellock.impl.ingame.Player;
-import org.angellock.impl.util.math.Position;
-
-public class PlayerMoveEvent extends AbstractEvent {
+@Getter
+public class MessageBroadcastEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
-    private final Player targetPlayer;
-    private final Position movePosition;
-
-    public PlayerMoveEvent(Player targetPlayer, Position movePosition) {
-        this.targetPlayer = targetPlayer;
-        this.movePosition = movePosition;
+    @Override
+    public HandlerMapper getMapper() {
+        return null;
     }
-
-    public Player getPlayer() {
-        return targetPlayer;
-    }
-
-    public Position getMovePosition() {
-        return movePosition;
+    private final String message;
+    public MessageBroadcastEvent(String message){
+        this.message = message;
     }
 
     public static HandlerMapper getHandlers() {
-        return HANDLERS;
-    }
-
-    @Override
-    public HandlerMapper getMapper() {
         return HANDLERS;
     }
 }

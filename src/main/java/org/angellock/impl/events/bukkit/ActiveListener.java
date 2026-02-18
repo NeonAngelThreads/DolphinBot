@@ -47,7 +47,7 @@ public class ActiveListener {
         return eventType;
     }
 
-    public void call(Event event) throws InvocationTargetException, IllegalAccessException {
+    public void call(AbstractEvent event) throws InvocationTargetException, IllegalAccessException {
         if (this.eventType.isInstance(event)) {
             this.action.invoke(this.listenerInstance, event);
         }

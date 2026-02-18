@@ -18,8 +18,11 @@ package org.angellock.impl.events;
 
 import org.angellock.impl.events.annotations.EventHandler;
 import org.angellock.impl.events.bukkit.ActiveListener;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.plugin.Plugin;
+import org.angellock.impl.util.ConsoleTokens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,22 +33,25 @@ import java.util.Map;
 
 public class EventDispatcher {
     private final Map<Plugin, List<ActiveListener>> pluginMap = new HashMap<>();
+    protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3EventSystem"));
 
     public void registerListeners(IListener listener, Plugin plugin) {
         for (Method method : listener.getClass().getDeclaredMethods()) {
             EventHandler annotation = method.getAnnotation(EventHandler.class);
             if (annotation != null) {
                 Class<?>[] params = method.getParameterTypes();
-                if (!Event.class.isAssignableFrom(params[0])) {
-                    throw new IllegalArgumentException("Parameter type in method marked by @EventHandler should be a subclass of Event.class. At method: " + method);
+                if (!AbstractEvent.class.isAssignableFrom(params[0])) {
+                    log.error("&4Parameter type in method marked by &e@EventHandler &4should be a subclass of Event.class. &cAt method: &b{}", method);
+                    return;
                 }
                 Class<?> eventParamType = params[0];
 
                 HandlerMapper mapper;
                 try {
                     mapper = (HandlerMapper) eventParamType.getMethod("getHandlers").invoke(null);
-                } catch (Exception e) {
-                    throw new IllegalStateException("Could not find public static method 'getHandlers()': " + eventParamType, e);
+                } catch (Throwable e) {
+                    log.error(ConsoleTokens.colorizeText("&cCould not register event of &b{}&4, because: Could not find public static method 'getHandlers()': &6{}, &cException: {}"), eventParamType.getName(), eventParamType, e.toString());
+                    return;
                 }
                 ActiveListener registeredListener = new ActiveListener(listener, method, eventParamType, annotation.priority());
 
@@ -55,7 +61,7 @@ public class EventDispatcher {
         }
     }
 
-    public void callEvent(Event event) {
+    public void callEvent(AbstractEvent event) {
         HandlerMapper list = event.getMapper();
         for (ActiveListener registeredListener : list.getRegisteredListenersInOrder()) {
             try {
