@@ -17,6 +17,8 @@
 package org.angellock.impl;
 
 import lombok.Setter;
+import org.angellock.impl.events.annotations.EventHandler;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
@@ -71,6 +73,10 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
         this.getSession().getChannel().deregister();
         this.getSession().getChannel().closeFuture();
         TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DOLPHIN_TIMING_RESET);
+    }
+
+    public void callHandleableEvent(AbstractEvent event){
+        this.getPluginManager().event().broadcastEvent(event);
     }
 
     @Override

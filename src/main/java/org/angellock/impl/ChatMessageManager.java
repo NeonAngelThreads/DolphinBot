@@ -76,4 +76,7 @@ public class ChatMessageManager{
         }
     }
 
+    public void sendCommand(String stringCommand){
+        this.instance.sendPacket(new ServerboundChatCommandPacket(stringCommand));
+    }
 }

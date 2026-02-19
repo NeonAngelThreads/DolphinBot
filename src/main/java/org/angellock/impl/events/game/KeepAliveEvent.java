@@ -17,9 +17,9 @@
 package org.angellock.impl.events.game;
 
 import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 
-public class KeepAliveEvent extends Event {
+public class KeepAliveEvent extends AbstractEvent {
 
     public static HandlerMapper mapper = new HandlerMapper();
     @Override

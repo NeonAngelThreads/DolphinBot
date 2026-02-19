@@ -9,15 +9,39 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl;
+package org.angellock.impl.api.state;
 
-import org.angellock.impl.events.bukkit.Event;
+public enum LoginState {
+    
+    LOGIN(0),
+    REGISTER(1),
+    VERIFY(2),
+    IDLE(3),
+    DISCONNECTED(4),
+    JOIN(5);
 
-public interface IEventCallable<T> {
-    T callEvent(Event event);
+    private final int stateValue;
+    private StateAction action;
+
+    private LoginState(int stateValue) {
+        this.stateValue = stateValue;
+    }
+
+    public LoginState withAction(StateAction action) {
+        this.action = action;
+        return this;
+    }
+
+    public StateAction getAction() {
+        return action;
+    }
+
+    public int getStateValue() {
+        return stateValue;
+    }
 }

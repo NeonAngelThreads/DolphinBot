@@ -156,7 +156,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
         this.serverSession.addListener(new ChatCommandHandler(this.commands));
         this.serverSession.addListener(new EntityMovePacket());
-        this.serverSession.addListener(new PlayerEmergeHandler());
+        this.serverSession.addListener(new PlayerEmergeHandler(this));
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
         if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
         this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
@@ -194,7 +194,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                 }
             }
         } finally {
-            this.serverSession.disconnect("Connection was Interrupted");
+            this.serverSession.disconnect("");
             scheduleReconnect();
         }
     }

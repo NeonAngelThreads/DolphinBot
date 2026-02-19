@@ -9,44 +9,29 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.game;
+package org.angellock.impl.events.bukkit;
 
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
-import org.angellock.impl.util.math.Position;
 
-public class JoinedGameEvent extends AbstractEvent {
-    private static final HandlerMapper HANDLERS = new HandlerMapper();
+public abstract class AbstractEvent {
+    private final boolean async;
 
-    private final Position position;
-
-    private final RobotPlayer robot;
-
-    public JoinedGameEvent(Position position, RobotPlayer robot) {
-        this.position = position;
-        this.robot = robot;
+    protected AbstractEvent() {
+        this(false);
     }
 
-    @Override
-    public HandlerMapper getMapper() {
-        return HANDLERS;
+    protected AbstractEvent(boolean isAsync) {
+        this.async = isAsync;
     }
 
-    public static HandlerMapper getHandlers() {
-        return HANDLERS;
+    public boolean isAsynchronous() {
+        return async;
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
-    public RobotPlayer getRobot() {
-        return robot;
-    }
+    public abstract HandlerMapper getMapper();
 }

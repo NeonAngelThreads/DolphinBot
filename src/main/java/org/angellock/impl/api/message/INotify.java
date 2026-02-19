@@ -9,23 +9,14 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.api.message;
 
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
-
-public class ReconnectEvent extends AbstractEvent {
-
-    public static HandlerMapper mapper = new HandlerMapper();
-
-
-    @Override
-    public HandlerMapper getMapper() {
-        return null;
-    }
+public interface INotify{
+    void onAccept();
+    void onDismiss();
 }

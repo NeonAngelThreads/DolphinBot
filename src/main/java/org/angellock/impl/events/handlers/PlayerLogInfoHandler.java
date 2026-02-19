@@ -35,4 +35,5 @@ public class PlayerLogInfoHandler {
             return (packet instanceof ClientboundPlayerInfoUpdatePacket);
         }
     }
+
 }

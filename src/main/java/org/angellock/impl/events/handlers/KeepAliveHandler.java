@@ -16,19 +16,18 @@
 
 package org.angellock.impl.events.handlers;
 
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.events.game.KeepAliveEvent;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundKeepAlivePacket;
 
-import static org.angellock.impl.plugin.PluginManager.event;
-
 public class KeepAliveHandler extends AbstractEventProcessor<ClientboundKeepAlivePacket> {
 
-    public KeepAliveHandler() {
+    public KeepAliveHandler(AbstractRobot bot) {
 
         this.addExtraAction((packet) -> {
-            event().broadcastEvent(new KeepAliveEvent());
+            bot.getPluginManager().event().broadcastEvent(new KeepAliveEvent());
         });
     }
 

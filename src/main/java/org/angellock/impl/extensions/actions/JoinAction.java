@@ -9,35 +9,39 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.commands.executors;
+package org.angellock.impl.extensions.actions;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.ICommandAction;
-import org.cloudburstmc.math.vector.Vector3i;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
+import org.angellock.impl.api.state.StateAction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemOnPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
 
-public class PearlWarpExecutor implements ICommandAction {
+import java.time.Instant;
+
+public class JoinAction extends StateAction {
+    public JoinAction(AbstractRobot botInstance) {
+        super(botInstance);
+    }
 
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
-        ServerboundUseItemOnPacket packet = new ServerboundUseItemOnPacket(
-                Vector3i.from(2019, 96, -1115),
-                Direction.DOWN,
+    public void execute() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        entityBot.sendPacket(new ServerboundSetCarriedItemPacket(2));
+        entityBot.sendPacket(new ServerboundUseItemPacket(
                 Hand.MAIN_HAND,
-                0f, 0f, 0f,
-                false,
-                (int) System.currentTimeMillis()
-        );
-
-        System.out.println(packet);
-        bot.sendPacket(packet);
+                (int) Instant.now().toEpochMilli(),
+                0,
+                0
+        ));
     }
 }

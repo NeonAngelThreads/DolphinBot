@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
 import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
@@ -169,7 +170,8 @@ public class BotManager extends ResourceHelper {
         bots.put(username, (RobotPlayer) botInst);
     }
 
-    public void dispatchMessages(List<String> msgQueue){
+    @SuppressWarnings("unused")
+    public static void dispatchMessages(List<String> msgQueue){
         List<RobotPlayer> randomBots = new ArrayList<>(bots.values());
         Collections.shuffle(randomBots);
         Random random = new Random();
@@ -189,6 +191,18 @@ public class BotManager extends ResourceHelper {
             selected.getMessageManager().putMessage(string);
             last = selected;
         }
+    }
+
+    @SuppressWarnings("unused")
+    public void distributeMessage(String handleableMessage){
+        for (RobotPlayer bot : bots.values()) {
+            bot.callHandleableEvent(new MessageBroadcastEvent(handleableMessage));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static @Nullable RobotPlayer getBotByName(String name){
+        return bots.get(name);
     }
 
     public static Map<String, RobotPlayer> bots() {

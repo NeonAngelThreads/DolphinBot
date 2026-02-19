@@ -18,10 +18,10 @@ package org.angellock.impl.events.dolphin;
 
 import lombok.Getter;
 import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.Event;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 
 @Getter
-public class CommandNotFoundEvent extends Event {
+public class CommandNotFoundEvent extends AbstractEvent {
     private final String currentCommand;
 
     public CommandNotFoundEvent(String currentCommand) {

@@ -14,24 +14,14 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.bukkit;
+package org.angellock.impl.api.state;
 
-import org.angellock.impl.events.HandlerMapper;
+import org.angellock.impl.AbstractRobot;
 
-public abstract class Event {
-    private final boolean async;
-
-    protected Event() {
-        this(false);
+public abstract class StateAction {
+    protected AbstractRobot entityBot;
+    public StateAction(AbstractRobot botInstance) {
+        this.entityBot = botInstance;
     }
-
-    protected Event(boolean isAsync) {
-        this.async = isAsync;
-    }
-
-    public boolean isAsynchronous() {
-        return async;
-    }
-
-    public abstract HandlerMapper getMapper();
+    public abstract void execute();
 }

@@ -9,23 +9,35 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.api.state;
 
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
+import it.unimi.dsi.fastutil.Pair;
+import org.angellock.impl.util.reason.IReason;
 
-public class ReconnectEvent extends AbstractEvent {
+import java.util.ArrayList;
+import java.util.HashMap;
 
-    public static HandlerMapper mapper = new HandlerMapper();
+public abstract class StateMachine<T> {
+    protected final HashMap<Pair<String, T>, LoginState> transitionMap = new HashMap<>(32);
+    protected final ArrayList<String> msgCache = new ArrayList<>();
 
-
-    @Override
-    public HandlerMapper getMapper() {
-        return null;
+    public String lookForCache(String msg) {
+        for (String s: this.msgCache){
+            if (msg.contains(s)){
+                return s;
+            }
+        }
+        return "";
     }
+
+    public abstract boolean check(T input);
+
+    public abstract void reset();
+
+    public abstract LoginStateMachine resetOnlyWhen(IReason reason);
 }
