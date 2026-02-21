@@ -9,24 +9,20 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.api.events;
 
-import lombok.Getter;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 
-@Getter
-public class CommandNotFoundEvent extends AbstractEvent {
-    private final String currentCommand;
+public class ReconnectEvent extends AbstractEvent {
 
-    public CommandNotFoundEvent(String currentCommand) {
-        this.currentCommand = currentCommand;
-    }
+    public static HandlerMapper mapper = new HandlerMapper();
+
 
     @Override
     public HandlerMapper getMapper() {

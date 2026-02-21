@@ -23,7 +23,8 @@ import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
+import org.angellock.impl.api.events.MessageBroadcastEvent;
+import org.angellock.impl.api.events.NotificationBroadcastEvent;
 import org.angellock.impl.extensions.Plugins;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
@@ -194,9 +195,9 @@ public class BotManager extends ResourceHelper {
     }
 
     @SuppressWarnings("unused")
-    public void distributeMessage(String handleableMessage){
+    public void distributeNotification(String handleableMessage){
         for (RobotPlayer bot : bots.values()) {
-            bot.callHandleableEvent(new MessageBroadcastEvent(handleableMessage));
+            bot.callHandleableEvent(new NotificationBroadcastEvent(handleableMessage));
         }
     }
 

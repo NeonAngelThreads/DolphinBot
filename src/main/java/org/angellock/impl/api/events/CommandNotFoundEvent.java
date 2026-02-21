@@ -14,14 +14,22 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.api.message;
+package org.angellock.impl.api.events;
 
-public abstract class Notification implements INotify{
-    private String message;
-    public Notification(String message) {
-        this.message = message;
+import lombok.Getter;
+import org.angellock.impl.events.HandlerMapper;
+import org.angellock.impl.events.bukkit.AbstractEvent;
+
+@Getter
+public class CommandNotFoundEvent extends AbstractEvent {
+    private final String currentCommand;
+
+    public CommandNotFoundEvent(String currentCommand) {
+        this.currentCommand = currentCommand;
     }
-    public String notification() {
-        return this.message;
+
+    @Override
+    public HandlerMapper getMapper() {
+        return null;
     }
 }

@@ -20,7 +20,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.events.handlers.SystemChatHandler;
@@ -29,7 +28,6 @@ import org.angellock.impl.extensions.actions.JoinAction;
 import org.angellock.impl.extensions.actions.LoginAction;
 import org.angellock.impl.extensions.actions.RegisterAction;
 import org.angellock.impl.extensions.actions.VerifyAction;
-import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.api.state.StateAction;
 import org.angellock.impl.api.state.LoginState;
@@ -39,20 +37,14 @@ import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerAction;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerActionType;
 import org.geysermc.mcprotocollib.protocol.data.game.item.ItemStack;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerButtonClickPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerClickPacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.HashMap;
 
 public class PlayerVerificationPlugin extends AbstractPlugin {

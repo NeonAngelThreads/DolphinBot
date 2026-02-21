@@ -436,13 +436,14 @@ Message APIs are aimed to help you to connect one or more bot between bots, that
 **Step 1:**    
 Defining a message listener on a receiver bot:  
 ExampleMessageListener.java
+
 ```java
 import org.angellock.impl.events.IListener;
-import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
+import org.angellock.impl.api.events.MessageBroadcastEvent;
 
 public class ExampleMessageListener implements IListener {
     @EventHandler
-    public void onMessage(MessageBroadcastEvent event){
+    public void onMessage(MessageBroadcastEvent event) {
         log.info("message payload: {}", event.getMessage());
         // Do something...
     }

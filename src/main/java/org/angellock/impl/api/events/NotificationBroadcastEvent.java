@@ -14,20 +14,26 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.api.events;
 
 import lombok.Getter;
+import org.angellock.impl.api.message.BotMessage;
+import org.angellock.impl.api.message.Notification;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
+
 @Getter
-public class MessageBroadcastEvent extends AbstractEvent {
+public class NotificationBroadcastEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     @Override
     public HandlerMapper getMapper() {
         return null;
     }
     private final String message;
-    public MessageBroadcastEvent(String message){
+    public NotificationBroadcastEvent(Notification message){
+        this.message = message.notification();
+    }
+    public NotificationBroadcastEvent(String message){
         this.message = message;
     }
 
