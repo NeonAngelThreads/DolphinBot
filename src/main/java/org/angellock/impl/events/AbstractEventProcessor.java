@@ -9,15 +9,15 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.events;
 
-import org.angellock.impl.events.bukkit.ActiveListener;
 import org.angellock.impl.events.bukkit.AbstractEvent;
+import org.angellock.impl.events.bukkit.ActiveListener;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.Session;
@@ -33,7 +33,6 @@ import java.util.List;
 
 public abstract class AbstractEventProcessor<T extends Packet> extends SessionAdapter {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&l&9PacketHandlers"));
-    protected long time_elapse = System.currentTimeMillis();
     private final long DELAY;
     protected List<IActions<T>> actionList = new ArrayList<>();
 

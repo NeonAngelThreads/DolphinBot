@@ -9,49 +9,38 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.extensions;
 
-import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
 import org.angellock.impl.commands.executors.*;
 import org.angellock.impl.commands.terminal.TerminalCommand;
 import org.angellock.impl.commands.terminal.TerminalCommandBuilder;
-import org.angellock.impl.events.handlers.*;
+import org.angellock.impl.events.handlers.LoginHandler;
 import org.angellock.impl.extensions.executors.ChatReloadExecutor;
 import org.angellock.impl.extensions.handlers.*;
-import org.angellock.impl.ingame.Player;
-import org.angellock.impl.ingame.PlayerTracker;
+import org.angellock.impl.extensions.listeners.BotNotifyListener;
+import org.angellock.impl.extensions.tasks.RunnableAFKAction;
 import org.angellock.impl.listeners.JoinGameListener;
 import org.angellock.impl.listeners.PlayerListener;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
-import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlayerInfoHelper;
-import org.angellock.impl.util.TextComponentSerializer;
-import org.angellock.impl.util.TranslatableUtil;
-import org.geysermc.mcprotocollib.auth.GameProfile;
-import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.HandPreference;
 import org.geysermc.mcprotocollib.protocol.data.game.setting.ChatVisibility;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundClientInformationPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
     private static final String VERSION = "1.2.5";
@@ -92,6 +81,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     public void onEnable(AbstractRobot robotEntity) {
 
         getEvents().registerListeners(new JoinGameListener(), this);
+        getEvents().registerListeners(new BotNotifyListener(), this);
 
         getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
@@ -126,7 +116,9 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
         getListeners().add(new LoginHandler().addExtraAction(packet -> this.joinGame(robotEntity)));
         getListeners().add(new SystemChatDisplay(robotEntity));
-        getListeners().add(new PlayerChatDisplay());
+        getListeners().add(new PlayerChatDisplay().addExtraAction((packet -> {
+            robotEntity.getBotManager().distributeNotification("sa");
+        })));
         getListeners().add(new PlayerUpdateHandler(this.helper));
         getListeners().add(new TitleMessageDisplay());
         getListeners().add(new PlayerRemoveHandler(this.helper));

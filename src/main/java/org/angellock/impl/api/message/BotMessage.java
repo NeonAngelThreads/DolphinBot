@@ -16,10 +16,9 @@
 
 package org.angellock.impl.api.message;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BotMessage implements INotify{
+public class BotMessage {
     private final Map<String, Object> messageMap;
 
     public BotMessage(Map<String, Object> messageMap) {
@@ -29,7 +28,8 @@ public abstract class BotMessage implements INotify{
         this.messageMap.put(key, value);
         return this;
     }
-    public Map<String, Object> message() {
+
+    public Map<String, Object> content() {
         return this.messageMap;
     }
 }

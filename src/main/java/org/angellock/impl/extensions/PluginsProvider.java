@@ -9,7 +9,7 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
@@ -20,7 +20,7 @@ import org.angellock.impl.plugin.AbstractPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 
-public enum Plugins {
+public enum PluginsProvider {
     QUEUE_PLUGIN("QuestionAnswerer", QuestionAnswererPlugin.class),
     BASE_PLUGIN("MessageDisplay", BaseDefaultPlugin.class),
     VERIFY_PLUGIN("HumanVerify", PlayerVerificationPlugin.class);
@@ -28,7 +28,7 @@ public enum Plugins {
     private final String pluginName;
     private final Class<?> pluginInstance;
 
-    Plugins(String pluginName, Class<?> pluginType) {
+    PluginsProvider(String pluginName, Class<?> pluginType) {
         this.pluginName = pluginName;
 
         this.pluginInstance = pluginType;
@@ -43,7 +43,7 @@ public enum Plugins {
     }
 
     public static AbstractPlugin getPluginFromString(String pluginName) {
-        for (Plugins plugins: Plugins.values()){
+        for (PluginsProvider plugins : PluginsProvider.values()) {
             if(plugins.pluginName.equalsIgnoreCase(pluginName)){
                 return plugins.getPlugin();
             }

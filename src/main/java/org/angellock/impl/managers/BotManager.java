@@ -9,7 +9,7 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
@@ -23,9 +23,8 @@ import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.api.events.MessageBroadcastEvent;
 import org.angellock.impl.api.events.NotificationBroadcastEvent;
-import org.angellock.impl.extensions.Plugins;
+import org.angellock.impl.extensions.PluginsProvider;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -116,7 +115,7 @@ public class BotManager extends ResourceHelper {
         List<JsonElement> plugins = profile.get("enabled_plugins").getAsJsonArray().asList();
         List<AbstractPlugin> pluginList = new ArrayList<>();
         for(JsonElement element: plugins){
-            pluginList.add(Plugins.getPluginFromString(element.getAsString()));
+            pluginList.add(PluginsProvider.getPluginFromString(element.getAsString()));
         }
 
         ProxyObject proxySetting = this.gson.fromJson(profile.get("proxy"), ProxyObject.class);
@@ -160,7 +159,7 @@ public class BotManager extends ResourceHelper {
                 .withOwners(owners)
                 .buildProtocol();
 
-        for (Plugins plugins: Plugins.values()){
+        for (PluginsProvider plugins : PluginsProvider.values()) {
             botInst
                     .getPluginManager()
                     .getDefaultPlugins()
@@ -197,8 +196,18 @@ public class BotManager extends ResourceHelper {
     @SuppressWarnings("unused")
     public void distributeNotification(String handleableMessage){
         for (RobotPlayer bot : bots.values()) {
-            bot.callHandleableEvent(new NotificationBroadcastEvent(handleableMessage));
+            this.notifyBot(bot, handleableMessage);
         }
+    }
+
+    @SuppressWarnings("unused")
+    public void notifyBot(String receiver, String handleableMessage) {
+        this.notifyBot(bots.get(receiver), handleableMessage);
+    }
+
+    @SuppressWarnings("unused")
+    public void notifyBot(RobotPlayer receiver, String handleableMessage) {
+        receiver.callHandleableEvent(new NotificationBroadcastEvent(handleableMessage));
     }
 
     @SuppressWarnings("unused")

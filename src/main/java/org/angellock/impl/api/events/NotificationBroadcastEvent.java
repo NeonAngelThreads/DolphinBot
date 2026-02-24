@@ -17,8 +17,6 @@
 package org.angellock.impl.api.events;
 
 import lombok.Getter;
-import org.angellock.impl.api.message.BotMessage;
-import org.angellock.impl.api.message.Notification;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 
@@ -27,12 +25,10 @@ public class NotificationBroadcastEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     @Override
     public HandlerMapper getMapper() {
-        return null;
+        return HANDLERS;
     }
     private final String message;
-    public NotificationBroadcastEvent(Notification message){
-        this.message = message.notification();
-    }
+
     public NotificationBroadcastEvent(String message){
         this.message = message;
     }

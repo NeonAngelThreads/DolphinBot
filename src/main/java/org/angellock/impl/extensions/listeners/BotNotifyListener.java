@@ -16,8 +16,13 @@
 
 package org.angellock.impl.extensions.listeners;
 
+import org.angellock.impl.api.events.NotificationBroadcastEvent;
 import org.angellock.impl.events.IListener;
+import org.angellock.impl.events.annotations.EventHandler;
 
-public class ChatReloadListener implements IListener {
-
+public class BotNotifyListener implements IListener {
+    @EventHandler
+    public void onNotify(NotificationBroadcastEvent event) {
+        System.out.println(event.getMessage());
+    }
 }
