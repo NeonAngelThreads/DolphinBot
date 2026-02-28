@@ -88,9 +88,9 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         StateAction loginAction = new LoginAction(stateMachine, entityBot);
 
         stateMachine
-                .source(LoginState.IDLE).whenReceive("§c§l离线玩家请注册").goal(LoginState.REGISTER, registerAction)
+                .source(LoginState.IDLE).whenReceive("离线玩家请注册").goal(LoginState.REGISTER, registerAction)
                     .and()
-                    .whenReceive("§c§l离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
+                    .whenReceive("离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
                 .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
                 .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
                 .source(LoginState.LOGIN).whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)

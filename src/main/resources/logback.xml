@@ -5,7 +5,15 @@
             <pattern>[%d{HH:mm:ss} %highlight(%4level)] [%logger{36}]: %msg%n</pattern>
         </encoder>
     </appender>
+    
+    <appender name="WEB" class="org.angellock.impl.api.WebLogAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss} %highlight(%4level)] [%logger{36}]: %msg%n</pattern>
+        </encoder>
+    </appender>
+    
     <root level="info">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="WEB" />
     </root>
 </configuration>

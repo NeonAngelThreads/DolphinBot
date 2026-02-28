@@ -33,7 +33,7 @@ public class SystemChatDisplay extends SystemChatHandler {
             String msg = componentSerializer.serialize(packet.getContent());
             if (!msg.equals(this.lastMsg)) {
                 this.lastMsg = msg;
-                log.info(bot.getProfileName()+" "+ ConsoleTokens.colorizeText(msg));
+                log.info(bot.getBotLabel(), bot.getProfileName()+" "+ ConsoleTokens.colorizeText(msg));
             }
         });
     }

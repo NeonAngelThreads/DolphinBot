@@ -19,11 +19,20 @@ package org.angellock.impl.commands.executors;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
+import org.angellock.impl.ingame.Player;
+import org.geysermc.mcprotocollib.protocol.data.game.ClientCommand;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.PlayerState;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundClientCommandPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundPlayerCommandPacket;
 import org.geysermc.mcprotocollib.protocol.packet.status.serverbound.ServerboundStatusRequestPacket;
 
 public class RespawnExecutor implements ICommandAction {
     @Override
     public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
-        bot.sendPacket(new ServerboundStatusRequestPacket());
+        bot.sendPacket(
+                new ServerboundClientCommandPacket(
+                        ClientCommand.RESPAWN
+                )
+        );
     }
 }

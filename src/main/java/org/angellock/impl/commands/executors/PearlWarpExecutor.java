@@ -37,7 +37,7 @@ public class PearlWarpExecutor implements ICommandAction {
                 (int) System.currentTimeMillis()
         );
 
-        System.out.println(packet);
+        AbstractRobot.getLog().info(bot.getBotLabel(), packet.toString());
         bot.sendPacket(packet);
     }
 }

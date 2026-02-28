@@ -106,6 +106,14 @@ public class BotManager extends ResourceHelper {
         return this;
     }
 
+    public static void registerNew(String key, RobotPlayer botObject){
+        log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"),
+                botObject.getInfoHelper().getName(),
+                botObject.getInfoHelper().getPassword(),
+                botObject.getInfoHelper().getOwners());
+        bots.put(key, botObject);
+    }
+
     private void registerBot(Map<String, JsonElement> profiles, String name) {
         Map<String, JsonElement> profile = profiles.get(name).getAsJsonObject().asMap();
         String botName = profile.get("name").getAsString();
@@ -147,12 +155,11 @@ public class BotManager extends ResourceHelper {
                 .withOwners(owners)
                 .enableProxy(proxyInfo)
                 .buildProtocol();
-        bots.put(name, (RobotPlayer) botInst);
+        registerNew(name, (RobotPlayer) botInst);
     }
 
     private void registerBot(String username, String password, String owner){
         String[] owners = this.escapeArrayCommandLine(owner);
-        log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), username, password, Arrays.toString(owners));
 
         AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(globalPluginDir))
                 .withName(username)
@@ -168,7 +175,7 @@ public class BotManager extends ResourceHelper {
                             .getPlugin()
                     );
         }
-        bots.put(username, (RobotPlayer) botInst);
+        registerNew(username, (RobotPlayer) botInst);
     }
 
     @SuppressWarnings("unused")
@@ -204,6 +211,15 @@ public class BotManager extends ResourceHelper {
     @SuppressWarnings("unused")
     public static @Nullable RobotPlayer getBotByName(String name){
         return bots.get(name);
+    }
+
+    public static @Nullable RobotPlayer getBotByProfileName(String name){
+        for (RobotPlayer value : bots().values()) {
+            if(value.getProfileName().equals(name) || value.getInfoHelper().getName().equals(name)){
+                return value;
+            }
+        }
+        return null;
     }
 
     public static Map<String, RobotPlayer> bots() {

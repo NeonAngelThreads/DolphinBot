@@ -14,20 +14,36 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.util.reason;
+package org.angellock.impl.util.strings;
 
-public enum KickReason implements IReason {
-    COMMAND_TOO_FAST(""),
-    PLAYER_EXIST(""),
-    HUMAN_VERIFICATION(""),
-    CONNECTION_RESET(""),
-    END_OF_STREAM(""),
+import org.jline.reader.ParsedLine;
 
-    CLOSED_BY_API("Stopped via API");
+import java.util.List;
 
-    private final String reason;
+public record BaseLine(String line, int cursor) implements ParsedLine {
 
-    KickReason(String reason) {
-        this.reason = reason;
+    @Override
+    public String word() {
+        return this.line.substring(0, this.cursor);
+    }
+
+    @Override
+    public int wordCursor() {
+        return this.cursor;
+    }
+
+    @Override
+    public int wordIndex() {
+        return 0;
+    }
+
+    @Override
+    public List<String> words() {
+        return null;
+    }
+
+    @Override
+    public int cursor() {
+        return 0;
     }
 }

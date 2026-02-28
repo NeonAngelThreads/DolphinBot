@@ -60,14 +60,14 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
 
     @Override
     public void onJoin() {
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
     }
 
     @Override
     public void onQuit(String reason) {
         long millis = System.currentTimeMillis() - this.connectTime;
-        log.info(ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
-        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DISCONNECT, reason);
+        log.info(this.getBotLabel(), ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.DISCONNECT, reason));
         this.getPluginManager().disableAllPlugins(this);
         this.getSession().getChannel().close();
         this.getSession().getChannel().deregister();
@@ -87,7 +87,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     @Override
     public void onPreLogin() {
         this.connectTime = System.currentTimeMillis();
-        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort()));
+        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.config().getServer(), this.config().getPort()));
     }
 
     @Override

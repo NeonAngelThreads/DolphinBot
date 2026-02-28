@@ -14,20 +14,17 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.util.reason;
+package org.angellock.impl.api.websocket.handlers;
 
-public enum KickReason implements IReason {
-    COMMAND_TOO_FAST(""),
-    PLAYER_EXIST(""),
-    HUMAN_VERIFICATION(""),
-    CONNECTION_RESET(""),
-    END_OF_STREAM(""),
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import org.angellock.impl.api.websocket.APIResponseHandler;
 
-    CLOSED_BY_API("Stopped via API");
+import java.io.IOException;
 
-    private final String reason;
+public class ConfigHandler implements HttpHandler {
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
 
-    KickReason(String reason) {
-        this.reason = reason;
     }
 }

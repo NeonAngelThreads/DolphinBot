@@ -14,20 +14,23 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.util.reason;
+package org.angellock.impl.api.websocket.handlers;
 
-public enum KickReason implements IReason {
-    COMMAND_TOO_FAST(""),
-    PLAYER_EXIST(""),
-    HUMAN_VERIFICATION(""),
-    CONNECTION_RESET(""),
-    END_OF_STREAM(""),
+import com.sun.net.httpserver.HttpExchange;
+import org.angellock.impl.api.websocket.APIResponseHandler;
 
-    CLOSED_BY_API("Stopped via API");
+import java.io.IOException;
+import java.util.Map;
 
-    private final String reason;
+public class HeartBeatHandler extends APIResponseHandler {
 
-    KickReason(String reason) {
-        this.reason = reason;
+    @Override
+    public void handleResponse(HttpExchange exchange) throws IOException {
+        this.sendResponse(exchange, 200, Map.of("status", "ok", "message", "DolphinBot API is running"));
+    }
+
+    @Override
+    public boolean isMethodAllowed(HttpExchange exchange) {
+        return true;
     }
 }

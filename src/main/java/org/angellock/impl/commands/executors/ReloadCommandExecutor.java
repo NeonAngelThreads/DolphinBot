@@ -32,7 +32,7 @@ public class ReloadCommandExecutor implements ICommandAction {
         int botAmount = BotManager.bots().size();
         if (botAmount == 2) {
             String pluginName = responseEntity.getCommandList()[1];
-            log.info("Reloading plugin {}", pluginName);
+            log.info(bot.getBotLabel(),"Reloading plugin {}", pluginName);
 
             PluginManager pm = bot.getPluginManager();
             pm.reloadPlugin(bot, pluginName);

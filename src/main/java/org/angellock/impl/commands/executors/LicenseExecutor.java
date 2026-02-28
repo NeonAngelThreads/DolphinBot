@@ -24,7 +24,7 @@ import org.angellock.impl.util.ConsoleTokens;
 public class LicenseExecutor implements ICommandAction {
     @Override
     public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
-        System.out.println(ConsoleTokens.colorizeText(
+        AbstractRobot.getLog().info(bot.getBotLabel(),ConsoleTokens.colorizeText(
                 "&7# &9DolphinBot - https://github.com/NeonAngelThreads/DolphinBot\n" +
                         "&7# Copyright (C) 2025 &3NeonAngelThreads (&bhttps://github.com/NeonAngelThreads&7)\n" +
                         "&7#\n" +
@@ -40,6 +40,6 @@ public class LicenseExecutor implements ICommandAction {
                         "&7# &bhttps://space.bilibili.com/386644641\n" +
                         "&7#"
         ));
-        bot.getLog().info("");
+        AbstractRobot.getLog().info("");
     }
 }

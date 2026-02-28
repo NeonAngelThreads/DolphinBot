@@ -17,6 +17,7 @@
 package org.angellock.impl.extensions.handlers;
 
 import net.kyori.adventure.text.TextComponent;
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.handlers.TitlePacketHandler;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
@@ -27,13 +28,13 @@ public class TitleMessageDisplay extends TitlePacketHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6FromTitle"));
     private long lastTitleTime;
     private String lastTitle;
-    public TitleMessageDisplay() {
+    public TitleMessageDisplay(AbstractRobot bot) {
         this.addExtraAction((titleTextPacket)-> {
             String currentText = ((TextComponent) titleTextPacket.getText()).content();
             if (!currentText.equals(this.lastTitle) || System.currentTimeMillis() - this.lastTitleTime > 1500) {
                 TextComponentSerializer serializer = new TextComponentSerializer();
                 String titleMsg = serializer.serialize(titleTextPacket.getText());
-                log.info(ConsoleTokens.colorizeText(titleMsg));
+                log.info(bot.getBotLabel(), ConsoleTokens.colorizeText(titleMsg));
                 this.lastTitleTime = System.currentTimeMillis();
                 this.lastTitle = currentText;
             }
