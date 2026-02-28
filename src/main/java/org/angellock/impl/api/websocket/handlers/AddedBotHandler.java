@@ -23,7 +23,7 @@ import org.angellock.impl.DolphinConfig;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.Start;
 import org.angellock.impl.api.websocket.APIResponseHandler;
-import org.angellock.impl.extensions.Plugins;
+import org.angellock.impl.extensions.PluginsProvider;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
@@ -68,12 +68,12 @@ public class AddedBotHandler extends APIResponseHandler {
                 .withName(name)
                 .withPassword(password)
                 .withProfileName(name)
-                .withDefaultPlugins(List.of(Plugins.BASE_PLUGIN.getPlugin(), Plugins.VERIFY_PLUGIN.getPlugin(), Plugins.QUEUE_PLUGIN.getPlugin()))
+                .withDefaultPlugins(List.of(PluginsProvider.BASE_PLUGIN.getPlugin(), PluginsProvider.VERIFY_PLUGIN.getPlugin(), PluginsProvider.QUEUE_PLUGIN.getPlugin()))
                 .enableProxy(info)
                 .buildProtocol();
 
-        bot.config().setServer(server);
-        bot.config().setPort(port);
+        bot.getInfoHelper().setServer(server);
+        bot.getInfoHelper().setPort(port);
 
         BotManager.registerNew(bot.getProfileName(), bot);
         this.sendResponse(exchange, 200, Map.of("success", true));

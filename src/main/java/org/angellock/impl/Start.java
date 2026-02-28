@@ -92,7 +92,7 @@ public class Start {
         BotManager botManager = new BotManager(defaultConfigPath, ".json", config)
                 .globalPluginManager(GLOBAL_CONFIG.valueOf(pluginDir))
                 .loadProfiles(profiles);
-
+        BotManager.setInstance(botManager);
         Map<String, RobotPlayer> bots = BotManager.bots();
         getTerminal(bots.values().iterator().next());
 

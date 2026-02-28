@@ -17,41 +17,34 @@
 package org.angellock.impl.api.websocket.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.websocket.APIResponseHandler;
 import org.angellock.impl.managers.BotManager;
+import org.angellock.impl.util.reason.KickReason;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class BotStartHandler extends APIResponseHandler {
-
-    private final String method;
-
-    public BotStartHandler(String method) {
-        this.method = method;
-    }
-
+public class DeleteBotHandler extends APIResponseHandler {
     @Override
     public void handleResponse(HttpExchange exchange) throws IOException {
+        boolean success = false;
         try {
-            String profileName = (getResponseBody(exchange)).get("profileName");
-            RobotPlayer robotPlayer = BotManager.getBotByName(profileName);
-            if (robotPlayer != null){
-                robotPlayer.scheduleConnect();
-                robotPlayer.setShouldReconnect(true);
-            } else {
-                this.sendResponse(exchange, 400, Map.of("success", false, "message", "could not find bot: "+profileName));
-            }
+            String botName = getResponseBody(exchange).get("botName");
+            //BotManager.getBotByProfileName(botName).getSession().disconnect(KickReason.CLOSED_BY_API.name());
+
+            success = BotManager.removeBot(botName);
         } catch (Exception e) {
-            this.sendResponse(exchange, 400, Map.of("success", false, "message", "Invalid request: " + e.getMessage()));
-        }finally {
-            this.sendResponse(exchange, 200, Map.of("success", true, "message", "Bot started successfully"));
+            this.sendResponse(exchange, 500, Map.of("success", false, "message", e.getMessage()));
+        }
+        if (success){
+            this.sendResponse(exchange, 200, Map.of("success", true, "message", "Bot deleted successfully"));
+        }else {
+            this.sendResponse(exchange, 500, Map.of("success", false, "message", "Could not deleted the bot"));
         }
     }
 
     @Override
     public boolean isMethodAllowed(HttpExchange exchange) {
-        return exchange.getRequestMethod().equalsIgnoreCase(this.method);
+        return "POST".equals(exchange.getRequestMethod());
     }
 }

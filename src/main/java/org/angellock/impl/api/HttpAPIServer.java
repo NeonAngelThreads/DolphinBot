@@ -76,6 +76,7 @@ public class HttpAPIServer {
         server.createContext("/api/bots/send-command", new CommandHandler("POST"));
         server.createContext("/api/config", new ConfigHandler());
         server.createContext("/api/bot/create", new AddedBotHandler("POST"));
+        server.createContext("/api/bot/delete", new DeleteBotHandler());
     }
 
     public void stop() {

@@ -79,7 +79,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     @Getter
     private ChatMessageManager messageManager;
     @Getter
-    private BotManager botManager;
+    private BotManager botManager = BotManager.getInstance();
     protected ProxyInfo proxyInfo;
     protected @Getter ProfileObject infoHelper = new ProfileObject();
 
@@ -91,6 +91,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.globalConfig = configManager;
         this.infoHelper.setName(this.globalConfig.getConfigValue("username"));
         this.infoHelper.setPassword(this.globalConfig.getConfigValue("password"));
+        this.infoHelper.setServer(this.globalConfig.getCoreSettings().getServer());
+        this.infoHelper.setPort(this.globalConfig.getCoreSettings().getPort());
 
         this.pluginManager = pluginManager;
 
@@ -148,10 +150,13 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
+        String serverIP = this.infoHelper.getServer() != null ? this.infoHelper.getServer() : this.config().getServer();
+        int serverPort = this.infoHelper.getPort() != 0 ? this.infoHelper.getPort() : this.config().getPort();
+
         if (this.proxyInfo != null) {
-            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol, this.proxyInfo);
+            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol, this.proxyInfo);
         } else {
-            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol);
+            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol);
         }
 
         this.messageManager = new ChatMessageManager(this);
@@ -199,7 +204,9 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
             }
         } finally {
             this.serverSession.disconnect("");
-            scheduleReconnect();
+            if (BotManager.getBotByProfileName(getProfileName()) != null){
+                scheduleReconnect();
+            }
         }
     }
 

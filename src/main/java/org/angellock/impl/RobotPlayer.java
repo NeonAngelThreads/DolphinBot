@@ -17,14 +17,15 @@
 package org.angellock.impl;
 
 import lombok.Setter;
-import org.angellock.impl.events.annotations.EventHandler;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.ingame.IPlayer;
+import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.math.Position;
+import org.angellock.impl.util.reason.KickReason;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
@@ -36,6 +37,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     private long connectTime;
     private long lastMsgTime = 0L;
     private final long msgDelay;
+    private volatile @Setter boolean shouldReconnect = true;
     protected @Setter Position loginPos = new Position();
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
@@ -67,12 +69,13 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     public void onQuit(String reason) {
         long millis = System.currentTimeMillis() - this.connectTime;
         log.info(this.getBotLabel(), ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.DISCONNECT, reason));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.DISCONNECT, reason));
         this.getPluginManager().disableAllPlugins(this);
         this.getSession().getChannel().close();
         this.getSession().getChannel().deregister();
         this.getSession().getChannel().closeFuture();
         TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DOLPHIN_TIMING_RESET);
+        BotManager.bots().put(getProfileName(), this);
     }
 
     public void callHandleableEvent(AbstractEvent event){
@@ -80,14 +83,18 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     }
 
     @Override
-    public void onKicked() {
+    public void onKicked(KickReason reason) {
         return;
     }
 
     @Override
     public void onPreLogin() {
+        while (!this.shouldReconnect) {
+            try {Thread.sleep(500);
+            } catch (InterruptedException ignored) {}
+        }
         this.connectTime = System.currentTimeMillis();
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.config().getServer(), this.config().getPort()));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort())));
     }
 
     @Override

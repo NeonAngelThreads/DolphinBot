@@ -27,6 +27,7 @@ import org.angellock.impl.commands.terminal.TerminalCommandBuilder;
 import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.extensions.executors.ChatReloadExecutor;
 import org.angellock.impl.extensions.handlers.*;
+import org.angellock.impl.extensions.tasks.RunnableAFKAction;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.listeners.JoinGameListener;

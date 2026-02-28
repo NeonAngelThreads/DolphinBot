@@ -36,10 +36,11 @@ public class BotStopHandler extends APIResponseHandler {
     @Override
     public void handleResponse(HttpExchange exchange) throws IOException {
         try {
-            String botName = (String) getResponseBody(exchange).get("botName");
+            String botName = getResponseBody(exchange).get("botName");
             RobotPlayer bot = BotManager.getBotByProfileName(botName);
             if (bot != null && bot.getSession() != null) {
                 bot.getSession().disconnect(KickReason.CLOSED_BY_API.name());
+                bot.setShouldReconnect(false);
                 this.sendResponse(exchange, 200, Map.of("success", true, "message", "Bot stopped successfully"));
             } else {
                 this.sendResponse(exchange, 404, Map.of("success", false, "message", "Bot not found"));

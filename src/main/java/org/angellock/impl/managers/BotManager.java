@@ -20,12 +20,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.events.MessageBroadcastEvent;
 import org.angellock.impl.api.events.NotificationBroadcastEvent;
-import org.angellock.impl.extensions.Plugins;
+import org.angellock.impl.extensions.PluginsProvider;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -45,13 +46,14 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
-    @Getter
-    private static final TranslatableUtil systemEventLogger = new TranslatableUtil();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
                                     .create();
     private final ConfigManager botConfigHelper;
     private static File globalPluginDir;
+    @Getter @Setter
+    private static BotManager instance;
+
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
         super(defaultPath, fileType);
         this.botConfigHelper = botConfigHelper;
@@ -80,9 +82,9 @@ public class BotManager extends ResourceHelper {
         return new String[0];
     }
     public BotManager loadProfiles(String profileString){
-        String commandLinePlayerName = (String)this.botConfigHelper.getConfigValue("username");
-        String commandLinePWD = (String)this.botConfigHelper.getConfigValue("password");
-        String commandLineOwner = (String)this.botConfigHelper.getConfigValue("owner");
+        String commandLinePlayerName = this.botConfigHelper.getConfigValue("username");
+        String commandLinePWD = this.botConfigHelper.getConfigValue("password");
+        String commandLineOwner = this.botConfigHelper.getConfigValue("owner");
         if (commandLinePlayerName != null) {
             this.registerBot(commandLinePlayerName, commandLinePWD, commandLineOwner);
             return this;
@@ -124,7 +126,7 @@ public class BotManager extends ResourceHelper {
         List<JsonElement> plugins = profile.get("enabled_plugins").getAsJsonArray().asList();
         List<AbstractPlugin> pluginList = new ArrayList<>();
         for(JsonElement element: plugins){
-            pluginList.add(Plugins.getPluginFromString(element.getAsString()));
+            pluginList.add(PluginsProvider.getPluginFromString(element.getAsString()));
         }
 
         ProxyObject proxySetting = this.gson.fromJson(profile.get("proxy"), ProxyObject.class);
@@ -167,7 +169,7 @@ public class BotManager extends ResourceHelper {
                 .withOwners(owners)
                 .buildProtocol();
 
-        for (Plugins plugins: Plugins.values()){
+        for (PluginsProvider plugins: PluginsProvider.values()){
             botInst
                     .getPluginManager()
                     .getDefaultPlugins()
@@ -176,6 +178,15 @@ public class BotManager extends ResourceHelper {
                     );
         }
         registerNew(username, (RobotPlayer) botInst);
+    }
+    @SuppressWarnings("unused")
+    public static boolean removeBot(String botName){
+        RobotPlayer target = getBotByProfileName(botName);
+        if(target== null){
+            return false;
+        }
+        target.setShouldReconnect(false);
+        return bots().remove(target.getProfileName()) != null;
     }
 
     @SuppressWarnings("unused")

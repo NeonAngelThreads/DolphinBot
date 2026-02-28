@@ -21,6 +21,7 @@ import joptsimple.OptionSpec;
 import lombok.Getter;
 import org.angellock.impl.DolphinConfig;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +64,7 @@ public class ConfigManager {
         return this.commandLineOptions;
     }
 
-    public DolphinConfig config() {
+    public static DolphinConfig config() {
         return coreSettings;
     }
 

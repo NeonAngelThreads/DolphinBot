@@ -52,10 +52,14 @@
    - Easy to register custom commands starting with `!` by using CommandBuilder DolphinAPIs.
    - Can **hot-inject** plugins during the connection of server.
    - Bypassing human verification in most servers including `2b2t.xin`.
-   - Supporting to configure the bot clusters, and start at once.
+   - Supporting to configure bot clusters, and start at once.
    - Supporting colourful console logging strings expression `colorizeText("&6Hello &lWorld")`.
    - Automatic answer questions in `2b2t.xin` for speeding up login process.
    - Supporting to configure proxy settings for multiple bots.
+   - **Web Console API** - Built-in HTTP API server for remote bot management and control.
+   - **Real-time Log Streaming** - WebSocket-based log streaming with ANSI color support.
+   - **Tab Completion** - Auto-completion support in web terminal, same as desktop experience.
+   - **Multi-terminal Management** - Independent terminal instances for each bot with tab-based switching.
 
 ## Screenshots:
 ### Running on Windows server 2019:
@@ -69,6 +73,7 @@
 - [`Terminal Interactions`](#interactions-in-terminal)
 - [`Packet Debugger`](#config-file-setting)
 - [`Proxy Settings`](#config-file-setting)
+- [`DolphinBot Web Dashboard`](#web-console)
 
 **Implemented Event APIs:**
 - [`Programmable State Machine`](PluginDocs.md#3-programmable-login-state-machine)
@@ -84,8 +89,8 @@
 - 
   |              Terminal Commands               | Description                                         |
   |:--------------------------------------------:|-----------------------------------------------------|
-  | `reload <Plugin Name> <bot name (optional)>` | Hot-reloading a specified plugin                    |
-  |  `load <PLugin Name> <bot name (optional)>`  | Hot-loading a specified plugin                      |
+  | `reload <plugin Name> [bot name]` | Hot-reloading a specified plugin                    |
+  |  `load <pLugin Name> [bot name]`  | Hot-loading a specified plugin                      |
   |                  `respawn`                   | Respawn the bot when in game.                       |
   |          `license`    (`l`, `lic`)           | Show the license on the terminal                    |
   |               `help`   (`h`, `?`)              | Show the Command menu and usages for each command   |
@@ -98,6 +103,7 @@ In this section, you will understand below how-tos:
   - **3. How to start multiple bot simultaneously with proxy settings**  
   - **4. How to configure advanced options**  
   - **5. How to make a custom plugin**  
+  - **6. How to use Web Console for remote management**  
 
 1. **Download the Client**  
    Download the jar archive file: `DolphinBot-[version]-full.jar`.  
@@ -327,6 +333,53 @@ each profile name, should be split with ";".
 Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
 You can send `!reload <pluginName>` dolphin command in server chat.  
 Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload plugins.
+
+## Web Console
+DolphinBot now includes a built-in Web Console for remote bot management and control. This allows you to manage your bots through a modern web interface without needing direct terminal access.
+
+### Starting the Web Console
+To enable the Web Console, simply add the `--api` parameter when starting DolphinBot:
+
+```bash
+java -jar "DolphinBot-[version]-full.jar" --api [port]
+```
+
+The API server will start on the specified port (default: 25560), and the WebSocket log server will start on port+1 (default: 25561).
+
+### Web Console Features
+- **Bot Management Dashboard** - View all bot instances with real-time status, game mode, and position
+- **Independent Terminals** - Each bot has its own terminal instance with tab-based switching
+- **Real-time Log Streaming** - All logs are streamed to the web terminal with full ANSI color support
+- **Tab Completion** - Auto-completion works exactly like the desktop terminal
+- **Modern UI/UX** - Beautiful modal dialogs, toast notifications, and responsive design
+- **Bot Statistics** - Visual circular progress showing online rate with color-coded status
+
+### Accessing the Web Console
+Once the API server is running, you can access the Web Console at:
+```
+http://localhost:8080
+```
+
+The Web Console is provided as a separate Spring Boot application located in the `web-console/` directory. See [Web Console Documentation](web-console/README.md) for detailed setup and usage instructions.
+
+### API Endpoints
+The built-in HTTP API provides the following endpoints:
+
+| Endpoint | Method | Description              |
+|-----------|----------|--------------------------|
+| `/api/health` | GET | Health check             |
+| `/api/bots` | GET | List all bots            |
+| `/api/bots/start` | POST | Start a bot              |
+| `/api/bots/stop` | POST | Stop a bot               |
+| `/api/bots/send-command` | POST | Send command to a bot    |
+| `/api/config` | GET/POST | Get/Update configuration |
+| `/api/bot/create`      |   POST       | create new bot           |             
+| `/api/bot/delete`      |     POST         | delete specified bot     |      
+
+### WebSocket Endpoints
+| Endpoint | Description |
+|-----------|-------------|
+| `ws://localhost:25561` | Log streaming and tab completion |
 
 ## FAQ
 
