@@ -22,15 +22,18 @@ import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 
 public class RegisterAction extends StateAction {
+    private long antiSpam = 0L;
     public RegisterAction(AbstractRobot botInstance) {
         super(botInstance);
     }
 
     @Override
     public void execute() {
-        entityBot.getPluginManager().loadAllPlugins(entityBot);
-        entityBot.setBypassed(true);
-        entityBot.getMessageManager().sendCommand(String.format("reg %s %s", entityBot.getPassword(), entityBot.getPassword()));
-        VerifyAction.setVerifyTimes(0);
+        if (System.currentTimeMillis() - this.antiSpam > 3000L){
+            entityBot.setBypassed(true);
+            entityBot.getMessageManager().sendCommand(String.format("reg %s %s", entityBot.getPassword(), entityBot.getPassword()));
+            VerifyAction.setVerifyTimes(0);
+            this.antiSpam = System.currentTimeMillis();
+        }
     }
 }

@@ -14,20 +14,25 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.util.reason;
+package org.angellock.impl.api.events;
 
-public enum KickReason implements IReason {
-    COMMAND_TOO_FAST(""),
-    PLAYER_EXIST(""),
-    HUMAN_VERIFICATION(""),
-    CONNECTION_RESET(""),
-    END_OF_STREAM(""),
+import lombok.Getter;
+import org.angellock.impl.events.HandlerMapper;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 
-    CLOSED_BY_API("Stopped via API");
+@Getter
+public class NotificationBroadcastEvent extends AbstractEvent {
+    private static final HandlerMapper HANDLERS = new HandlerMapper();
+    @Override
+    public HandlerMapper getMapper() {
+        return null;
+    }
+    private final String message;
+    public NotificationBroadcastEvent(String message){
+        this.message = message;
+    }
 
-    private final String reason;
-
-    KickReason(String reason) {
-        this.reason = reason;
+    public static HandlerMapper getHandlers() {
+        return HANDLERS;
     }
 }

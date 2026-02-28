@@ -83,11 +83,11 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
     public void listRegisterInfo(AbstractRobot botInstance) {
         Set<String> pl = botInstance.getRegisteredCommands().getRegisteredCommands().keySet();
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
+        log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
         Set<String> tCommand = TerminalCommandManager.registeredCommand.keySet();
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
+        log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
         List<SessionListener> listeners = botInstance.getSession().getListeners();
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
+        log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
     }
 
     public void loadAllPlugins(AbstractRobot botInstance){
@@ -107,19 +107,19 @@ public class PluginManager extends Manager implements IPluginInjectable{
         if(!this.pluginFolder.exists()){
             boolean successful = this.pluginFolder.mkdir();
             if (!successful){
-                log.error(ConsoleTokens.colorizeText("&4Failed to create the plugin folder."));
+                log.error(botInstance.getBotLabel(),ConsoleTokens.colorizeText("&4Failed to create the plugin folder."));
             }else {
-                log.info(ConsoleTokens.colorizeText("&7Successfully created new plugin folder."));
+                log.info(botInstance.getBotLabel(),ConsoleTokens.colorizeText("&7Successfully created new plugin folder."));
             }
         }
         if (!subDir.exists()){
             boolean successful2 = subDir.mkdir();
             if(successful2){
-                log.info(ConsoleTokens.colorizeText("&7Created individual bot plugin folder."));
+                log.info(botInstance.getBotLabel(),ConsoleTokens.colorizeText("&7Created individual bot plugin folder."));
             }
         }
         if(plugins == null){
-            log.error(ConsoleTokens.colorizeText("&6The plugin folder was invalid or not found by removed, plugins will not be loaded. &8At: " + pluginFolder.getPath()));
+            log.error(botInstance.getBotLabel(),ConsoleTokens.colorizeText("&6The plugin folder was invalid or not found by removed, plugins will not be loaded. &8At: " + pluginFolder.getPath()));
             return;
         }
         for (File plugin: plugins){
@@ -128,7 +128,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
         File[] individualPlugins = subDir.listFiles(this.pluginFilePattern);
         if(individualPlugins == null){
-            log.error(ConsoleTokens.colorizeText("&4The plugin folder was invalid or not found, plugins will not be loaded. &8At: " + subDir.getPath()));
+            log.error(botInstance.getBotLabel(),ConsoleTokens.colorizeText("&4The plugin folder was invalid or not found, plugins will not be loaded. &8At: " + subDir.getPath()));
             return;
         }
         for (File InnerPlugin: individualPlugins){
@@ -138,7 +138,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
     }
     public void disableAllPlugins(AbstractRobot botInstance){
         for (String plugin : this.registeredPlugins.keySet()){
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_DISABLE, plugin));
+            log.info(botInstance.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_DISABLE, plugin));
             this.disable(botInstance, plugin);
         }
         botInstance.getSession().getListeners().clear();
@@ -150,7 +150,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
         for (SessionListener listener : pluginListeners) {
             if(botInstance.getSession().getListeners().contains(listener)){
-                log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_DISABLE, listener.toString()));
+                log.info(botInstance.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_DISABLE, listener.toString()));
                 botInstance.getSession().removeListener(listener);
             }
         }
@@ -166,26 +166,26 @@ public class PluginManager extends Manager implements IPluginInjectable{
             plugin.onEnables(provider);
 
             List<SessionListener> listeners = plugin.getListeners();
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
+            log.info(provider.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
 
             for (SessionListener listener : listeners) {
                 if (!provider.getSession().getListeners().contains(listener)) {
-                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_LOAD, listener.toString()));
+                    log.info(provider.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_EVENT_HANDLER_LOAD, listener.toString()));
                     provider.getSession().addListener(listener);
                 }
             }
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMPLETE, plugin.getName(), plugin.getVersion(), plugin.getDescription()));
+            log.info(provider.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMPLETE, plugin.getName(), plugin.getVersion(), plugin.getDescription()));
         }
     }
 
     public void loadPlugin(AbstractRobot botInstance, File target) {
         Plugin plugin = loader.loadPluginClass(target);
         if (plugin != null) {
-            log.info(ConsoleTokens.colorizeText("&2Registering plugin: &b" + plugin.getName()));
+            log.info(botInstance.getBotLabel(), ConsoleTokens.colorizeText("&2Registering plugin: &b" + plugin.getName()));
             enable((AbstractPlugin) plugin, botInstance);
             this.loadedExternalPlugin.put(plugin.getName().toLowerCase(), target);
         }else {
-            log.error(ConsoleTokens.colorizeText("Failed to register the plugin &4" + target));
+            log.error(botInstance.getBotLabel(), ConsoleTokens.colorizeText("Failed to register the plugin &4" + target));
         }
     }
 

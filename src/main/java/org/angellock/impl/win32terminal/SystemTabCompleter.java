@@ -33,6 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SystemTabCompleter implements Completer {
+    private static SystemTabCompleter completer;
+    public static SystemTabCompleter getInstance() {
+        if(completer == null){
+            completer = new SystemTabCompleter();
+        }
+        return completer;
+    }
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
         String line = parsedLine.line();

@@ -86,14 +86,15 @@ public class LoginStateMachine extends StateMachine<String> {
         String key = this.lookForCache(input);
         if (!key.isEmpty()) {
             LoginState nextState = this.transitionMap.get(Pair.of(this.currentState.name(), key));
+            StateAction action = this.currentState.getAction();
+            if (action != null) {
+                action.execute();
+                return true;
+            }
             if (nextState != null) {
                 TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
                 this.currentState = nextState;
-                StateAction action = this.currentState.getAction();
-                if (action != null) {
-                    action.execute();
-                    return true;
-                }
+
             }
         }
         return false;

@@ -14,14 +14,23 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.api.message;
+package org.angellock.impl.api.websocket.handlers;
 
-public abstract class Notification implements INotify{
-    public String message;
-    public Notification(String message) {
-        this.message = message;
+import com.sun.net.httpserver.HttpExchange;
+import org.angellock.impl.api.websocket.APIResponseHandler;
+
+import java.io.IOException;
+import java.util.Map;
+
+public class HeartBeatHandler extends APIResponseHandler {
+
+    @Override
+    public void handleResponse(HttpExchange exchange) throws IOException {
+        this.sendResponse(exchange, 200, Map.of("status", "ok", "message", "DolphinBot API is running"));
     }
-    public String notification() {
-        return this.message;
+
+    @Override
+    public boolean isMethodAllowed(HttpExchange exchange) {
+        return true;
     }
 }

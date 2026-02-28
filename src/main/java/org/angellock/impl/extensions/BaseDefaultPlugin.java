@@ -126,10 +126,10 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
         getListeners().add(new LoginHandler().addExtraAction(packet -> this.joinGame(robotEntity)));
         getListeners().add(new SystemChatDisplay(robotEntity));
-        getListeners().add(new PlayerChatDisplay());
-        getListeners().add(new PlayerUpdateHandler(this.helper));
-        getListeners().add(new TitleMessageDisplay());
-        getListeners().add(new PlayerRemoveHandler(this.helper));
+        getListeners().add(new PlayerChatDisplay(robotEntity));
+        getListeners().add(new PlayerUpdateHandler(this.helper, robotEntity));
+        getListeners().add(new TitleMessageDisplay(robotEntity));
+        getListeners().add(new PlayerRemoveHandler(this.helper, robotEntity));
 
         if (robotEntity.config().isAntiAFK()) {
             this.tickThread = new Thread(new RunnableAFKAction(robotEntity));
@@ -139,7 +139,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     }
 
     public void joinGame(AbstractRobot player){
-        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.LEFT_HAND, true, true));
+        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.RIGHT_HAND, true, true));
 
         player.sendPacket(new ServerboundSetCarriedItemPacket(1));
         player.sendPacket(new ServerboundUseItemPacket(

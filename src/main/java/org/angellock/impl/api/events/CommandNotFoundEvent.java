@@ -14,20 +14,22 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.util.reason;
+package org.angellock.impl.api.events;
 
-public enum KickReason implements IReason {
-    COMMAND_TOO_FAST(""),
-    PLAYER_EXIST(""),
-    HUMAN_VERIFICATION(""),
-    CONNECTION_RESET(""),
-    END_OF_STREAM(""),
+import lombok.Getter;
+import org.angellock.impl.events.HandlerMapper;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 
-    CLOSED_BY_API("Stopped via API");
+@Getter
+public class CommandNotFoundEvent extends AbstractEvent {
+    private final String currentCommand;
 
-    private final String reason;
+    public CommandNotFoundEvent(String currentCommand) {
+        this.currentCommand = currentCommand;
+    }
 
-    KickReason(String reason) {
-        this.reason = reason;
+    @Override
+    public HandlerMapper getMapper() {
+        return null;
     }
 }

@@ -56,7 +56,7 @@ public class DolphinConfig {
 
     public DolphinConfig mergeCommandOptions(Map<String, Object> commandLines) {
         for (Map.Entry<String, Object> opt : commandLines.entrySet()) {
-            String value = (String) opt.getValue();
+            String value = String.valueOf(opt.getValue());
             switch (opt.getKey().toLowerCase()) {
                 case "server" -> setServer(value);
                 case "port" -> setPort(Integer.parseInt(value));
@@ -70,7 +70,11 @@ public class DolphinConfig {
     }
 
     public Locale getLanguage() {
-        return switch (this.language.toLowerCase()) {
+        return getLanguage(this.language);
+    }
+
+    public static Locale getLanguage(String locale){
+        return switch (locale) {
             case "zh" -> Locale.CHINESE;
             default -> Locale.ENGLISH;
         };

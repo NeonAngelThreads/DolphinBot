@@ -60,18 +60,18 @@ public class ChatMessageManager{
     private void sendMessagePacket(String message){
         if (!this.isCommand(message)) {
             MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
+            log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
             this.instance.sendPacket(msgPacket);
         } else {
             try {
                 boolean valid = this.instance.commandManager.callCommand(message, instance);
                 if (!valid) {
                     MinecraftPacket cmd = new ServerboundChatCommandPacket(message.replaceFirst("/", ""));
-                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
+                    log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
                     this.instance.sendPacket(cmd);
                 }
             } catch (Exception e) {
-                log.warn("An exception occurred: &7{}", e.getMessage());
+                log.warn(instance.getBotLabel(), "An exception occurred: &7{}", e.getMessage());
             }
         }
     }

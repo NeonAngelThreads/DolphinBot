@@ -39,6 +39,7 @@ import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
@@ -47,8 +48,12 @@ import org.geysermc.mcprotocollib.network.tcp.TcpClientSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+import org.slf4j.spi.LoggingEventBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +155,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         }
 
         this.messageManager = new ChatMessageManager(this);
-
         this.serverSession.addListener((IConnectListener) event -> onJoin());
         this.serverSession.addListener(new DisconnectReasonHandler(this));
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
@@ -244,6 +248,10 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public AbstractRobot withProfileName(String name) {
         this.infoHelper.setProfileName(name);
         return this;
+    }
+
+    public Marker getBotLabel(){
+        return MarkerFactory.getMarker(this.getInfoHelper().getName());
     }
 
     public Map<UUID, Player> getOnlinePlayers() {

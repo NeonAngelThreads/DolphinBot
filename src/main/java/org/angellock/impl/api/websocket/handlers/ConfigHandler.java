@@ -14,24 +14,17 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.api.websocket.handlers;
 
-import lombok.Getter;
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
-@Getter
-public class MessageBroadcastEvent extends AbstractEvent {
-    private static final HandlerMapper HANDLERS = new HandlerMapper();
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import org.angellock.impl.api.websocket.APIResponseHandler;
+
+import java.io.IOException;
+
+public class ConfigHandler implements HttpHandler {
     @Override
-    public HandlerMapper getMapper() {
-        return null;
-    }
-    private final String message;
-    public MessageBroadcastEvent(String message){
-        this.message = message;
-    }
+    public void handle(HttpExchange exchange) throws IOException {
 
-    public static HandlerMapper getHandlers() {
-        return HANDLERS;
     }
 }
