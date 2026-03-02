@@ -88,7 +88,9 @@ public class Start {
         }
         @Nullable String profiles = (GLOBAL_CONFIG.valueOf(profilesArg));
 
-        ConfigManager config = new ConfigManager(GLOBAL_CONFIG, defaultConfigPath);
+        ConfigManager config = new ConfigManager();
+        ConfigManager.setDefaultPath(defaultConfigPath);
+        ConfigManager.initGlobalSettings();
         BotManager botManager = new BotManager(defaultConfigPath, ".json", config)
                 .globalPluginManager(GLOBAL_CONFIG.valueOf(pluginDir))
                 .loadProfiles(profiles);

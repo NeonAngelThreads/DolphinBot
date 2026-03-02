@@ -28,15 +28,7 @@ import java.util.ResourceBundle;
 
 public class TranslatableUtil {
     private static final Logger log = LoggerFactory.getLogger("EventLogger");
-    public static ResourceBundle bundle = ResourceBundle.getBundle("locale", ConfigManager.getCoreSettings().getLanguage());;
-
-    public TranslatableUtil(RobotPlayer bot) {
-        this(bot.config().getLanguage());
-    }
-
-    public TranslatableUtil(Locale locale) {
-        bundle = ResourceBundle.getBundle("locale", locale);
-    }
+    public static ResourceBundle bundle = ResourceBundle.getBundle("locale", ConfigManager.global().getLanguage());
 
     public static void infoTranslatableOf(EnumSystemEvents translatableEvent, Object... args) {
         log.info(getFormattedMessage(translatableEvent, args));

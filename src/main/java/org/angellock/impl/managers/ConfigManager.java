@@ -19,8 +19,10 @@ package org.angellock.impl.managers;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.DolphinConfig;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.Start;
 import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
@@ -34,18 +36,29 @@ import java.util.Map;
 public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6ConfigManager"));
     private final Map<String, Object> commandLineOptions = new HashMap<>();
+    private DolphinConfig coreSettings;
     @Getter
-    private static DolphinConfig coreSettings;
-    private final RobotConfig configHelper;
-    public ConfigManager(OptionSet optionList, @Nullable String defaultPath){
+    private static DolphinConfig globalSettings;
+    private RobotConfig configHelper;
+    @Setter
+    private static String defaultPath = null;
+    private OptionSet optionSet = Start.getGLOBAL_CONFIG()  ;
+    public ConfigManager buildConfig(){
         this.configHelper = new RobotConfig(defaultPath, ".json");
-
-        for (OptionSpec<?> option: optionList.specs()){
+        for (OptionSpec<?> option: this.optionSet.specs()){
             String stringOpt = option.options().get(0);
-            Object valueObject = optionList.valueOf(option);
+            Object valueObject = this.optionSet.valueOf(option);
             this.commandLineOptions.put(stringOpt, valueObject);
         }
-        coreSettings = this.configHelper.loadBotConfig(this.commandLineOptions);
+        this.coreSettings = this.configHelper.loadBotConfig(this.commandLineOptions);
+        return this;
+    }
+
+    public static DolphinConfig global(){
+        if (globalSettings == null){
+            ConfigManager.initGlobalSettings();
+        }
+        return globalSettings;
     }
 
     public void printConfigSpec() {
@@ -53,7 +66,14 @@ public class ConfigManager {
         log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONFIG_FILE_LOADED, this.config()));
     }
     public ConfigManager(OptionSet optionList){
-        this(optionList, null);
+        this.optionSet = optionList;
+    }
+
+    public static void initGlobalSettings() {
+        ConfigManager.globalSettings = new RobotConfig(defaultPath, ".json").loadBotConfig();
+    }
+
+    public ConfigManager() {
     }
 
     @Deprecated
@@ -64,8 +84,8 @@ public class ConfigManager {
         return this.commandLineOptions;
     }
 
-    public static DolphinConfig config() {
-        return coreSettings;
+    public DolphinConfig config() {
+        return coreSettings == null ? globalSettings : this.coreSettings;
     }
 
     public String getConfigValue(String key) {

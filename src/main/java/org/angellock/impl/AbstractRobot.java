@@ -88,11 +88,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected final CommandSpec commands = new CommandSpec(this);
 
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
-        this.globalConfig = configManager;
+        this.globalConfig = configManager.buildConfig();
         this.infoHelper.setName(this.globalConfig.getConfigValue("username"));
         this.infoHelper.setPassword(this.globalConfig.getConfigValue("password"));
-        this.infoHelper.setServer(this.globalConfig.getCoreSettings().getServer());
-        this.infoHelper.setPort(this.globalConfig.getCoreSettings().getPort());
+        this.infoHelper.setServer(this.globalConfig.config().getServer());
+        this.infoHelper.setPort(this.globalConfig.config().getPort());
 
         this.pluginManager = pluginManager;
 
@@ -150,8 +150,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
-        String serverIP = this.infoHelper.getServer() != null ? this.infoHelper.getServer() : this.config().getServer();
-        int serverPort = this.infoHelper.getPort() != 0 ? this.infoHelper.getPort() : this.config().getPort();
+        String serverIP = this.infoHelper.getServer();// != null ? this.infoHelper.getServer() : this.config().getServer();
+        int serverPort = this.infoHelper.getPort();// != 0 ? this.infoHelper.getPort() : this.config().getPort();
 
         if (this.proxyInfo != null) {
             this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol, this.proxyInfo);

@@ -138,7 +138,7 @@
       您还可以通过添加参数来指定更多选项：  
       `--owner` : 仅指定哪些人可以使用此机器人。  
    2. **配置文件设置**  
-         配置文件包括功能配置文件 `mc.bot.config.json` 和账户配置文件 `bot.profiles.json`  
+         配置文件包括功能配置文件 `bot.config.global.json` 和账户配置文件 `bot.profiles.json`  
          您还可以按照以下格式将上述配置文件参数移至配置文件`bot.profiles.json`中，其中的所有配置值都将被加载。  
          DolphinBot 将首先应用命令行选项，配置文件中重复的选项将被忽略。  
          指定配置文件路径是可选的，使用选项 `--config-file` 来定位配置目录或文件。  
@@ -276,7 +276,7 @@ java -jar "DolphinBot-[version].jar" --profiles="bot#1;bot#2;bot#3;..."
 **Example:**
 `--owner=owner1;owner2;owner3;...`
    1. **高级配置（可选）**  
-      如果你想访问更高级的配置，可以编辑`mc.bot.config.json`。  
+      如果你想访问更高级的配置，可以编辑`bot.config.global.json`。  
       每个配置选项都与命令行定义的选项相对应，所有配置值（包括无法识别的选项）都将被解析，因此您可以添加自定义配置选项。  
       配置此文件的示例:
       ```json
@@ -332,8 +332,8 @@ DolphinBot现在包含内置的Web控制台，支持远程机器人管理和控�
 java -jar "DolphinBot-[version]-full.jar" --api [端口]
 ```
 
-API服务器将在指定端口启动（默认：25560），WebSocket日志服务器将在端口+1启动（默认：25561）。
-
+API服务器将在指定端口启动（默认：25560），WebSocket日志服务器将在端口+1启动（默认：25561）。  
+如果`--api`命令行参数缺失，API服务器将开启在默认25560端口。
 ### Web控制台功能
 - **机器人管理仪表板** - 查看所有机器人实例，包括实时状态、游戏模式和位置
 - **独立终端** - 每个机器人拥有自己的终端实例，支持基于标签页的切换

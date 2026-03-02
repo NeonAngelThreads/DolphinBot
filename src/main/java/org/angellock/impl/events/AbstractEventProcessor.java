@@ -35,7 +35,7 @@ public abstract class AbstractEventProcessor<T extends Packet> extends SessionAd
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&l&9PacketHandlers"));
     private final long DELAY;
     protected List<IActions<T>> actionList = new ArrayList<>();
-    private static final boolean showWarn = ConfigManager.getCoreSettings().getDebugSettings().isShowWarns();
+    private static final boolean showWarn = false;
     protected IActions<T> preAction = (T) -> {
     };
 

@@ -29,7 +29,7 @@ public class QuestionManager extends ResourceHelper{
     }
 
     public QuestionManager(String filename){
-        super(null, filename);
+        this(null, filename);
     }
 
     @Override

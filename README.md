@@ -157,7 +157,7 @@ In this section, you will understand below how-tos:
    `--owner=owner1;owner2;owner3;...`  
 
    ### Config File Setting    
-   Config files include functional config `mc.bot.config.json` and profile config `bot.profiles.json`  
+   Config files include functional config `bot.config.global.json` and profile config `bot.profiles.json`  
       You can also move above profile arguments into config file ``bot.profiles.json`` following below formats, all config values in it will be loaded.
       DolphinBot will apply command-line options first, duplicated options in config file will be ignored.    
       To specify the path of config file is optional, Use option `--config-file` to locate config directory or file.  
@@ -286,7 +286,7 @@ each profile name, should be split with ";".
 }
 ```
 ### Advanced Configurations (optional)
-   If you want to access more advanced configs, you can edit `mc.bot.config.json`.  
+   If you want to access more advanced configs, you can edit `bot.config.global.json`.  
    Every single config option is equilibrium to option that defined by command line, and all config value including
    unrecognized option will be parsed, so you can add your customize config options.  
    An example for configuring this file:

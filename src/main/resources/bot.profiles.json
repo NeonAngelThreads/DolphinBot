@@ -12,11 +12,11 @@
         "HumanVerify"
       ],
       "proxy": {
-        "enabled": true,
+        "enabled": false,
         "info": {
           "address": "",
-          "port": 7777,
-          "type": "SOCKS4",
+          "port": 10808,
+          "type": "SOCKS5",
           "username": "",
           "password": ""
         }

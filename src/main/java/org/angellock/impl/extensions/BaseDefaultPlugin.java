@@ -85,7 +85,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     @Override
     public void onLoad() {
-        boolean captureSkins = ConfigManager.getCoreSettings().getOther().isEnableSkinRecorder();
+        boolean captureSkins = ConfigManager.global().getOther().isEnableSkinRecorder();
         this.helper = new PlayerInfoHelper(captureSkins);
     }
 

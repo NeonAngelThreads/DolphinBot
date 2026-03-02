@@ -44,6 +44,7 @@ public class BotsHandler extends APIResponseHandler {
             Map<String, Object> botInfo = new HashMap<>();
             botInfo.put("name", bot.getInfoHelper().getName());
             botInfo.put("profileName", bot.getProfileName());
+            botInfo.put("address", String.format("%s:%s",bot.getInfoHelper().getServer(), bot.getInfoHelper().getPort()));
             botInfo.put("isConnected", bot.getSession() != null && bot.getSession().isConnected());
             botInfo.put("gameMode", bot.getServerGamemode() != null ? bot.getServerGamemode().name() : "UNKNOWN");
             botInfo.put("position", Map.of(

@@ -31,10 +31,6 @@ public class PlayerTracker {
     @Getter
     private final static Map<Integer, UUID> UUIDMapping = new HashMap<>();
     private final static Map<String, UUID> playerUUIDMapping = new HashMap<>();
-    @Getter
-    private static UUID lastLogout;
-    private static long logoutElapse;
-
     public @Nullable
     static Player getPlayerById(int entityID) {
         UUID uuid = UUIDMapping.get(entityID);
@@ -79,8 +75,4 @@ public class PlayerTracker {
         return playerUUIDMapping;
     }
 
-    public static void recordLastLogout(UUID lastLogout) {
-        logoutElapse = System.currentTimeMillis();
-        PlayerTracker.lastLogout = lastLogout;
-    }
 }

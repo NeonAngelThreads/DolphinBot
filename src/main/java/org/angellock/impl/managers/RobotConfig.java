@@ -16,14 +16,19 @@
 
 package org.angellock.impl.managers;
 
+import lombok.Setter;
 import org.angellock.impl.DolphinConfig;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 
+@Setter
 public class RobotConfig extends ResourceHelper{
-
+    private String fileName;
     public RobotConfig(@Nullable String defaultPath, String fileType) {
         super(defaultPath, fileType);
     }
@@ -33,15 +38,16 @@ public class RobotConfig extends ResourceHelper{
                 .Helper
                 .fromJson(this.readDataFrom(this.configPath), DolphinConfig.class);
     }
-    @Override
-    public String getFileName() {
-        return "mc.bot.config";
-    }
 
     public DolphinConfig loadBotConfig(Map<String, Object> commandLineOptions) {
         return this
                 .Helper
                 .fromJson(this.readDataFrom(this.configPath), DolphinConfig.class)
                 .mergeCommandOptions(commandLineOptions);
+    }
+
+    @Override
+    public String getFileName() {
+        return "bot.config.global";
     }
 }

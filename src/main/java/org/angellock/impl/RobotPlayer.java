@@ -94,7 +94,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
             } catch (InterruptedException ignored) {}
         }
         this.connectTime = System.currentTimeMillis();
-        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort())));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.getInfoHelper().getServer(), String.valueOf(this.getInfoHelper().getPort())));
     }
 
     @Override

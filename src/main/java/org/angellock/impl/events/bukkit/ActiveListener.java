@@ -28,7 +28,7 @@ public class ActiveListener {
     private EventPriority priority = EventPriority.NORMAL;
 
     public ActiveListener(Object listenerInstance, Method action, Class<?> eventType) {
-        action.setAccessible(true);
+        // action.setAccessible(true);
         this.listenerInstance = listenerInstance;
         this.action = action;
         this.eventType = eventType;
