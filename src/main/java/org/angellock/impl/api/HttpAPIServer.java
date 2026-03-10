@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.websocket.LogWebSocketHandler;
 import org.angellock.impl.api.websocket.handlers.*;
+import org.angellock.impl.api.websocket.handlers.info.PlayersHandler;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.reason.KickReason;
@@ -77,6 +78,7 @@ public class HttpAPIServer {
         server.createContext("/api/config", new ConfigHandler());
         server.createContext("/api/bot/create", new AddedBotHandler("POST"));
         server.createContext("/api/bot/delete", new DeleteBotHandler());
+        server.createContext("/api/server/players", new PlayersHandler());
     }
 
     public void stop() {

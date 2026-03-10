@@ -27,6 +27,8 @@ import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Base64;
+
 public class PlayerUpdateHandler extends PlayerLogInfoHandler.UpdateHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&ePlayers"));
     public PlayerUpdateHandler(PlayerInfoHelper helper, AbstractRobot bot) {
@@ -35,6 +37,7 @@ public class PlayerUpdateHandler extends PlayerLogInfoHandler.UpdateHandler {
             for (PlayerListEntry player : players) {
                 GameProfile playerProfile = player.getProfile();
                 PlayerTracker.putPlayer(new Player(playerProfile));
+
                 if (playerProfile != null) {
                     log.info(bot.getBotLabel(), ConsoleTokens.colorizeText("&7[&a+&7]{}"), helper.getLogMsg(playerProfile));
                 }

@@ -14,7 +14,7 @@
       "proxy": {
         "enabled": false,
         "info": {
-          "address": "",
+          "address": "565.987",
           "port": 10808,
           "type": "SOCKS5",
           "username": "",

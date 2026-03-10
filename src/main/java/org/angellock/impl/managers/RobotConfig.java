@@ -28,7 +28,6 @@ import java.util.Map;
 
 @Setter
 public class RobotConfig extends ResourceHelper{
-    private String fileName;
     public RobotConfig(@Nullable String defaultPath, String fileType) {
         super(defaultPath, fileType);
     }

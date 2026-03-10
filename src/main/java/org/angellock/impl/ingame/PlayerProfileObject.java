@@ -9,30 +9,24 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.managers;
+package org.angellock.impl.ingame;
 
-import com.google.gson.JsonElement;
-import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import lombok.Data;
 
-import java.util.Map;
+@Data
+public class PlayerProfileObject {
+    String timestamp;
+    String profileId;
+    String profileName;
+    boolean signatureRequired;
 
-@Getter
-public class LocaleManager extends ResourceHelper {
-    private final Map<String, JsonElement> systemEventMessages;
 
-    public LocaleManager(@Nullable String defaultPath, String fileType) {
-        super(defaultPath, fileType);
-        this.systemEventMessages = this.readJSONContent();
-    }
+    static class Texture{
 
-    @Override
-    public String getFileName() {
-        return "ui.lang.locale";
     }
 }

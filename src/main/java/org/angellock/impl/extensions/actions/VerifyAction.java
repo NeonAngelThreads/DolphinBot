@@ -41,20 +41,23 @@ public class VerifyAction extends StateAction {
     public void execute() {
         int var = 0;
         try {
-            var = TimingUtil.getRandomDelay(TimingUtil.getRandomizer(), var);
-            Thread.sleep(500L*(1+var));
+            while (true) {
+                var = TimingUtil.getRandomDelay(TimingUtil.getRandomizer(), var);
+                Thread.sleep(500L*(1+var));
 
-            if (entityBot.getSession().isConnected()){
-                if (!isBypassed()) {
-                    if(verifyTimes < 2){
-                        verifyTimes++;
-                        entityBot.getSession().disconnect("Bypassing");
-                    }
-                    log.info(ConsoleTokens.colorizeText("&7正在进行人机验证..."));
-                    if (System.currentTimeMillis() - entityBot.getConnectTime() > 10700L) {
-                        log.info(ConsoleTokens.colorizeText("&a机器人验证已完毕."));
-                        stateMachine.setState(LoginState.REGISTER);
-                        log.info(ConsoleTokens.colorizeText("&aRobot verification successfully passed, sending reg command!"));
+                if (entityBot.getSession().isConnected()){
+                    if (!isBypassed()) {
+                        if(verifyTimes < 2){
+                            verifyTimes++;
+                            entityBot.getSession().disconnect("Bypassing");
+                        }
+                        log.info(ConsoleTokens.colorizeText("&7正在进行人机验证..."));
+                        if (System.currentTimeMillis() - entityBot.getConnectTime() > 10700L) {
+                            log.info(ConsoleTokens.colorizeText("&a机器人验证已完毕."));
+                            stateMachine.setState(LoginState.REGISTER);
+                            log.info(ConsoleTokens.colorizeText("&aRobot verification successfully passed, sending reg command!"));
+                            return;
+                        }
                     }
                 }
             }

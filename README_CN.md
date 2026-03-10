@@ -16,6 +16,9 @@
   <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
     <img src="https://img.shields.io/github/v/release/NeonAngelThreads/DolphinBot" alt="Release"/>
   </a>
+  <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
+        <img src="https://img.shields.io/github/downloads/neonangelthreads/DolphinBot/total" alt="downloads"/>
+  </a>
    <br>
    <a href="https://github.com/NeonAngelThreads/DolphinBot/commits/master/">
       <img src="https://img.shields.io/github/last-commit/NeonAngelThreads/DolphinBot" alt="commits"/>
@@ -26,6 +29,9 @@
   </a>
   <a href="https://github.com/NeonAngelThreads/DolphinBot/tree/master/src/main">
      <img src="https://img.shields.io/github/languages/code-size/NeonAngelThreads/DolphinBot" alt="GitHub code size"/>
+  </a>
+<a href="https://app.codacy.com/gh/NeonAngelThreads/DolphinStudio/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
+     <img src="https://app.codacy.com/project/badge/Grade/ec90e9d4d7ef4023b124c4609b41a961"/>
   </a>
   <p align="center">
      <a href="https://github.com/NeonAngelThreads/DolphinBot/blob/master/PluginDocs.md">📖开发文档</a>
@@ -59,7 +65,7 @@
 ## 截图:
 ### 在 Windows server 2019 表现效果:
 <p align="center">
-   <img src="assets/dolphinbot1.png">
+   <img src="assets/dev2.png">
 </p>
 
 ## 介绍:

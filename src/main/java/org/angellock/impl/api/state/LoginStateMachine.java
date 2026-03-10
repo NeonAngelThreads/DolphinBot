@@ -24,8 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginStateMachine extends StateMachine<String> {
-
-    private static final Logger log = LoggerFactory.getLogger(LoginStateMachine.class);
     private LoginState currentState;
     private final LoginState initialState;
     private String message;
@@ -87,14 +85,17 @@ public class LoginStateMachine extends StateMachine<String> {
         if (!key.isEmpty()) {
             LoginState nextState = this.transitionMap.get(Pair.of(this.currentState.name(), key));
             StateAction action = this.currentState.getAction();
-            if (action != null) {
+            if (action != null){
                 action.execute();
-                return true;
             }
+            TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
             if (nextState != null) {
-                TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
                 this.currentState = nextState;
-
+                StateAction currentAction = currentState.getAction();
+                if (currentAction != null){
+                    currentAction.execute();
+                }
+                return true;
             }
         }
         return false;

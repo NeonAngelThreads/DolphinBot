@@ -31,6 +31,8 @@ public class PlayerTracker {
     @Getter
     private final static Map<Integer, UUID> UUIDMapping = new HashMap<>();
     private final static Map<String, UUID> playerUUIDMapping = new HashMap<>();
+    @Getter
+    private final static Map<UUID, GameProfile> playerProfiles = new HashMap<>();
     public @Nullable
     static Player getPlayerById(int entityID) {
         UUID uuid = UUIDMapping.get(entityID);
@@ -64,11 +66,14 @@ public class PlayerTracker {
             onlinePlayers.put(uuid, player);
             playerUUIDMapping.put(profile.getName(), uuid);
             UUIDMapping.put(player.getId(), uuid);
+
+            playerProfiles.put(player.getProfile().getId(), profile);
         }
     }
 
     public static void delPlayer(@NotNull UUID player) {
         onlinePlayers.remove(player);
+        playerProfiles.remove(player);
     }
 
     public static Map<String, UUID> getPlayerUUIDMapping() {
