@@ -20,11 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
-import io.netty.handler.codec.base64.Base64Decoder;
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.websocket.APIResponseHandler;
 import org.angellock.impl.ingame.PlayerTracker;
-import org.angellock.impl.managers.BotManager;
 import org.geysermc.mcprotocollib.auth.GameProfile;
 
 import java.io.IOException;
@@ -58,9 +55,9 @@ public class PlayersHandler extends APIResponseHandler {
                             .getAsString();
 
                 player.add(Map.of("name", name, "skin", url, "uuid", uuid));
-                continue;
+            } else {
+                player.add(Map.of("name", profile.getName(), "skin", "null", "uuid", uuid));
             }
-            player.add(Map.of("name", profile.getName(), "skin", "null", "uuid", uuid));
         }
         sendResponse(exchange, 200, Map.of("data",player));
     }

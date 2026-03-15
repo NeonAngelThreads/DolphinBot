@@ -22,7 +22,6 @@ public abstract class AbstractBuilder<T> {
     protected String commandName = "";
     protected String description;
     protected AbstractPlugin provider;
-
     protected String usage;
 
     protected String[] aliases = new String[0];

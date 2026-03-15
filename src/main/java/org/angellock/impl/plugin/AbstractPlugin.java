@@ -91,7 +91,11 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
     public void onEnables(AbstractRobot targetBot){
         this.targetBot = targetBot;
         if (this.listeners.isEmpty()) {
-            onEnable(this.targetBot);
+            try {
+                onEnable(this.targetBot);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     public abstract void onEnable(final AbstractRobot entityBot);

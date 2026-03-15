@@ -55,8 +55,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
-    private static final String VERSION = "1.2.5";
+    private static final String VERSION = "1.2.6";
     private static final String NAME = "Base-default-plugin";
+    private static final String DISC = "Base system commands, Event handlers provider";
     private Thread tickThread = null;
     private PlayerInfoHelper helper;
 
@@ -72,7 +73,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
     @Override
     public String getDescription() {
-        return "null";
+        return DISC;
     }
 
     @Override
@@ -94,14 +95,28 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
         getEvents().registerListeners(new JoinGameListener(), this);
 
-        getTerminalCommands().registerCommand(new TerminalCommand("reload", new ReloadCommandExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
-        getTerminalCommands().registerCommand(new TerminalCommand("respawn", new RespawnExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand("warp", new PearlWarpExecutor()));
+        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+                .withName("respawn")
+                .withProvider(this)
+                .withDescription("A command to respawn the bot.")
+                .withUsage("/respawn")
+                .build(new RespawnExecutor())
+        );
+        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+                .withName("reload")
+                .withAliases("rl")
+                .withProvider(this)
+                .withDescription("A command to hot reload a plugin dynamically while running.")
+                .withUsage("/reload <plugin name> [bot name], /rl <plugin name>")
+                .build(new ReloadCommandExecutor())
+        );
 
         getTerminalCommands().registerCommand(new TerminalCommandBuilder()
                 .withName("license")
-                .withAliases("lic", "l")
+                .withAliases("lic")
+                .withUsage("/license, /lic")
                 .withDescription("A command to show the license")
                 .withProvider(this)
                 .build(new LicenseExecutor())
@@ -109,20 +124,28 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         getTerminalCommands().registerCommand(new TerminalCommandBuilder()
                 .withName("help")
                 .withAliases("h", "?", "？")
+                .withUsage("/help, /?, /h")
                 .withDescription("Show help.")
                 .withProvider(this)
                 .build(new HelpExecutor())
         );
 
+        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+                .withName("reconnect")
+                .withAliases("rc")
+                .withUsage("/reconnect, /rc")
+                .withDescription("Try to reconnect to the server.")
+                .withProvider(this)
+                .build(new ReconnectExecutor())
+        );
+
         if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
             getEvents().registerListeners(new PlayerListener(), this);
         }
-        getCommands().register(
-                new CommandBuilder()
-                        .withName("reload")
-                        .allowedUsers(
-                                robotEntity.getInfoHelper().getOwners()
-                        ).build(new ChatReloadExecutor())
+        getCommands().register(new CommandBuilder()
+                .withName("reload")
+                .allowedUsers(robotEntity.getInfoHelper().getOwners())
+                .build(new ChatReloadExecutor())
         );
 
         getListeners().add(new LoginHandler().addExtraAction(packet -> this.joinGame(robotEntity)));

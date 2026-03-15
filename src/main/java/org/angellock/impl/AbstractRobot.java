@@ -150,8 +150,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
-        String serverIP = this.infoHelper.getServer();// != null ? this.infoHelper.getServer() : this.config().getServer();
-        int serverPort = this.infoHelper.getPort();// != 0 ? this.infoHelper.getPort() : this.config().getPort();
+        String serverIP = this.infoHelper.getServer(); // != null ? this.infoHelper.getServer() : this.config().getServer();
+        int serverPort = this.infoHelper.getPort(); // != 0 ? this.infoHelper.getPort() : this.config().getPort();
 
         if (this.proxyInfo != null) {
             this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol, this.proxyInfo);
@@ -168,7 +168,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new PlayerEmergeHandler(this));
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
         if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
-        this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
+        //this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
         this.serverSession.connect(true, false);
 

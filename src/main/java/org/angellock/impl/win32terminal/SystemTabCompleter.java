@@ -45,7 +45,7 @@ public class SystemTabCompleter implements Completer {
         String line = parsedLine.line();
         String[] subCommands = line.replaceFirst("/","").strip().split(" ");
         HashMap<String, TerminalCommand> commands = TerminalCommandManager.getRegisteredCommand();
-        if (subCommands.length > 1) {
+        if (subCommands.length > 0) {
             TerminalCommand command = commands.get(subCommands[0]);
             if (command != null) {
                 ICommandCompleter commandCompleter = command.getCompleter();
@@ -62,7 +62,8 @@ public class SystemTabCompleter implements Completer {
             for (String alias : cmd.getAliases()) {
                 if (alias.contains(line)) {
                     list.add(new Candidate( "/" + alias, new AttributedStringBuilder()
-                            .style(AttributedStyle.BOLD.foreground(AttributedStyle.RED).background(AttributedStyle.BLUE)).append(alias).append("    ")
+                            .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN))
+                            .append(alias)
                             .toAnsi(),
                             cmd.getName(),
                             null,

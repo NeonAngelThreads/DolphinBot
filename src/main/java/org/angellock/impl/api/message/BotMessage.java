@@ -25,6 +25,10 @@ public class BotMessage{
     public BotMessage(Map<String, Object> messageMap) {
         this.messageMap = messageMap;
     }
+    public BotMessage() {
+        this.messageMap = new HashMap<>();
+    }
+
     public BotMessage addItem(String key, Object value){
         this.messageMap.put(key, value);
         return this;
