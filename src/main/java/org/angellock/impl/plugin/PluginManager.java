@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.*;
 
 public class PluginManager extends Manager implements IPluginInjectable{
@@ -156,6 +158,17 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
         target.onDisable();
         target.setEnabled(false);
+
+        if (target instanceof AbstractPlugin) {
+            ClassLoader classLoader = ((AbstractPlugin) target).getClassLoader();
+            if (classLoader instanceof URLClassLoader) {
+                try {
+                    ((URLClassLoader) classLoader).close();
+                } catch (IOException e) {
+                    log.error(botInstance.getBotLabel(), ConsoleTokens.colorizeText("&4Failed to close plugin classloader: " + e.getMessage()));
+                }
+            }
+        }
     }
 
     public void enable(AbstractPlugin plugin, AbstractRobot provider) {

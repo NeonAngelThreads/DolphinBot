@@ -42,6 +42,7 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
     private AbstractRobot targetBot;
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6&lPlugins"));
     protected Thread schedulerThread;
+    private ClassLoader classLoader;
 
     public AbstractPlugin(@Nullable String defaultDataPath){
         this();
@@ -87,6 +88,15 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
     public TerminalCommandManager getTerminalCommands(){
         return this.targetBot.getCommandManager();
     }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
     @Override
     public void onEnables(AbstractRobot targetBot){
         this.targetBot = targetBot;

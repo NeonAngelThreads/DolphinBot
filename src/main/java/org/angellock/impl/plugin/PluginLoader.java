@@ -60,10 +60,13 @@ public class PluginLoader{
                 jarClass = Class.forName(pluginManifest.getMainClass(), true, classLoader);
 
                 if(Plugin.class.isAssignableFrom(jarClass)){
-//                    classLoader.close();
                     Constructor<?> constructor = jarClass.getDeclaredConstructor();
                     constructor.setAccessible(true);
-                    return (Plugin) constructor.newInstance();
+                    Plugin instance = (Plugin) constructor.newInstance();
+                    if (instance instanceof AbstractPlugin) {
+                        ((AbstractPlugin) instance).setClassLoader(classLoader);
+                    }
+                    return instance;
                 }
 
             } catch (ClassNotFoundException var11) {
@@ -72,7 +75,11 @@ public class PluginLoader{
                 try {
                     ServiceLoader<Plugin> serviceLoader = ServiceLoader.load(Plugin.class, classLoader);
                     if(serviceLoader.findFirst().isPresent()){
-                        return serviceLoader.findFirst().get();
+                        Plugin instance = serviceLoader.findFirst().get();
+                        if (instance instanceof AbstractPlugin) {
+                            ((AbstractPlugin) instance).setClassLoader(classLoader);
+                        }
+                        return instance;
                     }
                     else {
                         log.error(ConsoleTokens.colorizeText("&4Failed to load plugin: " + pluginManifest));
@@ -80,11 +87,6 @@ public class PluginLoader{
                 } catch (NoClassDefFoundError e) {
                     log.error(ConsoleTokens.colorizeText("&4Failed to load plugin: " + pluginManifest));
                     log.error(ConsoleTokens.colorizeText("&7" + e.toString()));
-                }
-            } finally {
-                try {
-                    classLoader.close();
-                } catch (IOException ignored) {
                 }
             }
 
