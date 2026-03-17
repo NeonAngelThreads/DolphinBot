@@ -18,10 +18,10 @@ package org.angellock.impl.util.strings;
 
 import java.util.HashMap;
 import java.util.Map;
-
+@SuppressWarnings("unused")
 public class UStringHelper {
     private static final Map<Character, String> charMap = new HashMap<>();
-    private static final String intArray = "˦ϨՅϤƼδ7θƍO";
+    private static final String intArray = "O˦ϨՅϤƼδ7θƍ";
 
     static {
         charMap.put('a', "\uD835\uDCEA");charMap.put('b', "\uD835\uDCEB");charMap.put('c', "\uD835\uDCEC");charMap.put('d', "\uD835\uDCED");charMap.put('e', "\uD835\uDCEE");

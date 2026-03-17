@@ -14,26 +14,36 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.plugin;
+package org.angellock.impl.util.wrapper;
 
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
-import org.geysermc.mcprotocollib.network.event.session.SessionListener;
+import org.angellock.impl.util.ConsoleTokens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
-import java.util.List;
+public class LoggerWrapper {
 
-public interface Plugin {
-    Path getDataFolder();
-    String getName();
-    String getVersion();
-    String getDescription();
-    boolean isEnabled();
-    void setPluginManifest(Manifest name);
-    void setEnabled(boolean state);
-    List<SessionListener> getListeners();
-    void onDisable();
+    protected Logger log;
+    @Setter
+    private AbstractRobot bot;
+    public LoggerWrapper() {
+        log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6Plugin"));
+    }
 
-    void onLoad();
+    public void setLoggerName(String name){
+        log = LoggerFactory.getLogger(name);
+    }
 
-    void onEnables(final AbstractRobot entityBot);
+    public void info(String s, Object...obj){
+        log.info(bot.getBotLabel(), s, obj);
+    }
+
+    public void warn(String s, Object...obj){
+        log.warn(bot.getBotLabel(), s, obj);
+    }
+    public void error(String s, Object...obj){
+        log.error(bot.getBotLabel(), s, obj);
+    }
+
 }

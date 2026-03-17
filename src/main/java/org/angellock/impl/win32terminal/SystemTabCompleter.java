@@ -59,19 +59,25 @@ public class SystemTabCompleter implements Completer {
             }
         }
         for (TerminalCommand cmd : commands.values()) {
+            appendCandidate(list, cmd.getName(), cmd.getDescription());
             for (String alias : cmd.getAliases()) {
-                if (alias.contains(line)) {
-                    list.add(new Candidate( "/" + alias, new AttributedStringBuilder()
-                            .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN))
-                            .append(alias)
-                            .toAnsi(),
-                            cmd.getName(),
-                            null,
-                            null,
-                            null,
-                            true));
+                if (alias.contains(line.replaceFirst("/", ""))) {
+                    appendCandidate(list, alias, cmd.getDescription());
                 }
             }
         }
+    }
+
+    private static void appendCandidate(List<Candidate> list, String name, String desc) {
+        Candidate candidate = new Candidate('/' + name, new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN))
+                .append(name)
+                .toAnsi(),
+                name,
+                desc,
+                null,
+                null,
+                true);
+        list.add(candidate);
     }
 }

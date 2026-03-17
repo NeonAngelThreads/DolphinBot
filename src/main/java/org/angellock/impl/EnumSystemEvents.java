@@ -37,7 +37,7 @@ public enum EnumSystemEvents {
     PACKET_ERROR("packet.error"),
     DOLPHIN_TIMING_RESET("dolphin.timing.reset"),
     SERVER_PLAYER_GAMEMODE("server.player.gamemode"),
-
+    PLUGIN_ERROR("plugin.error"),
     SERVER_WORLD_JOIN("server.world.join"),
     CHAT_MESSAGE_SEND("chat.message.send"),
     CHAT_COMMAND_SEND("chat.command.send"),

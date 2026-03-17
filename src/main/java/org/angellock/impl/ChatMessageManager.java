@@ -44,7 +44,7 @@ public class ChatMessageManager{
         this.chatMessageQueue.offer(msg);
     }
 
-    public boolean pollMessage() {
+    public boolean pollMessage() throws Exception{
         String removal = this.chatMessageQueue.poll();
         if(removal != null) {
             this.sendMessagePacket(removal);

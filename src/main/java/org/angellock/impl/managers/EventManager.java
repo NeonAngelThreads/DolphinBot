@@ -16,8 +16,10 @@
 
 package org.angellock.impl.managers;
 
+import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.events.EventDispatcher;
 import org.angellock.impl.events.bukkit.AbstractEvent;
+import org.angellock.impl.util.TranslatableUtil;
 
 public class EventManager {
     private final EventDispatcher dispatcher = new EventDispatcher();
@@ -27,6 +29,10 @@ public class EventManager {
     }
 
     public void broadcastEvent(AbstractEvent event){
-        this.dispatcher.callEvent(event);
+        try {
+            this.dispatcher.callEvent(event);
+        } catch (Exception e) {
+            TranslatableUtil.errorTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
+        }
     }
 }

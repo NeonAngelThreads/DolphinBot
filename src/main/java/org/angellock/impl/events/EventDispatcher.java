@@ -61,7 +61,7 @@ public class EventDispatcher {
         }
     }
 
-    public void callEvent(AbstractEvent event) {
+    public void callEvent(AbstractEvent event) throws Exception{
         HandlerMapper list = event.getMapper();
         for (ActiveListener registeredListener : list.getRegisteredListenersInOrder()) {
             try {

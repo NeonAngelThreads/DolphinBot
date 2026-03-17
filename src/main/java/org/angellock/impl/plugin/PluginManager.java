@@ -85,14 +85,16 @@ public class PluginManager extends Manager implements IPluginInjectable{
 
     public void listRegisterInfo(AbstractRobot botInstance) {
         Set<String> pl = botInstance.getRegisteredCommands().getRegisteredCommands().keySet();
-        log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
+        if (!pl.isEmpty()){
+            log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_COMMANDS, pl, pl.size()));
+        }
         Set<String> tCommand = TerminalCommandManager.registeredCommand.keySet();
         log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD_TERMINAL_COMMANDS, tCommand, tCommand.size()));
         List<SessionListener> listeners = botInstance.getSession().getListeners();
         log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
     }
 
-    public void loadAllPlugins(AbstractRobot botInstance){
+    public void loadAllPlugins(AbstractRobot botInstance) throws Exception{
         if(!this.registeredPlugins.isEmpty()){
             for (AbstractPlugin plugin : this.registeredPlugins.values()) {
                 enable(plugin, botInstance);
@@ -147,7 +149,8 @@ public class PluginManager extends Manager implements IPluginInjectable{
     }
     @Override
     public void disable(AbstractRobot botInstance, String pluginName){
-        Plugin target = this.registeredPlugins.get(pluginName);
+        Plugin target = this.registeredPlugins.get(pluginName.toLowerCase());
+        target.setEnabled(false);
         List<SessionListener> pluginListeners = target.getListeners();
 
         for (SessionListener listener : pluginListeners) {
@@ -157,10 +160,9 @@ public class PluginManager extends Manager implements IPluginInjectable{
             }
         }
         target.onDisable();
-        target.setEnabled(false);
 
-        if (target instanceof AbstractPlugin) {
-            ClassLoader classLoader = ((AbstractPlugin) target).getClassLoader();
+        if (target instanceof AbstractPlugin plugin) {
+            ClassLoader classLoader = plugin.getClassLoader();
             if (classLoader instanceof URLClassLoader) {
                 try {
                     ((URLClassLoader) classLoader).close();

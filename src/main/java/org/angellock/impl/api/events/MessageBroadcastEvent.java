@@ -25,7 +25,7 @@ public class MessageBroadcastEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     @Override
     public HandlerMapper getMapper() {
-        return null;
+        return HANDLERS;
     }
     private final BotMessage message;
     public MessageBroadcastEvent(BotMessage message){
