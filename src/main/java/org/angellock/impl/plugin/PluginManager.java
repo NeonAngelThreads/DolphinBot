@@ -19,6 +19,7 @@ package org.angellock.impl.plugin;
 import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.managers.EventManager;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
@@ -94,7 +95,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
     }
 
-    public void loadAllPlugins(AbstractRobot botInstance) throws Exception{
+    public void loadAllPlugins(RobotPlayer botInstance) throws Exception{
         if(!this.registeredPlugins.isEmpty()){
             for (AbstractPlugin plugin : this.registeredPlugins.values()) {
                 enable(plugin, botInstance);
@@ -173,12 +174,12 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
     }
 
-    public void enable(AbstractPlugin plugin, AbstractRobot provider) {
+    public void enable(AbstractPlugin plugin, RobotPlayer provider) {
         plugin.onLoad();
         if (!plugin.isEnabled()){
             plugin.setEnabled(true);
             this.registerPlugin(plugin);
-            plugin.onEnables(provider);
+            plugin.onPreEnable(provider);
 
             List<SessionListener> listeners = plugin.getListeners();
             log.info(provider.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
@@ -193,7 +194,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
     }
 
-    public void loadPlugin(AbstractRobot botInstance, File target) {
+    public void loadPlugin(RobotPlayer botInstance, File target) {
         Plugin plugin = loader.loadPluginClass(target);
         if (plugin != null) {
             log.info(botInstance.getBotLabel(), ConsoleTokens.colorizeText("&2Registering plugin: &b" + plugin.getName()));
@@ -204,7 +205,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
     }
 
-    public void reloadPlugin(AbstractRobot botInstance, String pluginName){
+    public void reloadPlugin(RobotPlayer botInstance, String pluginName){
         File pluginFile = this.loadedExternalPlugin.get(pluginName);
         disable(botInstance, pluginName);
         if (pluginFile.exists()){

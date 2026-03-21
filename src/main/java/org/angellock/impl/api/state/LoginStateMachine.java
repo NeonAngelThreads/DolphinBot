@@ -17,6 +17,7 @@
 package org.angellock.impl.api.state;
 
 import it.unimi.dsi.fastutil.Pair;
+import lombok.Getter;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.IReason;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginStateMachine extends StateMachine<String> {
+    @Getter
     private LoginState currentState;
     private final LoginState initialState;
     private String message;

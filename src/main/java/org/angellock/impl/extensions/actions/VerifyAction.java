@@ -17,9 +17,11 @@
 package org.angellock.impl.extensions.actions;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.LoginState;
 import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.api.state.StateAction;
+import org.angellock.impl.events.EventPriority;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TimingUtil;
 import org.slf4j.Logger;
@@ -31,7 +33,7 @@ public class VerifyAction extends StateAction {
     AbstractRobot robot;
     private static int verifyTimes = 0;
     LoginStateMachine stateMachine;
-    public VerifyAction(LoginStateMachine stateMachine, AbstractRobot botInstance) {
+    public VerifyAction(LoginStateMachine stateMachine, RobotPlayer botInstance) {
         super(botInstance);
         this.stateMachine = stateMachine;
         this.robot = botInstance;

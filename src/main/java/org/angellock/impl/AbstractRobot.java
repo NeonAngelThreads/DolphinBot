@@ -77,8 +77,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     @Setter
     protected @Getter GameMode serverGamemode = GameMode.ADVENTURE;
     @Getter
-    private ChatMessageManager messageManager;
-    @Getter
     private BotManager botManager = BotManager.getInstance();
     protected ProxyInfo proxyInfo;
     protected @Getter ProfileObject infoHelper = new ProfileObject();
@@ -159,7 +157,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
             this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol);
         }
 
-        this.messageManager = new ChatMessageManager(this);
         this.serverSession.addListener((IConnectListener) event -> onJoin());
         this.serverSession.addListener(new DisconnectReasonHandler(this));
         this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
@@ -172,44 +169,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.connect(true, false);
 
         this.connectDuration = System.currentTimeMillis();
-        try {
-            boolean connect = true;
-            boolean shouldWait = false;
 
-            while (true) {
-                try {
-                    Thread.sleep(20L);
-                    if (!this.serverSession.isConnected()){
-                        this.connectDuration = System.currentTimeMillis();
-                        break;
-                    } else if (connect) {
-                        if (System.currentTimeMillis() - this.connectDuration > 100L){
-                            this.pluginManager.loadAllPlugins(this);
-                            connect = false;
-                        }
-                    } else if (!shouldWait) {
-                        if (this.messageManager.pollMessage()) {
-                            shouldWait = true;
-                        }
-                    } else if (canSendMessages()) {
-                        shouldWait = false;
-                    }
-                }
-                catch (InterruptedException e){
-                    continue;
-                } catch (IllegalArgumentException e) {
-                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
-                } catch (Exception e) {
-                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
-                }
-            }
-        } finally {
-            this.serverSession.disconnect("");
-            if (BotManager.getBotByProfileName(getProfileName()) != null){
-                scheduleReconnect();
-            }
-        }
+        this.mainTickingEventLoop();
     }
+
+    public abstract void mainTickingEventLoop();
 
     public abstract boolean canSendMessages();
 

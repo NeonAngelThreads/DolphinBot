@@ -16,7 +16,10 @@
 
 package org.angellock.impl.plugin;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.EventDispatcher;
 import org.angellock.impl.managers.TerminalCommandManager;
@@ -35,13 +38,17 @@ import java.util.List;
 
 public abstract class AbstractPlugin extends Manager implements Plugin {
     private Path dataPath;
+    @Getter
     private String simpleName;
+    @Getter
     private Manifest pluginManifest;
     private boolean enabled = false;
     private final List<SessionListener> listeners = new ArrayList<>();
-    private AbstractRobot targetBot;
+    private RobotPlayer targetBot;
     private final LoggerWrapper log = new LoggerWrapper();
     protected Thread schedulerThread;
+    @Setter
+    @Getter
     private ClassLoader classLoader;
 
     public AbstractPlugin(@Nullable String defaultDataPath){
@@ -65,14 +72,6 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         return this.targetBot.getPluginManager().event().dispatcher();
     }
 
-    public String getSimpleName() {
-        return simpleName;
-    }
-
-    public Manifest getPluginManifest(){
-        return this.pluginManifest;
-    }
-
     public LoggerWrapper getLogger(){
         return log;
     }
@@ -90,27 +89,22 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         return this.targetBot.getCommandManager();
     }
 
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
-
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
     @Override
-    public void onEnables(AbstractRobot targetBot){
+    public void onPreEnable(RobotPlayer targetBot){
         this.targetBot = targetBot;
         this.log.setBot(targetBot);
         if (this.listeners.isEmpty()) {
             try {
                 onEnable(this.targetBot);
+                onEnable((AbstractRobot) this.targetBot);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
     }
-    public abstract void onEnable(final AbstractRobot entityBot);
+    @Deprecated
+    public void onEnable(final AbstractRobot entityBot){};
+    public abstract void onEnable(final RobotPlayer entityBot);
 
     public abstract String getPluginName();
     @Override

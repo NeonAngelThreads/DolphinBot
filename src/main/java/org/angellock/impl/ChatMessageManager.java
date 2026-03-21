@@ -34,9 +34,9 @@ public class ChatMessageManager{
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&7ChatMessageManager"));
     @Getter
     private final Queue<String> chatMessageQueue = new ArrayDeque<>();
-    private final AbstractRobot instance;
+    private final RobotPlayer instance;
 
-    public ChatMessageManager(AbstractRobot bot) {
+    public ChatMessageManager(RobotPlayer bot) {
         this.instance = bot;
     }
 

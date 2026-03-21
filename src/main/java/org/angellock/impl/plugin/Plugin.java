@@ -17,6 +17,7 @@
 package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 
 import java.nio.file.Path;
@@ -35,5 +36,5 @@ public interface Plugin {
 
     void onLoad();
 
-    void onEnables(final AbstractRobot entityBot);
+    void onPreEnable(final RobotPlayer entityBot);
 }

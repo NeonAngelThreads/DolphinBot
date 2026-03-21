@@ -19,6 +19,7 @@ package org.angellock.impl.extensions;
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.IDisconnectListener;
 import org.angellock.impl.events.handlers.ContainerPacketHandler;
 import org.angellock.impl.events.handlers.LoginHandler;
@@ -78,9 +79,9 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void onEnable(AbstractRobot entityBot) {
+    public void onEnable(RobotPlayer entityBot) {
 
-        LoginStateMachine stateMachine = new LoginStateMachine(LoginState.IDLE);
+        LoginStateMachine stateMachine = entityBot.getLoginStateMachine();
 
         StateAction verifyAction = new VerifyAction(stateMachine, entityBot);
         StateAction registerAction = new RegisterAction(entityBot);
@@ -88,7 +89,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         StateAction loginAction = new LoginAction(stateMachine, entityBot);
 
         stateMachine
-                .source(LoginState.IDLE).whenReceive("离线玩家请注册").goal(LoginState.REGISTER, registerAction)
+                .source(LoginState.DISCONNECTED).whenReceive("离线玩家请注册").goal(LoginState.REGISTER, registerAction)
                     .and()
                     .whenReceive("离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
                 .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
@@ -110,7 +111,7 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
         getListeners().add(new ContainerPacketHandler().addExtraAction((packet -> {
             String title = ConsoleTokens.colorizeText(((TextComponent)packet.getTitle()).content().strip());
-            log.info(ConsoleTokens.colorizeText("&7[Inventory] &7Container opened, with containerId: &9{}, &6Title: \"&l{}\""), packet.getContainerId(), title);
+            log.info(entityBot.getBotLabel(), ConsoleTokens.colorizeText("&7[Inventory] &7Container opened, with containerId: &9{}, &6Title: \"&l{}\""), packet.getContainerId(), title);
             entityBot.sendPacket(new ServerboundContainerButtonClickPacket(packet.getContainerId(), 4));
             entityBot.sendPacket(new ServerboundContainerClickPacket(packet.getContainerId(),
                     0,

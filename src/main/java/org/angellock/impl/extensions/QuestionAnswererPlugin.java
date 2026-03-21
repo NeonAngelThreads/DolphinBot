@@ -18,6 +18,7 @@ package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.handlers.SystemChatHandler;
 import org.angellock.impl.managers.QuestionManager;
 import org.angellock.impl.plugin.AbstractPlugin;
@@ -54,7 +55,7 @@ public class QuestionAnswererPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void onEnable(AbstractRobot entityBot) {
+    public void onEnable(RobotPlayer entityBot) {
 
         getListeners().add(new SystemChatHandler().addExtraAction((packet) -> {
             if (!((TextComponent)packet.getContent()).content().isEmpty()) return;

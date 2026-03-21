@@ -17,13 +17,14 @@
 package org.angellock.impl.extensions.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.angellock.impl.events.IActions;
 
 public class ChatReloadExecutor implements ICommandAction {
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         long timeElapse = System.currentTimeMillis();
         bot.getPluginManager().reloadPlugin(bot, responseEntity.getCommandList()[1].toLowerCase());
         long time = (System.currentTimeMillis() - timeElapse);

@@ -17,6 +17,7 @@
 package org.angellock.impl.extensions.actions;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.LoginState;
 import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.api.state.StateAction;
@@ -25,7 +26,7 @@ import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.Serverbound
 
 public class LoginAction extends StateAction {
     LoginStateMachine stateMachine;
-    public LoginAction(LoginStateMachine stateMachine, AbstractRobot botInstance) {
+    public LoginAction(LoginStateMachine stateMachine, RobotPlayer botInstance) {
         super(botInstance);
         this.stateMachine = stateMachine;
     }
@@ -37,8 +38,5 @@ public class LoginAction extends StateAction {
             return;
         }
         entityBot.getMessageManager().sendCommand("login " + entityBot.getPassword());
-//        if (entityBot.getServerGamemode() != GameMode.SURVIVAL){
-//            stateMachine.setState(LoginState.JOIN);
-//        }
     }
 }

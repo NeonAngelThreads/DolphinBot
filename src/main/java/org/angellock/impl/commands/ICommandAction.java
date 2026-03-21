@@ -17,7 +17,8 @@
 package org.angellock.impl.commands;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 
 public interface ICommandAction {
-    void onCommand(CommandResponse responseEntity, AbstractRobot bot);
+    void onCommand(CommandResponse responseEntity, RobotPlayer bot);
 }

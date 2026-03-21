@@ -17,6 +17,7 @@
 package org.angellock.impl.commands;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class Command extends AbstractCommand {
     }
 
     @Override
-    public boolean activate(CommandResponse entity, AbstractRobot bot) {
+    public boolean activate(CommandResponse entity, RobotPlayer bot) {
         if (users.contains(entity.getSender()) || users.isEmpty()) {
             this.action.onCommand(entity, bot);
             return true;

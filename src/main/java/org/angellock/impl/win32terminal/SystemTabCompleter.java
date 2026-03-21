@@ -58,10 +58,12 @@ public class SystemTabCompleter implements Completer {
                 }
             }
         }
+
+        String inputCommand = line.replaceFirst("/", "");
         for (TerminalCommand cmd : commands.values()) {
             appendCandidate(list, cmd.getName(), cmd.getDescription());
             for (String alias : cmd.getAliases()) {
-                if (alias.contains(line.replaceFirst("/", ""))) {
+                if (alias.contains(inputCommand)) {
                     appendCandidate(list, alias, cmd.getDescription());
                 }
             }
@@ -69,6 +71,7 @@ public class SystemTabCompleter implements Completer {
     }
 
     private static void appendCandidate(List<Candidate> list, String name, String desc) {
+
         Candidate candidate = new Candidate('/' + name, new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN))
                 .append(name)

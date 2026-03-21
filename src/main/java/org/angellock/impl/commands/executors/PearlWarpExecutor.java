@@ -17,6 +17,7 @@
 package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.cloudburstmc.math.vector.Vector3i;
@@ -27,7 +28,7 @@ import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.Serv
 public class PearlWarpExecutor implements ICommandAction {
 
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         ServerboundUseItemOnPacket packet = new ServerboundUseItemOnPacket(
                 Vector3i.from(2019, 96, -1115),
                 Direction.DOWN,

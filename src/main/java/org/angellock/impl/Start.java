@@ -118,7 +118,7 @@ public class Start {
 
     }
 
-    private static void getTerminal(AbstractRobot dolphinBot) {
+    private static void getTerminal(RobotPlayer dolphinBot) {
         LineReader reader = AnsiEscapes.getReader();
         terminalInput = new Thread(() -> {
             while (true) {

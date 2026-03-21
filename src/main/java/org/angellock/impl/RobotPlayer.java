@@ -16,7 +16,10 @@
 
 package org.angellock.impl;
 
+import lombok.Getter;
 import lombok.Setter;
+import org.angellock.impl.api.state.LoginState;
+import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.BotManager;
@@ -38,16 +41,61 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     private long lastMsgTime = 0L;
     private final long msgDelay;
     private volatile @Setter boolean shouldReconnect = true;
+    @Getter
+    private ChatMessageManager messageManager;
+    @Getter
+    private final LoginStateMachine loginStateMachine = new LoginStateMachine(LoginState.DISCONNECTED);
     protected @Setter Position loginPos = new Position();
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
         super(configManager, pluginManager);
-
+        this.messageManager = new ChatMessageManager(this);
         this.msgDelay = Long.parseLong(Optional
                 .ofNullable(
                         this.globalConfig.getConfigValue("msg-send-delay"))
                 .orElse("3000")
         );
+    }
+
+    @Override
+    public void mainTickingEventLoop() {
+        try {
+            boolean connect = true;
+            boolean shouldWait = false;
+
+            while (true) {
+                try {
+                    Thread.sleep(20L);
+                    if (!this.serverSession.isConnected()){
+                        this.connectDuration = System.currentTimeMillis();
+                        break;
+                    } else if (connect) {
+                        if (System.currentTimeMillis() - this.connectDuration > 100L){
+                            this.pluginManager.loadAllPlugins(this);
+                            connect = false;
+                        }
+                    } else if (!shouldWait) {
+                        if (this.getMessageManager().pollMessage()) {
+                            shouldWait = true;
+                        }
+                    } else if (canSendMessages()) {
+                        shouldWait = false;
+                    }
+                }
+                catch (InterruptedException e){
+                    continue;
+                } catch (IllegalArgumentException e) {
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
+                } catch (Exception e) {
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
+                }
+            }
+        } finally {
+            this.serverSession.disconnect("");
+            if (BotManager.getBotByProfileName(getProfileName()) != null){
+                scheduleReconnect();
+            }
+        }
     }
 
     @Override

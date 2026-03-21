@@ -19,6 +19,7 @@ package org.angellock.impl.extensions;
 import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
 import org.angellock.impl.commands.executors.*;
@@ -34,25 +35,16 @@ import org.angellock.impl.listeners.JoinGameListener;
 import org.angellock.impl.listeners.PlayerListener;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
-import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.PlayerInfoHelper;
-import org.angellock.impl.util.TextComponentSerializer;
-import org.angellock.impl.util.TranslatableUtil;
-import org.geysermc.mcprotocollib.auth.GameProfile;
-import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.HandPreference;
 import org.geysermc.mcprotocollib.protocol.data.game.setting.ChatVisibility;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundClientInformationPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
     private static final String VERSION = "1.2.6";
@@ -91,7 +83,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void onEnable(AbstractRobot robotEntity) {
+    public void onEnable(RobotPlayer robotEntity) {
 
         getEvents().registerListeners(new JoinGameListener(), this);
 

@@ -17,13 +17,14 @@
 package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.angellock.impl.util.ConsoleTokens;
 
 public class LicenseExecutor implements ICommandAction {
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         AbstractRobot.getLog().info(bot.getBotLabel(),ConsoleTokens.colorizeText(
                 "&7# &9DolphinBot - https://github.com/NeonAngelThreads/DolphinBot\n" +
                         "&7# Copyright (C) 2025 &3NeonAngelThreads (&bhttps://github.com/NeonAngelThreads&7)\n" +

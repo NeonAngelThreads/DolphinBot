@@ -17,12 +17,13 @@
 package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 
 public class ReconnectExecutor implements ICommandAction {
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         bot.getSession().disconnect("Connection terminated by user. Reconnecting...");
         if (!bot.config().isAutoReconnect()) {
             bot.scheduleConnect();
