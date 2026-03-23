@@ -57,7 +57,7 @@ public class Start {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            log.warn(ConsoleTokens.colorizeText("&6MySQL driver not found in classpath, some plugins may not work properly."));
+            log.warn(ConsoleTokens.colorizeText("[!] &6MySQL driver not found in classpath, some plugins may not work properly."));
         }
         optionParser.allowsUnrecognizedOptions();
 
@@ -140,9 +140,11 @@ public class Start {
                         log.warn("To exit DolphinBot, press Ctrl + C again.");
                         exit = true;
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getMessage());
+                } catch (Throwable ignored) {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
         });
