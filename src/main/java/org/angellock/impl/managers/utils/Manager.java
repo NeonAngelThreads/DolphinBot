@@ -27,15 +27,18 @@ public class Manager {
     public String getBaseConfigRoot(){
         if (PATH == null) {
             URL d = Start.class.getProtectionDomain().getCodeSource().getLocation();
-            String path = URLDecoder.decode(d.getPath().substring(1), StandardCharsets.UTF_8);
+            String path = URLDecoder.decode(d.getPath(), StandardCharsets.UTF_8);
+            if (Start.isWindows() && path.startsWith("/")) {
+                path = path.substring(1);
+            }
             if (path.endsWith(".jar")) {
                 path = path.substring(0, path.lastIndexOf('/'));
             }
             if (!path.endsWith("/")) {
-                path += "/";
+                path += '/';
             }
             PATH = path;
-            return path;
+            return PATH;
         }
         return PATH;
     }

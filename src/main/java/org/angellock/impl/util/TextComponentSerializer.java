@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {
 
-    private final StringBuilder result = new StringBuilder();
+    private StringBuilder result;
     @NotNull
     @Override
     public Component deserialize(@NotNull String input) {
@@ -70,6 +70,7 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
     @NotNull
     @Override
     public String serialize(@NotNull Component component) {
+        result = new StringBuilder();
         this.serializeColorAndStyle(component);
         return result.toString() + ConsoleTokens.RESET_ALL;
     }

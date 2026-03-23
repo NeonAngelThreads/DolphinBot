@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
 public class SystemChatDisplay extends SystemChatHandler {
 
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3Chat"));
+    TextComponentSerializer componentSerializer = new TextComponentSerializer();
     private String lastMsg;
     public SystemChatDisplay(AbstractRobot bot) {
         this.addExtraAction((packet) -> {
-            TextComponentSerializer componentSerializer = new TextComponentSerializer();
             String msg = componentSerializer.serialize(packet.getContent());
             if (!msg.equals(this.lastMsg)) {
                 this.lastMsg = msg;

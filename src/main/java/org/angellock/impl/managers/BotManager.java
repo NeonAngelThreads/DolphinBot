@@ -94,7 +94,12 @@ public class BotManager extends ResourceHelper {
         log.info(ConsoleTokens.colorizeText("&bBot profiles was specified: &d{}"), Arrays.toString(profileKeys));
 
         Map<String, JsonElement> jsonObject = this.readJSONContent();
-        Map<String, JsonElement> profiles = jsonObject.get("profiles").getAsJsonObject().asMap();
+        JsonElement profileElements = jsonObject.get("profiles");
+        if (profileElements == null || !profileElements.isJsonObject()) {
+            log.error(ConsoleTokens.colorizeText("&4Could not load bot profiles: profiles key is missing or not a JSON object."));
+            return this;
+        }
+        Map<String, JsonElement> profiles = profileElements.getAsJsonObject().asMap();
 
         if (profileKeys.length == 0) {
             for(String profileName: profiles.keySet()){
@@ -117,7 +122,12 @@ public class BotManager extends ResourceHelper {
     }
 
     private void registerBot(Map<String, JsonElement> profiles, String name) {
-        Map<String, JsonElement> profile = profiles.get(name).getAsJsonObject().asMap();
+        JsonElement profileElement = profiles.get(name);
+        if (profileElement == null || !profileElement.isJsonObject()) {
+            log.error(ConsoleTokens.colorizeText("&4Could not register bot: profile '&5{}&4' is missing or invalid."), name);
+            return;
+        }
+        Map<String, JsonElement> profile = profileElement.getAsJsonObject().asMap();
         String botName = profile.get("name").getAsString();
         String password = profile.get("password").getAsString();
         List<JsonElement> owners = profile.get("owner").getAsJsonArray().asList();
