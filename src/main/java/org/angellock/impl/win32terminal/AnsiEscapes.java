@@ -70,21 +70,20 @@ public class AnsiEscapes {
                     .encoding(StandardCharsets.UTF_8)
                     .build();
 
-            reader = LineReaderBuilder.builder()
-                    .terminal(AnsiEscapes.getTerminal())
-                    .parser(new DefaultParser())
-                    .completer(new SystemTabCompleter())
-                    //.option(LineReader.Option.CASE_INSENSITIVE, true)
-                    .option(LineReader.Option.AUTO_LIST, true) // Automatically list options
-                    .option(LineReader.Option.LIST_PACKED, true) // Display completions in a compact form
-                    .option(LineReader.Option.AUTO_MENU, true) // Show menu automatically
-                    .option(LineReader.Option.MENU_COMPLETE, true)
-                    .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M> ")
-                    .build();
-
         } catch (IOException e) {
             System.out.println("Could not enable ansi escapes: " + e.getMessage());
         }
+        reader = LineReaderBuilder.builder()
+                .terminal(AnsiEscapes.getTerminal())
+                .parser(new DefaultParser())
+                .completer(new SystemTabCompleter())
+                //.option(LineReader.Option.CASE_INSENSITIVE, true)
+                .option(LineReader.Option.AUTO_LIST, true) // Automatically list options
+                .option(LineReader.Option.LIST_PACKED, true) // Display completions in a compact form
+                .option(LineReader.Option.AUTO_MENU, true) // Show menu automatically
+                .option(LineReader.Option.MENU_COMPLETE, true)
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M> ")
+                .build();
     }
 
     public static void printArt(String ARCHIVE_VERSION) {
