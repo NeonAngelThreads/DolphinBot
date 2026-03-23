@@ -46,22 +46,23 @@ public class AnsiEscapes {
     }
 
     public static void enableAnsiSupport() {
-        if (Kernel32.INSTANCE == null) return;
-        Pointer stdHandle = Kernel32.INSTANCE.GetStdHandle(-11);
-        int[] consoleMode = new int[1];
-        if (Kernel32.INSTANCE.GetConsoleMode(stdHandle, consoleMode) > 0) {
-            int newMode = consoleMode[0] | TERMINAL_PROCESSING;
-            Kernel32.INSTANCE.SetConsoleMode(stdHandle, newMode);
-        } else {
-            System.out.println("Failed to set console mode.");
-        }
-        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
-        try {
-            Process p = pb.start();
-            p.waitFor();
-        } catch (IOException e) {
-            System.out.println(ConsoleTokens.colorizeText("&eFailed to change and active page code to 65001.(UTF-8)"));
-        } catch (InterruptedException ignore) {
+        if (Kernel32.INSTANCE != null) {
+            Pointer stdHandle = Kernel32.INSTANCE.GetStdHandle(-11);
+            int[] consoleMode = new int[1];
+            if (Kernel32.INSTANCE.GetConsoleMode(stdHandle, consoleMode) > 0) {
+                int newMode = consoleMode[0] | TERMINAL_PROCESSING;
+                Kernel32.INSTANCE.SetConsoleMode(stdHandle, newMode);
+            } else {
+                System.out.println("Failed to set console mode.");
+            }
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
+            try {
+                Process p = pb.start();
+                p.waitFor();
+            } catch (IOException e) {
+                System.out.println(ConsoleTokens.colorizeText("&eFailed to change and active page code to 65001.(UTF-8)"));
+            } catch (InterruptedException ignore) {
+            }
         }
         try {
             winTerminal = TerminalBuilder.builder()
