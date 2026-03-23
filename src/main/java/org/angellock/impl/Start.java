@@ -54,6 +54,11 @@ public class Start {
         OptionParser optionParser = new OptionParser();
 
         AnsiEscapes.enableAnsiSupport();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.warn(ConsoleTokens.colorizeText("&6MySQL driver not found in classpath, some plugins may not work properly."));
+        }
         optionParser.allowsUnrecognizedOptions();
 
         optionParser.accepts("owner").withRequiredArg().ofType(String.class);
