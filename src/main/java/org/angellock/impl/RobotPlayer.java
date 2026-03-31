@@ -42,7 +42,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     private final long msgDelay;
     private volatile @Setter boolean shouldReconnect = true;
     @Getter
-    private ChatMessageManager messageManager;
+    private final ChatMessageManager messageManager;
     @Getter
     private final LoginStateMachine loginStateMachine = new LoginStateMachine(LoginState.DISCONNECTED);
     protected @Setter Position loginPos = new Position();
@@ -76,6 +76,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
                         }
                     } else if (!shouldWait) {
                         if (this.getMessageManager().pollMessage()) {
+                            this.lastMsgTime = System.currentTimeMillis();
                             shouldWait = true;
                         }
                     } else if (canSendMessages()) {
@@ -101,11 +102,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     @Override
     public boolean canSendMessages() {
         long t = System.currentTimeMillis();
-        if (t - lastMsgTime > msgDelay) {
-            this.lastMsgTime = t;
-            return true;
-        }
-        return false;
+        return t - lastMsgTime > msgDelay;
     }
 
     @Override
@@ -138,7 +135,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     @Override
     public void onPreLogin() {
         while (!this.shouldReconnect) {
-            try {Thread.sleep(500);
+            try {Thread.sleep(500L);
             } catch (InterruptedException ignored) {}
         }
         this.connectTime = System.currentTimeMillis();

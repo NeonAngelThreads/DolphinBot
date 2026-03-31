@@ -38,7 +38,6 @@ public class Manager {
                 path += '/';
             }
             PATH = path;
-            return PATH;
         }
         return PATH;
     }

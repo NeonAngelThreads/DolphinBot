@@ -30,6 +30,7 @@ public class PlayerTracker {
     private final static Map<UUID, Player> onlinePlayers = new HashMap<>();
     @Getter
     private final static Map<Integer, UUID> UUIDMapping = new HashMap<>();
+    @Getter
     private final static Map<String, UUID> playerUUIDMapping = new HashMap<>();
     @Getter
     private final static Map<UUID, GameProfile> playerProfiles = new HashMap<>();
@@ -74,10 +75,6 @@ public class PlayerTracker {
     public static void delPlayer(@NotNull UUID player) {
         onlinePlayers.remove(player);
         playerProfiles.remove(player);
-    }
-
-    public static Map<String, UUID> getPlayerUUIDMapping() {
-        return playerUUIDMapping;
     }
 
 }

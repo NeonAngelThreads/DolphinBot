@@ -143,7 +143,7 @@ public class Start {
                 } catch (Throwable ignored) {
                     try {
                         Thread.sleep(1000L);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored1) {
                     }
                 }
             }
