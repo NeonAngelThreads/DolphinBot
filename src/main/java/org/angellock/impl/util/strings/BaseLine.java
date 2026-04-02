@@ -9,23 +9,41 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.util.strings;
 
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
+import org.jline.reader.ParsedLine;
 
-public class ReconnectEvent extends AbstractEvent {
+import java.util.List;
 
-    public static HandlerMapper mapper = new HandlerMapper();
-
+public record BaseLine(String line, int cursor) implements ParsedLine {
 
     @Override
-    public HandlerMapper getMapper() {
+    public String word() {
+        return this.line.substring(0, this.cursor);
+    }
+
+    @Override
+    public int wordCursor() {
+        return this.cursor;
+    }
+
+    @Override
+    public int wordIndex() {
+        return 0;
+    }
+
+    @Override
+    public List<String> words() {
         return null;
+    }
+
+    @Override
+    public int cursor() {
+        return 0;
     }
 }

@@ -20,6 +20,8 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import lombok.Getter;
+import org.angellock.impl.api.HttpAPIServer;
 import org.angellock.impl.dolphin.GUIWindowManager;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
@@ -46,10 +48,17 @@ public class Start {
     private static volatile boolean exit = false;
     private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
     private static GUIWindowManager guiManager;
+    @Getter
+    private static OptionSet GLOBAL_CONFIG;
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser();
 
         AnsiEscapes.enableAnsiSupport();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.warn(ConsoleTokens.colorizeText("[!] &6MySQL driver not found in classpath, some plugins may not work properly."));
+        }
         optionParser.allowsUnrecognizedOptions();
 
         optionParser.accepts("owner").withRequiredArg().ofType(String.class);
@@ -59,19 +68,21 @@ public class Start {
         optionParser.accepts("port").withRequiredArg().ofType(String.class);
         optionParser.accepts("skin-recorder").withRequiredArg().ofType(String.class);
         optionParser.accepts("gui");
+        optionParser.accepts("api").withOptionalArg().ofType(Integer.class).defaultsTo(25560);
         ArgumentAcceptingOptionSpec<String> profilesArg = optionParser.accepts("profiles").withOptionalArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> pluginDir = optionParser.accepts("plugin-dir").withOptionalArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> configFile = optionParser.accepts("config-file").withOptionalArg().ofType(String.class);
         NonOptionArgumentSpec<String> unrecognizedOptions = optionParser.nonOptions();
-        OptionSet parsedOption = optionParser.parse(args);
+        GLOBAL_CONFIG = optionParser.parse(args);
 
-        List<?> badOptions = parsedOption.valuesOf(unrecognizedOptions);
+
+        List<?> badOptions = GLOBAL_CONFIG.valuesOf(unrecognizedOptions);
         if (!badOptions.isEmpty()){
             log.warn(ConsoleTokens.colorizeText("&6Omitted option arguments " + badOptions));
         }
 
         String defaultConfigPath = Optional
-                .ofNullable(parsedOption.valueOf(configFile))
+                .ofNullable(GLOBAL_CONFIG.valueOf(configFile))
                 .orElse("not-set");
 
         if (Files.exists(Paths.get(defaultConfigPath))) {
@@ -80,17 +91,27 @@ public class Start {
             log.error(ConsoleTokens.colorizeText("&4The specified config file path is invalid: " + defaultConfigPath));
             defaultConfigPath = null;
         }
-        @Nullable String profiles = (parsedOption.valueOf(profilesArg));
+        @Nullable String profiles = (GLOBAL_CONFIG.valueOf(profilesArg));
 
-        ConfigManager config = new ConfigManager(parsedOption, defaultConfigPath);
+        ConfigManager config = new ConfigManager();
+        ConfigManager.setDefaultPath(defaultConfigPath);
+        ConfigManager.initGlobalSettings();
         BotManager botManager = new BotManager(defaultConfigPath, ".json", config)
-                .globalPluginManager(parsedOption.valueOf(pluginDir))
+                .globalPluginManager(GLOBAL_CONFIG.valueOf(pluginDir))
                 .loadProfiles(profiles);
-
+        BotManager.setInstance(botManager);
         Map<String, RobotPlayer> bots = BotManager.bots();
         getTerminal(bots.values().iterator().next());
 
-        if (parsedOption.has("gui")){
+        // Start HTTP API Server
+        int apiPort = (int) GLOBAL_CONFIG.valueOf("api");
+        try {
+            new HttpAPIServer(apiPort);
+        } catch (Exception e) {
+            log.error("Failed to start HTTP API Server on port " + apiPort, e);
+        }
+
+        if (GLOBAL_CONFIG.has("gui")){
             guiManager = new GUIWindowManager(botManager);
             guiManager.startGUI();
         } else {
@@ -102,7 +123,7 @@ public class Start {
 
     }
 
-    private static void getTerminal(AbstractRobot dolphinBot) {
+    private static void getTerminal(RobotPlayer dolphinBot) {
         LineReader reader = AnsiEscapes.getReader();
         terminalInput = new Thread(() -> {
             while (true) {
@@ -119,9 +140,11 @@ public class Start {
                         log.warn("To exit DolphinBot, press Ctrl + C again.");
                         exit = true;
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    log.info(ConsoleTokens.colorizeText("&8Failed to send message: &7{}"), e.getMessage());
+                } catch (Throwable ignored) {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ignored1) {
+                    }
                 }
             }
         });

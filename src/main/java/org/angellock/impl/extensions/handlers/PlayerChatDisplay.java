@@ -16,6 +16,7 @@
 
 package org.angellock.impl.extensions.handlers;
 
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.handlers.PlayerChatPacketHandler;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
@@ -24,12 +25,12 @@ import org.slf4j.LoggerFactory;
 
 public class PlayerChatDisplay extends PlayerChatPacketHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3Chat"));
-    public PlayerChatDisplay() {
+    public PlayerChatDisplay(AbstractRobot bot) {
         this.addExtraAction((packet) -> {
             TextComponentSerializer componentSerializer = new TextComponentSerializer();
             String msg = packet.getContent();
             String player = componentSerializer.serialize(packet.getName());
-            log.info(ConsoleTokens.colorizeText("&6{}&7>> {}"), player, ConsoleTokens.colorizeText(msg));
+            log.info(bot.getBotLabel(), ConsoleTokens.colorizeText("&6{}&7>> {}"), player, ConsoleTokens.colorizeText(msg));
         });
     }
 }

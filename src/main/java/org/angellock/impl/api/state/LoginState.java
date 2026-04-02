@@ -17,7 +17,6 @@
 package org.angellock.impl.api.state;
 
 public enum LoginState {
-    
     LOGIN(0),
     REGISTER(1),
     VERIFY(2),
@@ -28,7 +27,7 @@ public enum LoginState {
     private final int stateValue;
     private StateAction action;
 
-    private LoginState(int stateValue) {
+    LoginState(int stateValue) {
         this.stateValue = stateValue;
     }
 

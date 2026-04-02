@@ -19,11 +19,15 @@ package org.angellock.impl.util;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.encoder.Encoder;
+import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.win32terminal.AnsiEscapes;
 import org.jline.reader.LineReader;
 
 import java.nio.charset.StandardCharsets;
 
+@Setter
+@Getter
 public class JLineAppender extends AppenderBase<ILoggingEvent> {
     private Encoder<ILoggingEvent> encoder;
 
@@ -50,11 +54,4 @@ public class JLineAppender extends AppenderBase<ILoggingEvent> {
         }
     }
 
-    public Encoder<ILoggingEvent> getEncoder() {
-        return encoder;
-    }
-
-    public void setEncoder(Encoder<ILoggingEvent> encoder) {
-        this.encoder = encoder;
-    }
 }

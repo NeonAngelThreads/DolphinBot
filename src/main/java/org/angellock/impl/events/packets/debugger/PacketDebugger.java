@@ -16,16 +16,18 @@
 
 package org.angellock.impl.events.packets.debugger;
 
+import lombok.extern.slf4j.Slf4j;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.network.event.session.*;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 
+@Slf4j
 public class PacketDebugger implements SessionListener {
 
     @Override
     public void packetReceived(Session session, Packet packet) {
-        System.out.println(ConsoleTokens.colorizeText("&9Received &1<- &7" + packet.toString()));
+        log.info(ConsoleTokens.colorizeText("&9Received &1<- &8{}"), packet.toString());
     }
 
     @Override
@@ -35,7 +37,7 @@ public class PacketDebugger implements SessionListener {
 
     @Override
     public void packetSent(Session session, Packet packet) {
-        System.out.println(ConsoleTokens.colorizeText("&Send &1-> &r" + packet.toString()));
+        log.info(ConsoleTokens.colorizeText("&2Send &1-> &r{}"), packet.toString());
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.terminal.TerminalCommand;
 import org.angellock.impl.managers.TerminalCommandManager;
@@ -25,18 +26,19 @@ import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 
 public class HelpExecutor implements org.angellock.impl.commands.ICommandAction {
     static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3Help"));
 
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         for (TerminalCommand command : TerminalCommandManager.registeredCommand.values()) {
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_NAME, command.getName()));
-            log.info("          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_ALIASES, command.getAliases()));
-            log.info("          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_DESCRIPTION, command.getDescription()));
-            log.info("          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_PROVIDER, command.getProvider()));
-            log.info("          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_USAGE, command.getUsage()));
+            log.info(bot.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_NAME, command.getName()));
+            log.info(bot.getBotLabel(),"          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_ALIASES, command.getAliases()));
+            log.info(bot.getBotLabel(),"          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_DESCRIPTION, command.getDescription()));
+            log.info(bot.getBotLabel(),"          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_PROVIDER, command.getProvider()));
+            log.info(bot.getBotLabel(),"          {}", TranslatableUtil.getFormattedMessage(EnumSystemEvents.COMMAND_USAGE, command.getUsage()));
         }
     }
 }

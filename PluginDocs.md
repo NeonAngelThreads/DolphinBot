@@ -40,7 +40,7 @@ In this section, you will learn:
    ````java
     package org.angellock.impl.extensions;
 
-    import org.angellock.impl.AbstractRobot;
+    import org.angellock.impl.RobotPlayer;
     import org.angellock.impl.events.handlers.LoginHandler;
     import org.angellock.impl.providers.AbstractPlugin;
     
@@ -73,7 +73,7 @@ In this section, you will learn:
         }
     
         @Override
-        public void onEnable(AbstractRobot entityBot) {
+        public void onEnable(RobotPlayer entityBot) {
             getListeners().add(
                     new LoginHandler().addExtraAction((loginPacket) -> {
                         getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
@@ -117,7 +117,7 @@ These methods aiming to build the chain calling style for simplicity.
 import org.angellock.impl.api.state.LoginStateMachine;
 
 @Override
-public void onEnable(AbstractRobot entityBot) {
+public void onEnable(RobotPlayer entityBot) {
 
     LoginStateMachine loginStateMachine = new LoginStateMachine();
 
@@ -150,7 +150,7 @@ you can simply add `.and()` branch statement in that state node. **For example:*
 import org.angellock.impl.api.state.LoginStateMachine;
 
 @Override
-public void onEnable(AbstractRobot entityBot) {
+public void onEnable(RobotPlayer entityBot) {
 
     LoginStateMachine loginStateMachine = new LoginStateMachine();
 
@@ -161,8 +161,8 @@ public void onEnable(AbstractRobot entityBot) {
             .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
             .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
             .source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction)
-            .resetOnlyWhen(KickReason.HUMAN_VERIFICATION).
-            build(); // This method will build the state machine object without return value
+            .resetOnlyWhen(KickReason.HUMAN_VERIFICATION)
+            .build(); // This method will build the state machine object without return value
 }
 ```
 **Explanation:**  
@@ -249,7 +249,7 @@ Added below code to `onEnable()` method in `ExamplePlugin`:
 ```java
 ...
 @Override
-public void onEnable(AbstractRobot entityBot) {
+public void onEnable(RobotPlayer entityBot) {
     registerEvent(new MyListener());
 }
 ```
@@ -267,7 +267,7 @@ import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
 public class ExamplePlugin extends AbstractPlugin implements IListener {
     @Override
-    public void onEnable(AbstractRobot entityBot) {
+    public void onEnable(RobotPlayer entityBot) {
         registerEvent(this); // Because plugin class implemented IListener, so it is also a Listener Type.
     }
 
@@ -329,7 +329,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     
    ````java
     @Override
-    public void onEnable(AbstractRobot entityBot) {
+    public void onEnable(RobotPlayer entityBot) {
         getListeners().add(
                 new LoginHandler().addExtraAction((loginPacket) -> {
                     getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode());
@@ -366,7 +366,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     import org.angellock.impl.extensions.examples.MyHandler;
 
     @Override
-    public void onEnable(AbstractRobot entityBot) {
+    public void onEnable(RobotPlayer entityBot) {
         getListeners().add(
                 new MyHandler().addExtraAction((playerChatPacket) -> {
                     getLogger().info(playerChatPacket.getContent()); // Example Action.
@@ -396,7 +396,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     and prints sub-commands you passed, the code looks like this:
   ```java
     @Override
-    public void onEnable(AbstractRobot abstractRobot) {
+    public void onEnable(RobotPlayer robot) {
         getCommands().register(new CommandBuilder().withName("test").allowedUsers("PlayerName").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             
@@ -409,7 +409,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
     **An Example of getting command-sender and command list:**
     ```java
      @Override
-     public void onEnable(AbstractRobot abstractRobot) {
+     public void onEnable(RobotPlayer robot) {
         getCommands().register(new CommandBuilder().withName("uid").allowedUsers("Melibertan").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             String commandSender = response.getSender(); // get player who have sent this command.
@@ -436,13 +436,14 @@ Message APIs are aimed to help you to connect one or more bot between bots, that
 **Step 1:**    
 Defining a message listener on a receiver bot:  
 ExampleMessageListener.java
+
 ```java
 import org.angellock.impl.events.IListener;
-import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
+import org.angellock.impl.api.events.MessageBroadcastEvent;
 
 public class ExampleMessageListener implements IListener {
     @EventHandler
-    public void onMessage(MessageBroadcastEvent event){
+    public void onMessage(MessageBroadcastEvent event) {
         log.info("message payload: {}", event.getMessage());
         // Do something...
     }
@@ -451,12 +452,12 @@ public class ExampleMessageListener implements IListener {
 Step 2:
 
 ```java
-import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.plugin.AbstractPlugin;
 
 public class MessagePlugin extends AbstractPlugin {
     @Override
-    public void onEnable(AbstractRobot robot){
+    public void onEnable(RobotPlayer robot){
         getEvents().registerListeners(new ExampleMessageListener(), this);
     }
 }
@@ -470,7 +471,7 @@ import org.angellock.impl.plugin.AbstractPlugin;
 
 public class SendMsgPlugin extends AbstractPlugin {
     @Override
-    public void onEnable(AbstractRobot robot) {
+    public void onEnable(RobotPlayer robot) {
         if (...){ // when the sending condition is meet
             BotManager.getBotByName("bot#1") // you can specify on which bot you want to send to. (you define on config file)
                     .callHandleableEvent(new MessageBroadcastEvent("something you want to send"));
@@ -492,9 +493,9 @@ DolphinAPI also implemented player event system, allowing you to detect and pred
         import org.angellock.impl.providers.AbstractPlugin;
         public class TestPlayerPlugin extends AbstractPlugin {
             @Override
-            public void onEnable(AbstractRobot abstractRobot) {
+            public void onEnable(RobotPlayer robot) {
                 getListeners().add(new EntityMovePacket().addExtraAction((movepacket)->{
-                    getLogger().info("Moving player position: "+abstractRobot.getOnlinePlayers().get(movepacket.getEntityId()).getPosition());
+                    getLogger().info("Moving player position: "+robot.getOnlinePlayers().get(movepacket.getEntityId()).getPosition());
                 }));
             }
      
@@ -523,11 +524,11 @@ DolphinAPI also implemented player event system, allowing you to detect and pred
         import org.angellock.impl.ingame.IPlayer;
         ...
             @Override
-            public void onEnable(AbstractRobot abstractRobot) {
-                IPlayer target = abstractRobot.getOnlinePlayers().get(movepacket.getEntityId());
+            public void onEnable(RobotPlayer robot) {
+                IPlayer target = robot.getOnlinePlayers().get(movepacket.getEntityId());
                 if(target != null){
-                    if(target.getPosition().getDistance(abstractRobot.getPosition()) < 7){
-                        abstractRobot.getSession().disconnect("Test");
+                    if(target.getPosition().getDistance(robot.getPosition()) < 7){
+                        robot.getSession().disconnect("Test");
                     }
                 }
             }

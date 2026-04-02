@@ -19,6 +19,7 @@ package org.angellock.impl.commands.terminal;
 import lombok.Getter;
 import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
@@ -42,7 +43,7 @@ public class TerminalCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean activate(CommandResponse entity, AbstractRobot bot) {
+    public boolean activate(CommandResponse entity, RobotPlayer bot) {
         if (entity.isFromTerminal()){
             action.onCommand(entity, bot);
             return true;

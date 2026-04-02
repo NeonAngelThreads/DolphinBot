@@ -17,10 +17,11 @@
 package org.angellock.impl.api.state;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 
 public abstract class StateAction {
-    protected AbstractRobot entityBot;
-    public StateAction(AbstractRobot botInstance) {
+    protected RobotPlayer entityBot;
+    public StateAction(RobotPlayer botInstance) {
         this.entityBot = botInstance;
     }
     public abstract void execute();

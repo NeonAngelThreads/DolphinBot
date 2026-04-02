@@ -17,20 +17,24 @@
 package org.angellock.impl.extensions.actions;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.StateAction;
 import org.angellock.impl.util.ConsoleTokens;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 
 public class RegisterAction extends StateAction {
-    public RegisterAction(AbstractRobot botInstance) {
+    private long antiSpam = 0L;
+    public RegisterAction(RobotPlayer botInstance) {
         super(botInstance);
     }
 
     @Override
     public void execute() {
-        entityBot.getPluginManager().loadAllPlugins(entityBot);
-        entityBot.setBypassed(true);
-        entityBot.getMessageManager().sendCommand(String.format("reg %s %s", entityBot.getPassword(), entityBot.getPassword()));
-        VerifyAction.setVerifyTimes(0);
+        if (System.currentTimeMillis() - this.antiSpam > 3000L){
+            entityBot.setBypassed(true);
+            entityBot.getMessageManager().sendCommand(String.format("reg %s %s", entityBot.getPassword(), entityBot.getPassword()));
+            VerifyAction.setVerifyTimes(0);
+            this.antiSpam = System.currentTimeMillis();
+        }
     }
 }

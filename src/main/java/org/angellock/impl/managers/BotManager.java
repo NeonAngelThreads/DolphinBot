@@ -20,11 +20,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.dolphin.MessageBroadcastEvent;
-import org.angellock.impl.extensions.Plugins;
+import org.angellock.impl.api.events.MessageBroadcastEvent;
+import org.angellock.impl.api.events.NotificationBroadcastEvent;
+import org.angellock.impl.extensions.PluginsProvider;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -44,13 +46,14 @@ import java.util.*;
 public class BotManager extends ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger("BotManager");
     private static final Map<String, RobotPlayer> bots = new HashMap<>();
-    @Getter
-    private static final TranslatableUtil systemEventLogger = new TranslatableUtil();
     private final Gson gson = new GsonBuilder()
                                     .serializeNulls()
                                     .create();
     private final ConfigManager botConfigHelper;
     private static File globalPluginDir;
+    @Getter @Setter
+    private static BotManager instance;
+
     public BotManager(@Nullable String defaultPath, String fileType, ConfigManager botConfigHelper) {
         super(defaultPath, fileType);
         this.botConfigHelper = botConfigHelper;
@@ -79,9 +82,9 @@ public class BotManager extends ResourceHelper {
         return new String[0];
     }
     public BotManager loadProfiles(String profileString){
-        String commandLinePlayerName = (String)this.botConfigHelper.getConfigValue("username");
-        String commandLinePWD = (String)this.botConfigHelper.getConfigValue("password");
-        String commandLineOwner = (String)this.botConfigHelper.getConfigValue("owner");
+        String commandLinePlayerName = this.botConfigHelper.getConfigValue("username");
+        String commandLinePWD = this.botConfigHelper.getConfigValue("password");
+        String commandLineOwner = this.botConfigHelper.getConfigValue("owner");
         if (commandLinePlayerName != null) {
             this.registerBot(commandLinePlayerName, commandLinePWD, commandLineOwner);
             return this;
@@ -91,7 +94,12 @@ public class BotManager extends ResourceHelper {
         log.info(ConsoleTokens.colorizeText("&bBot profiles was specified: &d{}"), Arrays.toString(profileKeys));
 
         Map<String, JsonElement> jsonObject = this.readJSONContent();
-        Map<String, JsonElement> profiles = jsonObject.get("profiles").getAsJsonObject().asMap();
+        JsonElement profileElements = jsonObject.get("profiles");
+        if (profileElements == null || !profileElements.isJsonObject()) {
+            log.error(ConsoleTokens.colorizeText("&4Could not load bot profiles: profiles key is missing or not a JSON object."));
+            return this;
+        }
+        Map<String, JsonElement> profiles = profileElements.getAsJsonObject().asMap();
 
         if (profileKeys.length == 0) {
             for(String profileName: profiles.keySet()){
@@ -105,8 +113,21 @@ public class BotManager extends ResourceHelper {
         return this;
     }
 
+    public static void registerNew(String key, RobotPlayer botObject){
+        log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"),
+                botObject.getInfoHelper().getName(),
+                botObject.getInfoHelper().getPassword(),
+                botObject.getInfoHelper().getOwners());
+        bots.put(key, botObject);
+    }
+
     private void registerBot(Map<String, JsonElement> profiles, String name) {
-        Map<String, JsonElement> profile = profiles.get(name).getAsJsonObject().asMap();
+        JsonElement profileElement = profiles.get(name);
+        if (profileElement == null || !profileElement.isJsonObject()) {
+            log.error(ConsoleTokens.colorizeText("&4Could not register bot: profile '&5{}&4' is missing or invalid."), name);
+            return;
+        }
+        Map<String, JsonElement> profile = profileElement.getAsJsonObject().asMap();
         String botName = profile.get("name").getAsString();
         String password = profile.get("password").getAsString();
         List<JsonElement> owners = profile.get("owner").getAsJsonArray().asList();
@@ -115,7 +136,7 @@ public class BotManager extends ResourceHelper {
         List<JsonElement> plugins = profile.get("enabled_plugins").getAsJsonArray().asList();
         List<AbstractPlugin> pluginList = new ArrayList<>();
         for(JsonElement element: plugins){
-            pluginList.add(Plugins.getPluginFromString(element.getAsString()));
+            pluginList.add(PluginsProvider.getPluginFromString(element.getAsString()));
         }
 
         ProxyObject proxySetting = this.gson.fromJson(profile.get("proxy"), ProxyObject.class);
@@ -146,12 +167,11 @@ public class BotManager extends ResourceHelper {
                 .withOwners(owners)
                 .enableProxy(proxyInfo)
                 .buildProtocol();
-        bots.put(name, (RobotPlayer) botInst);
+        registerNew(name, (RobotPlayer) botInst);
     }
 
     private void registerBot(String username, String password, String owner){
         String[] owners = this.escapeArrayCommandLine(owner);
-        log.info(ConsoleTokens.colorizeText("&5Registering bot: &o&1[&9name=&b{}&9, password=&b{}&9, owner=&b{}&1]"), username, password, Arrays.toString(owners));
 
         AbstractRobot botInst = new RobotPlayer(this.botConfigHelper, new PluginManager(globalPluginDir))
                 .withName(username)
@@ -159,7 +179,7 @@ public class BotManager extends ResourceHelper {
                 .withOwners(owners)
                 .buildProtocol();
 
-        for (Plugins plugins: Plugins.values()){
+        for (PluginsProvider plugins: PluginsProvider.values()){
             botInst
                     .getPluginManager()
                     .getDefaultPlugins()
@@ -167,7 +187,16 @@ public class BotManager extends ResourceHelper {
                             .getPlugin()
                     );
         }
-        bots.put(username, (RobotPlayer) botInst);
+        registerNew(username, (RobotPlayer) botInst);
+    }
+    @SuppressWarnings("unused")
+    public static boolean removeBot(String botName){
+        RobotPlayer target = getBotByProfileName(botName);
+        if(target== null){
+            return false;
+        }
+        target.setShouldReconnect(false);
+        return bots().remove(target.getProfileName()) != null;
     }
 
     @SuppressWarnings("unused")
@@ -194,15 +223,24 @@ public class BotManager extends ResourceHelper {
     }
 
     @SuppressWarnings("unused")
-    public void distributeMessage(String handleableMessage){
+    public void distributeNotification(String handleableMessage){
         for (RobotPlayer bot : bots.values()) {
-            bot.callHandleableEvent(new MessageBroadcastEvent(handleableMessage));
+            bot.callHandleableEvent(new NotificationBroadcastEvent(handleableMessage));
         }
     }
 
     @SuppressWarnings("unused")
     public static @Nullable RobotPlayer getBotByName(String name){
         return bots.get(name);
+    }
+
+    public static @Nullable RobotPlayer getBotByProfileName(String name){
+        for (RobotPlayer value : bots().values()) {
+            if(value.getProfileName().equals(name) || value.getInfoHelper().getName().equals(name)){
+                return value;
+            }
+        }
+        return null;
     }
 
     public static Map<String, RobotPlayer> bots() {

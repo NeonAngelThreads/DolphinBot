@@ -14,9 +14,19 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.api.message;
+package org.angellock.impl.ingame;
 
-public interface INotify{
-    void onAccept();
-    void onDismiss();
+import lombok.Data;
+
+@Data
+public class PlayerProfileObject {
+    String timestamp;
+    String profileId;
+    String profileName;
+    boolean signatureRequired;
+
+
+    static class Texture{
+
+    }
 }

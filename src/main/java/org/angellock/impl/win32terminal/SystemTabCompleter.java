@@ -19,6 +19,7 @@ package org.angellock.impl.win32terminal;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.ICommandCompleter;
 import org.angellock.impl.commands.terminal.TerminalCommand;
+import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.jline.reader.Candidate;
@@ -28,17 +29,22 @@ import org.jline.reader.ParsedLine;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SystemTabCompleter implements Completer {
+    private static SystemTabCompleter completer;
+    public static SystemTabCompleter getInstance() {
+        if(completer == null){
+            completer = new SystemTabCompleter();
+        }
+        return completer;
+    }
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
         String line = parsedLine.line();
         String[] subCommands = line.replaceFirst("/","").strip().split(" ");
         HashMap<String, TerminalCommand> commands = TerminalCommandManager.getRegisteredCommand();
-        if (subCommands.length > 1) {
+        if (subCommands.length > 0) {
             TerminalCommand command = commands.get(subCommands[0]);
             if (command != null) {
                 ICommandCompleter commandCompleter = command.getCompleter();
@@ -51,19 +57,36 @@ public class SystemTabCompleter implements Completer {
                 }
             }
         }
+
+        String inputCommand = line.replaceFirst("/", "");
         for (TerminalCommand cmd : commands.values()) {
+            if (cmd.getName().contains(inputCommand)) {
+                appendCandidate(list, cmd.getName(), cmd.getDescription());
+            }
             for (String alias : cmd.getAliases()) {
-                if (alias.contains(line)) {
-                    list.add(new Candidate( "/" + alias, new AttributedStringBuilder()
-                            .style(AttributedStyle.BOLD.foreground(AttributedStyle.RED).background(AttributedStyle.BLUE)).append(alias).append("    ")
-                            .toAnsi(),
-                            cmd.getName(),
-                            null,
-                            null,
-                            null,
-                            true));
+                if (alias.contains(inputCommand)) {
+                    appendCandidate(list, alias, cmd.getDescription());
                 }
             }
         }
+        if(list.isEmpty()){
+            PlayerTracker.getPlayerUUIDMapping().forEach(
+                    (name, uuid) -> appendCandidate(list, name, uuid.toString())
+            );
+        }
+    }
+
+    private static void appendCandidate(List<Candidate> list, String name, String desc) {
+
+        Candidate candidate = new Candidate('/' + name, new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN))
+                .append(name)
+                .toAnsi(),
+                name,
+                desc,
+                null,
+                null,
+                true);
+        list.add(candidate);
     }
 }

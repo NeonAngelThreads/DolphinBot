@@ -9,7 +9,7 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
@@ -17,8 +17,8 @@
 package org.angellock.impl.events;
 
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.bukkit.ActiveListener;
 import org.angellock.impl.events.bukkit.AbstractEvent;
+import org.angellock.impl.events.bukkit.ActiveListener;
 import org.angellock.impl.plugin.Plugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.Logger;
@@ -61,13 +61,13 @@ public class EventDispatcher {
         }
     }
 
-    public void callEvent(AbstractEvent event) {
+    public void callEvent(AbstractEvent event) throws Exception{
         HandlerMapper list = event.getMapper();
         for (ActiveListener registeredListener : list.getRegisteredListenersInOrder()) {
             try {
                 registeredListener.call(event);
             } catch (InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                log.warn(ConsoleTokens.colorizeText("&6Error: could not pass event {}, details: {}"), event, e.getMessage());
             }
         }
     }

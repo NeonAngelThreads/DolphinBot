@@ -17,6 +17,7 @@
 package org.angellock.impl.util;
 
 import org.angellock.impl.EnumSystemEvents;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +28,7 @@ import java.util.ResourceBundle;
 
 public class TranslatableUtil {
     private static final Logger log = LoggerFactory.getLogger("EventLogger");
-    public static ResourceBundle bundle;
-
-    public TranslatableUtil() {
-        this(ConfigManager.getCoreSettings().getLanguage());
-    }
-
-    public TranslatableUtil(Locale locale) {
-        bundle = ResourceBundle.getBundle("locale", locale);
-    }
+    public static ResourceBundle bundle = ResourceBundle.getBundle("locale", ConfigManager.global().getLanguage());
 
     public static void infoTranslatableOf(EnumSystemEvents translatableEvent, Object... args) {
         log.info(getFormattedMessage(translatableEvent, args));

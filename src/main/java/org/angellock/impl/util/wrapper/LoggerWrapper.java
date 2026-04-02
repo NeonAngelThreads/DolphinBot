@@ -14,14 +14,36 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.api.message;
+package org.angellock.impl.util.wrapper;
 
-public abstract class Notification implements INotify{
-    public String message;
-    public Notification(String message) {
-        this.message = message;
+import lombok.Setter;
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.util.ConsoleTokens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LoggerWrapper {
+
+    protected Logger log;
+    @Setter
+    private AbstractRobot bot;
+    public LoggerWrapper() {
+        log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6Plugin"));
     }
-    public String notification() {
-        return this.message;
+
+    public void setLoggerName(String name){
+        log = LoggerFactory.getLogger(name);
     }
+
+    public void info(String s, Object...obj){
+        log.info(bot.getBotLabel(), s, obj);
+    }
+
+    public void warn(String s, Object...obj){
+        log.warn(bot.getBotLabel(), s, obj);
+    }
+    public void error(String s, Object...obj){
+        log.error(bot.getBotLabel(), s, obj);
+    }
+
 }

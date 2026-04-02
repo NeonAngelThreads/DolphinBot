@@ -73,7 +73,7 @@ public abstract class ResourceHelper extends AbstractJsonAccessor {
     }
 
     public String getFullFileName(){
-        return getFileName() + this.fileType;
+        return this.getFileName() + this.fileType;
     }
 
 }

@@ -46,22 +46,23 @@ public class AnsiEscapes {
     }
 
     public static void enableAnsiSupport() {
-        if (Kernel32.INSTANCE == null) return;
-        Pointer stdHandle = Kernel32.INSTANCE.GetStdHandle(-11);
-        int[] consoleMode = new int[1];
-        if (Kernel32.INSTANCE.GetConsoleMode(stdHandle, consoleMode) > 0) {
-            int newMode = consoleMode[0] | TERMINAL_PROCESSING;
-            Kernel32.INSTANCE.SetConsoleMode(stdHandle, newMode);
-        } else {
-            System.out.println("Failed to set console mode.");
-        }
-        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
-        try {
-            Process p = pb.start();
-            p.waitFor();
-        } catch (IOException e) {
-            System.out.println(ConsoleTokens.colorizeText("&eFailed to change and active page code to 65001.(UTF-8)"));
-        } catch (InterruptedException ignore) {
+        if (Kernel32.INSTANCE != null) {
+            Pointer stdHandle = Kernel32.INSTANCE.GetStdHandle(-11);
+            int[] consoleMode = new int[1];
+            if (Kernel32.INSTANCE.GetConsoleMode(stdHandle, consoleMode) > 0) {
+                int newMode = consoleMode[0] | TERMINAL_PROCESSING;
+                Kernel32.INSTANCE.SetConsoleMode(stdHandle, newMode);
+            } else {
+                System.out.println("Failed to set console mode.");
+            }
+            ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "chcp", "65001").inheritIO();
+            try {
+                Process p = pb.start();
+                p.waitFor();
+            } catch (IOException e) {
+                System.out.println(ConsoleTokens.colorizeText("&eFailed to change and active page code to 65001.(UTF-8)"));
+            } catch (InterruptedException ignore) {
+            }
         }
         try {
             winTerminal = TerminalBuilder.builder()
@@ -69,21 +70,20 @@ public class AnsiEscapes {
                     .encoding(StandardCharsets.UTF_8)
                     .build();
 
-            reader = LineReaderBuilder.builder()
-                    .terminal(AnsiEscapes.getTerminal())
-                    .parser(new DefaultParser())
-                    .completer(new SystemTabCompleter())
-                    //.option(LineReader.Option.CASE_INSENSITIVE, true)
-                    .option(LineReader.Option.AUTO_LIST, true) // Automatically list options
-                    .option(LineReader.Option.LIST_PACKED, true) // Display completions in a compact form
-                    .option(LineReader.Option.AUTO_MENU, true) // Show menu automatically
-                    .option(LineReader.Option.MENU_COMPLETE, true)
-                    .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M> ")
-                    .build();
-
         } catch (IOException e) {
             System.out.println("Could not enable ansi escapes: " + e.getMessage());
         }
+        reader = LineReaderBuilder.builder()
+                .terminal(AnsiEscapes.getTerminal())
+                .parser(new DefaultParser())
+                .completer(new SystemTabCompleter())
+                //.option(LineReader.Option.CASE_INSENSITIVE, true)
+                .option(LineReader.Option.AUTO_LIST, true) // Automatically list options
+                .option(LineReader.Option.LIST_PACKED, true) // Display completions in a compact form
+                .option(LineReader.Option.AUTO_MENU, true) // Show menu automatically
+                .option(LineReader.Option.MENU_COMPLETE, true)
+                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M> ")
+                .build();
     }
 
     public static void printArt(String ARCHIVE_VERSION) {

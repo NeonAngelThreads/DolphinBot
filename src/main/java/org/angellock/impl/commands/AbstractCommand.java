@@ -19,6 +19,7 @@ package org.angellock.impl.commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,5 +53,5 @@ public abstract class AbstractCommand {
         return this.aliases.contains(alias);
     }
 
-    public abstract boolean activate(CommandResponse entity, AbstractRobot bot);
+    public abstract boolean activate(CommandResponse entity, RobotPlayer bot);
 }

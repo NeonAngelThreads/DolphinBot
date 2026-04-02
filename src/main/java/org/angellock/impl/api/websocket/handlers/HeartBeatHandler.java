@@ -9,18 +9,28 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.extensions.listeners;
+package org.angellock.impl.api.websocket.handlers;
 
-import org.angellock.impl.events.IActions;
+import com.sun.net.httpserver.HttpExchange;
+import org.angellock.impl.api.websocket.APIResponseHandler;
 
-public class JoinMessageInformant implements IActions {
+import java.io.IOException;
+import java.util.Map;
+
+public class HeartBeatHandler extends APIResponseHandler {
+
     @Override
-    public void onAction(Object packet) {
+    public void handleResponse(HttpExchange exchange) throws IOException {
+        this.sendResponse(exchange, 200, Map.of("status", "ok", "message", "DolphinBot API is running"));
+    }
 
+    @Override
+    public boolean isMethodAllowed(HttpExchange exchange) {
+        return true;
     }
 }

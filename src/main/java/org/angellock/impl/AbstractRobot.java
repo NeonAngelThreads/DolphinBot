@@ -39,6 +39,7 @@ import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
@@ -47,8 +48,12 @@ import org.geysermc.mcprotocollib.network.tcp.TcpClientSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+import org.slf4j.spi.LoggingEventBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +77,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     @Setter
     protected @Getter GameMode serverGamemode = GameMode.ADVENTURE;
     @Getter
-    private ChatMessageManager messageManager;
-    @Getter
-    private BotManager botManager;
+    private BotManager botManager = BotManager.getInstance();
     protected ProxyInfo proxyInfo;
     protected @Getter ProfileObject infoHelper = new ProfileObject();
 
@@ -83,9 +86,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     protected final CommandSpec commands = new CommandSpec(this);
 
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
-        this.globalConfig = configManager;
+        this.globalConfig = configManager.buildConfig();
         this.infoHelper.setName(this.globalConfig.getConfigValue("username"));
         this.infoHelper.setPassword(this.globalConfig.getConfigValue("password"));
+        this.infoHelper.setServer(this.globalConfig.config().getServer());
+        this.infoHelper.setPort(this.globalConfig.config().getPort());
 
         this.pluginManager = pluginManager;
 
@@ -143,13 +148,14 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
     public void connect(){
         onPreLogin();
-        if (this.proxyInfo != null) {
-            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol, this.proxyInfo);
-        } else {
-            this.serverSession = new TcpClientSession(this.config().getServer(), this.config().getPort(), minecraftProtocol);
-        }
+        String serverIP = this.infoHelper.getServer();
+        int serverPort = this.infoHelper.getPort();
 
-        this.messageManager = new ChatMessageManager(this);
+        if (this.proxyInfo != null) {
+            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol, this.proxyInfo);
+        } else {
+            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol);
+        }
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
         this.serverSession.addListener(new DisconnectReasonHandler(this));
@@ -159,45 +165,15 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new PlayerEmergeHandler(this));
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
         if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
-        this.serverSession.setFlag(BuiltinFlags.READ_TIMEOUT, -1);
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
         this.serverSession.connect(true, false);
 
         this.connectDuration = System.currentTimeMillis();
-        try {
-            boolean connect = true;
-            boolean shouldWait = false;
 
-            while (true) {
-                try {
-                    Thread.sleep(20L);
-                    if (!this.serverSession.isConnected()){
-                        this.connectDuration = System.currentTimeMillis();
-                        break;
-                    } else if (connect) {
-                        if (System.currentTimeMillis() - this.connectDuration > 100L){
-                            this.pluginManager.loadAllPlugins(this);
-                            connect = false;
-                        }
-                    } else if (!shouldWait) {
-                        if (this.messageManager.pollMessage()) {
-                            shouldWait = true;
-                        }
-                    } else if (canSendMessages()) {
-                        shouldWait = false;
-                    }
-                }
-                catch (InterruptedException e){
-                    throw new RuntimeException(e);
-                } catch (IllegalArgumentException e) {
-                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
-                }
-            }
-        } finally {
-            this.serverSession.disconnect("");
-            scheduleReconnect();
-        }
+        this.mainTickingEventLoop();
     }
+
+    public abstract void mainTickingEventLoop();
 
     public abstract boolean canSendMessages();
 
@@ -244,6 +220,10 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public AbstractRobot withProfileName(String name) {
         this.infoHelper.setProfileName(name);
         return this;
+    }
+
+    public Marker getBotLabel(){
+        return MarkerFactory.getMarker(this.getInfoHelper().getName());
     }
 
     public Map<UUID, Player> getOnlinePlayers() {

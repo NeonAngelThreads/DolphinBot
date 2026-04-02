@@ -20,6 +20,9 @@ import org.angellock.impl.Start;
 import org.angellock.impl.util.colorutil.SimpleColor;
 import org.angellock.impl.win32terminal.Win32ColorSerializer;
 
+import java.security.Provider;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,20 +49,19 @@ public enum ConsoleTokens implements IComparable<SimpleColor>{
     private final char colorCode;
     private final SimpleColor hexColor;
     private static final Pattern foreground_pattern = Pattern.compile("[&§]([0-9a-flonNRU])");
+    private static final Function<String, String> colorizeAction = Start.isWindows() ? Win32ColorSerializer::serialize : (msg)->{
+        Matcher matcher = foreground_pattern.matcher(msg);
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            char code = matcher.group(1).charAt(0);
+            matcher.appendReplacement(result, parseColorFormCode(code).toString());
+        }
+        matcher.appendTail(result);
+        return standardizeText(result.toString());
+    };
 
     public static String colorizeText(String msg){
-        if (Start.isWindows()) {
-            return Win32ColorSerializer.serialize(msg);
-        }else {
-            Matcher matcher = foreground_pattern.matcher(msg);
-            StringBuilder result = new StringBuilder();
-            while (matcher.find()) {
-                char code = matcher.group(1).charAt(0);
-                matcher.appendReplacement(result, parseColorFormCode(code).toString());
-            }
-            matcher.appendTail(result);
-            return standardizeText(result.toString());
-        }
+        return colorizeAction.apply(msg);
     }
 
     public static String fadeText(String text){

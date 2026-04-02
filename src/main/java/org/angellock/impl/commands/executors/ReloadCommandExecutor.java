@@ -17,6 +17,7 @@
 package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.angellock.impl.managers.BotManager;
@@ -28,11 +29,11 @@ public class ReloadCommandExecutor implements ICommandAction {
     private static final Logger log = LoggerFactory.getLogger(ReloadCommandExecutor.class);
 
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         int botAmount = BotManager.bots().size();
         if (botAmount == 2) {
             String pluginName = responseEntity.getCommandList()[1];
-            log.info("Reloading plugin {}", pluginName);
+            log.info(bot.getBotLabel(),"Reloading plugin {}", pluginName);
 
             PluginManager pm = bot.getPluginManager();
             pm.reloadPlugin(bot, pluginName);

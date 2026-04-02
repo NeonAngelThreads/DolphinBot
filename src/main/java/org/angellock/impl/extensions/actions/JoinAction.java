@@ -17,6 +17,7 @@
 package org.angellock.impl.extensions.actions;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.StateAction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
@@ -25,17 +26,12 @@ import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.Serv
 import java.time.Instant;
 
 public class JoinAction extends StateAction {
-    public JoinAction(AbstractRobot botInstance) {
+    public JoinAction(RobotPlayer botInstance) {
         super(botInstance);
     }
 
     @Override
     public void execute() {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         entityBot.sendPacket(new ServerboundSetCarriedItemPacket(2));
         entityBot.sendPacket(new ServerboundUseItemPacket(
                 Hand.MAIN_HAND,
@@ -43,5 +39,10 @@ public class JoinAction extends StateAction {
                 0,
                 0
         ));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

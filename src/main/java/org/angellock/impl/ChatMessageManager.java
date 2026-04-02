@@ -34,9 +34,9 @@ public class ChatMessageManager{
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&7ChatMessageManager"));
     @Getter
     private final Queue<String> chatMessageQueue = new ArrayDeque<>();
-    private final AbstractRobot instance;
+    private final RobotPlayer instance;
 
-    public ChatMessageManager(AbstractRobot bot) {
+    public ChatMessageManager(RobotPlayer bot) {
         this.instance = bot;
     }
 
@@ -44,7 +44,7 @@ public class ChatMessageManager{
         this.chatMessageQueue.offer(msg);
     }
 
-    public boolean pollMessage() {
+    public boolean pollMessage() throws Exception{
         String removal = this.chatMessageQueue.poll();
         if(removal != null) {
             this.sendMessagePacket(removal);
@@ -60,18 +60,18 @@ public class ChatMessageManager{
     private void sendMessagePacket(String message){
         if (!this.isCommand(message)) {
             MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
-            log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
+            log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
             this.instance.sendPacket(msgPacket);
         } else {
             try {
                 boolean valid = this.instance.commandManager.callCommand(message, instance);
                 if (!valid) {
                     MinecraftPacket cmd = new ServerboundChatCommandPacket(message.replaceFirst("/", ""));
-                    log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
+                    log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
                     this.instance.sendPacket(cmd);
                 }
             } catch (Exception e) {
-                log.warn("An exception occurred: &7{}", e.getMessage());
+                log.warn(instance.getBotLabel(), "An exception occurred: &7{}", e.getMessage());
             }
         }
     }

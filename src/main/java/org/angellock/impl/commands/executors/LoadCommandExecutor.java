@@ -17,6 +17,7 @@
 package org.angellock.impl.commands.executors;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandAction;
 import org.angellock.impl.plugin.PluginManager;
@@ -25,14 +26,14 @@ import java.io.File;
 
 public class LoadCommandExecutor implements ICommandAction {
     @Override
-    public void onCommand(CommandResponse responseEntity, AbstractRobot bot) {
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         if (responseEntity.getCommandList().length > 1) {
             String pluginName = responseEntity.getCommandList()[1];
             hotLoad(bot, pluginName);
         }
     }
 
-    private static void hotLoad(AbstractRobot bot, String pluginName) {
+    private static void hotLoad(RobotPlayer bot, String pluginName) {
         PluginManager pm = bot.getPluginManager();
         pm.loadPlugin(bot, new File(pm.getPluginFolder(), pluginName));
     }

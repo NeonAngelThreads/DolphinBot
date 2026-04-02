@@ -16,12 +16,16 @@
 
 package org.angellock.impl.plugin;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.EventDispatcher;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
+import org.angellock.impl.util.wrapper.LoggerWrapper;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,14 +38,18 @@ import java.util.List;
 
 public abstract class AbstractPlugin extends Manager implements Plugin {
     private Path dataPath;
+    @Getter
     private String simpleName;
-    private Manifest manifest;
-    private boolean enabled = false;
+    @Getter
     private Manifest pluginManifest;
+    private boolean enabled = false;
     private final List<SessionListener> listeners = new ArrayList<>();
-    private AbstractRobot targetBot;
-    private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&6&lPlugins"));
+    private RobotPlayer targetBot;
+    private final LoggerWrapper log = new LoggerWrapper();
     protected Thread schedulerThread;
+    @Setter
+    @Getter
+    private ClassLoader classLoader;
 
     public AbstractPlugin(@Nullable String defaultDataPath){
         this();
@@ -57,21 +65,14 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         String path = getBaseConfigRoot();
         this.dataPath = Path.of(path);
         this.simpleName = this.getClass().getSimpleName();
+        log.setLoggerName(this.simpleName);
     }
 
     public EventDispatcher getEvents(){
         return this.targetBot.getPluginManager().event().dispatcher();
     }
 
-    public String getSimpleName() {
-        return simpleName;
-    }
-
-    public Manifest getManifest(){
-        return this.pluginManifest;
-    }
-
-    public static Logger getLogger(){
+    public LoggerWrapper getLogger(){
         return log;
     }
 
@@ -87,14 +88,23 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
     public TerminalCommandManager getTerminalCommands(){
         return this.targetBot.getCommandManager();
     }
+
     @Override
-    public void onEnables(AbstractRobot targetBot){
+    public void onPreEnable(RobotPlayer targetBot){
         this.targetBot = targetBot;
+        this.log.setBot(targetBot);
         if (this.listeners.isEmpty()) {
-            onEnable(this.targetBot);
+            try {
+                onEnable(this.targetBot);
+                onEnable((AbstractRobot) this.targetBot);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
     }
-    public abstract void onEnable(final AbstractRobot entityBot);
+    @Deprecated
+    public void onEnable(final AbstractRobot entityBot){};
+    public abstract void onEnable(final RobotPlayer entityBot);
 
     public abstract String getPluginName();
     @Override
@@ -103,7 +113,7 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
             return this.getPluginName();
         }
         else {
-            String pluginName = getManifest().getPluginName();
+            String pluginName = getPluginManifest().getPluginName();
             if(!pluginName.isEmpty()){
                 return pluginName;
             }
@@ -125,8 +135,8 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         return this.listeners;
     }
     @Override
-    public void setManifest(Manifest manifest){
-        this.manifest = manifest;
+    public void setPluginManifest(Manifest pluginManifest){
+        this.pluginManifest = pluginManifest;
     }
     @Override
     public void setEnabled(boolean state){

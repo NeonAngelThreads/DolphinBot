@@ -17,6 +17,7 @@
 package org.angellock.impl.api.state;
 
 import it.unimi.dsi.fastutil.Pair;
+import lombok.Getter;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.reason.IReason;
@@ -24,8 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginStateMachine extends StateMachine<String> {
-
-    private static final Logger log = LoggerFactory.getLogger(LoginStateMachine.class);
+    @Getter
     private LoginState currentState;
     private final LoginState initialState;
     private String message;
@@ -86,14 +86,18 @@ public class LoginStateMachine extends StateMachine<String> {
         String key = this.lookForCache(input);
         if (!key.isEmpty()) {
             LoginState nextState = this.transitionMap.get(Pair.of(this.currentState.name(), key));
+            StateAction action = this.currentState.getAction();
+            if (action != null){
+                action.execute();
+            }
+            TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
             if (nextState != null) {
-                TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
                 this.currentState = nextState;
-                StateAction action = this.currentState.getAction();
-                if (action != null) {
-                    action.execute();
-                    return true;
+                StateAction currentAction = currentState.getAction();
+                if (currentAction != null){
+                    currentAction.execute();
                 }
+                return true;
             }
         }
         return false;

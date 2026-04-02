@@ -16,15 +16,19 @@
 
 package org.angellock.impl;
 
+import lombok.Getter;
 import lombok.Setter;
-import org.angellock.impl.events.annotations.EventHandler;
+import org.angellock.impl.api.state.LoginState;
+import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.ingame.IPlayer;
+import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.math.Position;
+import org.angellock.impl.util.reason.KickReason;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
@@ -36,11 +40,16 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     private long connectTime;
     private long lastMsgTime = 0L;
     private final long msgDelay;
+    private volatile @Setter boolean shouldReconnect = true;
+    @Getter
+    private final ChatMessageManager messageManager;
+    @Getter
+    private final LoginStateMachine loginStateMachine = new LoginStateMachine(LoginState.DISCONNECTED);
     protected @Setter Position loginPos = new Position();
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
         super(configManager, pluginManager);
-
+        this.messageManager = new ChatMessageManager(this);
         this.msgDelay = Long.parseLong(Optional
                 .ofNullable(
                         this.globalConfig.getConfigValue("msg-send-delay"))
@@ -49,30 +58,69 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     }
 
     @Override
+    public void mainTickingEventLoop() {
+        try {
+            boolean connect = true;
+            boolean shouldWait = false;
+
+            while (true) {
+                try {
+                    Thread.sleep(20L);
+                    if (!this.serverSession.isConnected()){
+                        this.connectDuration = System.currentTimeMillis();
+                        break;
+                    } else if (connect) {
+                        if (System.currentTimeMillis() - this.connectDuration > 100L){
+                            this.pluginManager.loadAllPlugins(this);
+                            connect = false;
+                        }
+                    } else if (!shouldWait) {
+                        if (this.getMessageManager().pollMessage()) {
+                            this.lastMsgTime = System.currentTimeMillis();
+                            shouldWait = true;
+                        }
+                    } else if (canSendMessages()) {
+                        shouldWait = false;
+                    }
+                }
+                catch (InterruptedException e){
+                    continue;
+                } catch (IllegalArgumentException e) {
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
+                } catch (Exception e) {
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
+                }
+            }
+        } finally {
+            this.serverSession.disconnect("");
+            if (BotManager.getBotByProfileName(getProfileName()) != null){
+                scheduleReconnect();
+            }
+        }
+    }
+
+    @Override
     public boolean canSendMessages() {
         long t = System.currentTimeMillis();
-        if (t - lastMsgTime > msgDelay) {
-            this.lastMsgTime = t;
-            return true;
-        }
-        return false;
+        return t - lastMsgTime > msgDelay;
     }
 
     @Override
     public void onJoin() {
-        log.info(TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
     }
 
     @Override
     public void onQuit(String reason) {
         long millis = System.currentTimeMillis() - this.connectTime;
-        log.info(ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
-        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DISCONNECT, reason);
+        log.info(this.getBotLabel(), ConsoleTokens.colorizeText("[{}] &7Session Duration: &f{}ms"), this.getProfileName(), millis);
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.DISCONNECT, reason));
         this.getPluginManager().disableAllPlugins(this);
         this.getSession().getChannel().close();
         this.getSession().getChannel().deregister();
         this.getSession().getChannel().closeFuture();
         TranslatableUtil.infoTranslatableOf(EnumSystemEvents.DOLPHIN_TIMING_RESET);
+        BotManager.bots().put(getProfileName(), this);
     }
 
     public void callHandleableEvent(AbstractEvent event){
@@ -80,14 +128,18 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     }
 
     @Override
-    public void onKicked() {
+    public void onKicked(KickReason reason) {
         return;
     }
 
     @Override
     public void onPreLogin() {
+        while (!this.shouldReconnect) {
+            try {Thread.sleep(500L);
+            } catch (InterruptedException ignored) {}
+        }
         this.connectTime = System.currentTimeMillis();
-        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.CONNECT, this.config().getServer(), String.valueOf(this.config().getPort()));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CONNECT, this.getInfoHelper().getServer(), String.valueOf(this.getInfoHelper().getPort())));
     }
 
     @Override

@@ -23,6 +23,8 @@ import java.util.List;
 
 @Data
 public class ProfileObject {
+    private String server;
+    private int port;
     private String profileName;
     private String name;
     private String password;

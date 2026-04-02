@@ -21,7 +21,9 @@ public enum KickReason implements IReason {
     PLAYER_EXIST(""),
     HUMAN_VERIFICATION(""),
     CONNECTION_RESET(""),
-    END_OF_STREAM("");
+    END_OF_STREAM(""),
+
+    CLOSED_BY_API("Stopped via API");
 
     private final String reason;
 

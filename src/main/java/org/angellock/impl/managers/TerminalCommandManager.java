@@ -18,6 +18,7 @@ package org.angellock.impl.managers;
 
 import lombok.Getter;
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandCompleter;
@@ -53,7 +54,7 @@ public class TerminalCommandManager {
         return log;
     }
 
-    public boolean callCommand(String msg, AbstractRobot bot) {
+    public boolean callCommand(String msg, RobotPlayer bot) {
         String[] commandList = msg
                 .replaceFirst("/", "")
                 .strip()

@@ -18,6 +18,7 @@ package org.angellock.impl.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -29,7 +30,7 @@ import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {
 
-    private final StringBuilder result = new StringBuilder();
+    private StringBuilder result;
     @NotNull
     @Override
     public Component deserialize(@NotNull String input) {
@@ -53,8 +54,12 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
             }
         }
 
-        if (component instanceof TextComponent){
-            this.result.append(((TextComponent) component).content());
+        if (component instanceof TextComponent textComponent){
+            this.result.append(textComponent.content());
+        }
+
+        if (component instanceof TranslatableComponent translatableComponent){
+            this.result.append(translatableComponent.key());
         }
 
         for (Component child : component.children()){
@@ -65,6 +70,7 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
     @NotNull
     @Override
     public String serialize(@NotNull Component component) {
+        result = new StringBuilder();
         this.serializeColorAndStyle(component);
         return result.toString() + ConsoleTokens.RESET_ALL;
     }

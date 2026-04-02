@@ -17,8 +17,9 @@
 package org.angellock.impl.plugin;
 
 import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
 
 public interface IPluginInjectable {
-    void enable(AbstractPlugin plugin, AbstractRobot provider);
+    void enable(AbstractPlugin plugin, RobotPlayer provider);
     void disable(AbstractRobot botInstance, String pluginName);
 }

@@ -14,24 +14,19 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.events.dolphin;
+package org.angellock.impl.commands.executors;
 
-import lombok.Getter;
-import org.angellock.impl.events.HandlerMapper;
-import org.angellock.impl.events.bukkit.AbstractEvent;
-@Getter
-public class MessageBroadcastEvent extends AbstractEvent {
-    private static final HandlerMapper HANDLERS = new HandlerMapper();
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.commands.CommandResponse;
+import org.angellock.impl.commands.ICommandAction;
+
+public class ReconnectExecutor implements ICommandAction {
     @Override
-    public HandlerMapper getMapper() {
-        return null;
-    }
-    private final String message;
-    public MessageBroadcastEvent(String message){
-        this.message = message;
-    }
-
-    public static HandlerMapper getHandlers() {
-        return HANDLERS;
+    public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
+        bot.getSession().disconnect("Connection terminated by user. Reconnecting...");
+        if (!bot.config().isAutoReconnect()) {
+            bot.scheduleConnect();
+        }
     }
 }

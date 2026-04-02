@@ -52,7 +52,11 @@ public abstract class AbstractJsonAccessor extends Manager implements IAccessibl
     }
 
     public Map<String, JsonElement> readJSONContent(){
-        return this.readDataFrom(this.configPath).asMap();
+        JsonObject jsonObject = this.readDataFrom(this.configPath);
+        if (jsonObject == null) {
+            return new HashMap<>();
+        }
+        return jsonObject.asMap();
     }
     @Override
     public void writeDataTo(HashMap<String, Object> data, Path filePath) throws IOException {

@@ -22,7 +22,9 @@
 
     <groupId>org.angellock.impl</groupId>
     <artifactId>DolphinBot</artifactId>
-    <version>1.3.1-RELEASE-full</version>
+    <name>DolphinBot</name>
+    <description>Advanced Bot Cluster Framework for Minecraft</description>
+    <version>1.4.2-RELEASE-full</version>
     <packaging>
         jar
     </packaging>
@@ -86,6 +88,23 @@
             <artifactId>lombok</artifactId>
             <version>RELEASE</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.net.httpserver</groupId>
+            <artifactId>http</artifactId>
+            <version>20070405</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/jrt-fs.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.1.0</version>
         </dependency>
     </dependencies>
 

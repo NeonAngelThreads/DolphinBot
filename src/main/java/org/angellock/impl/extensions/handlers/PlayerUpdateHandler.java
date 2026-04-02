@@ -16,6 +16,7 @@
 
 package org.angellock.impl.extensions.handlers;
 
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.handlers.PlayerLogInfoHandler;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
@@ -26,16 +27,19 @@ import org.geysermc.mcprotocollib.protocol.data.game.PlayerListEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Base64;
+
 public class PlayerUpdateHandler extends PlayerLogInfoHandler.UpdateHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&ePlayers"));
-    public PlayerUpdateHandler(PlayerInfoHelper helper) {
+    public PlayerUpdateHandler(PlayerInfoHelper helper, AbstractRobot bot) {
         this.addExtraAction((updatePacket) -> {
             PlayerListEntry[] players = updatePacket.getEntries();
             for (PlayerListEntry player : players) {
                 GameProfile playerProfile = player.getProfile();
                 PlayerTracker.putPlayer(new Player(playerProfile));
+
                 if (playerProfile != null) {
-                    log.info(ConsoleTokens.colorizeText("&7[&a+&7]{}"), helper.getLogMsg(playerProfile));
+                    log.info(bot.getBotLabel(), ConsoleTokens.colorizeText("&7[&a+&7]{}"), helper.getLogMsg(playerProfile));
                 }
             }
         });

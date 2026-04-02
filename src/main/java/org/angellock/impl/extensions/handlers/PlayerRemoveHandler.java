@@ -16,6 +16,7 @@
 
 package org.angellock.impl.extensions.handlers;
 
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.handlers.PlayerLogInfoHandler;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
@@ -28,7 +29,7 @@ import java.util.UUID;
 
 public class PlayerRemoveHandler extends PlayerLogInfoHandler.RemoveHandler {
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&ePlayers"));
-    public PlayerRemoveHandler(PlayerInfoHelper helper) {
+    public PlayerRemoveHandler(PlayerInfoHelper helper, AbstractRobot bot) {
         this.addExtraAction((packet -> {
             if(packet.getProfileIds().isEmpty()) {
                 return;
@@ -40,7 +41,7 @@ public class PlayerRemoveHandler extends PlayerLogInfoHandler.RemoveHandler {
             Player player = PlayerTracker.getPlayerByUUID(logoutPlayer);
             if (player != null) {
                 PlayerTracker.delPlayer(logoutPlayer);
-                log.info(ConsoleTokens.colorizeText("&7[&4-&7]") + helper.getLogMsg(player.getProfile()));
+                log.info(bot.getBotLabel(), ConsoleTokens.colorizeText("&7[&4-&7]") + helper.getLogMsg(player.getProfile()));
             }
         }));
     }
