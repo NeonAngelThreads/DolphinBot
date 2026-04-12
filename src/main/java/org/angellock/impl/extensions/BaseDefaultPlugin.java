@@ -39,6 +39,7 @@ import org.angellock.impl.util.PlayerInfoHelper;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.HandPreference;
 import org.geysermc.mcprotocollib.protocol.data.game.setting.ChatVisibility;
+import org.geysermc.mcprotocollib.protocol.data.game.setting.ParticleStatus;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundClientInformationPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
@@ -155,7 +156,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     }
 
     public void joinGame(AbstractRobot player){
-        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.RIGHT_HAND, true, true));
+        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.RIGHT_HAND, true, true, ParticleStatus.ALL));
 
         player.sendPacket(new ServerboundSetCarriedItemPacket(1));
         player.sendPacket(new ServerboundUseItemPacket(

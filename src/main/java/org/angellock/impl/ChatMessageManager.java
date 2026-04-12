@@ -59,7 +59,7 @@ public class ChatMessageManager{
 
     private void sendMessagePacket(String message){
         if (!this.isCommand(message)) {
-            MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet());
+            MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet(), 0);
             log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
             this.instance.sendPacket(msgPacket);
         } else {

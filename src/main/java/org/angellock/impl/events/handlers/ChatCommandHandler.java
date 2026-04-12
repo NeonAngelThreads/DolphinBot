@@ -26,13 +26,12 @@ import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerChatPacket;
 
 public class ChatCommandHandler extends AbstractEventProcessor<ClientboundPlayerChatPacket> {
-
+    private final AbstractCommandSerializer serializer = new XinCommandSerializer();
     public ChatCommandHandler(CommandSpec commands) {
         this.addExtraAction((chat) -> {
             PlainTextSerializer nameSerializer = new PlainTextSerializer();
             String sender = nameSerializer.serialize(chat.getName());
             String commandMsg = chat.getContent();
-            AbstractCommandSerializer serializer = new XinCommandSerializer();
             CommandResponse meta = serializer.serialize(commandMsg, sender);
             commands.executeCommand(meta);
         });

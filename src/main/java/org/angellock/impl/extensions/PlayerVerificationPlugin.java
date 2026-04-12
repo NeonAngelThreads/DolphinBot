@@ -40,6 +40,7 @@ import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerAction;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerActionType;
+import org.geysermc.mcprotocollib.protocol.data.game.item.HashedStack;
 import org.geysermc.mcprotocollib.protocol.data.game.item.ItemStack;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerButtonClickPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerClickPacket;
@@ -118,7 +119,8 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
                     4,
                     ContainerActionType.CLICK_ITEM,
                     (ContainerAction) () -> 0,
-                    new ItemStack(0), new HashMap<>())
+                    null,
+                    new HashMap<>())
             );
         })));
 

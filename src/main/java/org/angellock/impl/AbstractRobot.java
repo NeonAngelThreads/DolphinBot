@@ -41,10 +41,13 @@ import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.TranslatableUtil;
+import org.geysermc.mcprotocollib.auth.GameProfile;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
+import org.geysermc.mcprotocollib.network.ClientSession;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.network.Session;
-import org.geysermc.mcprotocollib.network.tcp.TcpClientSession;
+import org.geysermc.mcprotocollib.network.factory.ClientNetworkSessionFactory;
+import org.geysermc.mcprotocollib.network.session.ClientNetworkSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
@@ -55,6 +58,8 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +69,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures {
-    protected TcpClientSession serverSession;
+    protected ClientSession serverSession;
     @Getter
     protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
@@ -151,11 +156,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         String serverIP = this.infoHelper.getServer();
         int serverPort = this.infoHelper.getPort();
 
-        if (this.proxyInfo != null) {
-            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol, this.proxyInfo);
-        } else {
-            this.serverSession = new TcpClientSession(serverIP, serverPort, minecraftProtocol);
-        }
+        this.serverSession = ClientNetworkSessionFactory.factory()
+                    .setRemoteSocketAddress(new InetSocketAddress(serverIP, serverPort))
+                    .setProtocol(this.minecraftProtocol)
+                    .setProxy(this.proxyInfo)
+                    .create();//new ClientNetworkSession(new InetSocketAddress(serverIP, serverPort), minecraftProtocol, this.proxyInfo);
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
         this.serverSession.addListener(new DisconnectReasonHandler(this));
@@ -166,7 +171,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
         if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
         this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
-        this.serverSession.connect(true, false);
+        this.serverSession.connect(true);
 
         this.connectDuration = System.currentTimeMillis();
 

@@ -158,6 +158,6 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     }
 
     public void interactBlock(int x, int y, int z, int i3) {
-        this.sendPacket(new ServerboundUseItemOnPacket(Vector3i.from(x, y, z), Direction.NORTH, Hand.MAIN_HAND, 0f, 0f, 0f, false, i3));
+        this.sendPacket(new ServerboundUseItemOnPacket(Vector3i.from(x, y, z), Direction.NORTH, Hand.MAIN_HAND, 0f, 0f, 0f, false, false, i3));
     }
 }

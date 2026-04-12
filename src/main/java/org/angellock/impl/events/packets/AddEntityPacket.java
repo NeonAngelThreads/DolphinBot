@@ -20,7 +20,8 @@ import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.events.game.EntityEmergedEvent;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.network.packet.Packet;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.spawn.ClientboundAddEntityPacket;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundAddEntityPacket;
+
 
 public class AddEntityPacket extends AbstractEventProcessor<ClientboundAddEntityPacket> {
     public AddEntityPacket() {
