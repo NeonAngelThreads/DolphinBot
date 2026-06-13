@@ -10,36 +10,27 @@
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
  *    program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://space.bilibili.com/386644641
  */
+package org.angellock.impl.protocol.via;
 
-package org.angellock.impl.api.state;
+import com.viaversion.viaversion.platform.NoopInjector;
 
-import it.unimi.dsi.fastutil.Pair;
-import lombok.extern.slf4j.Slf4j;
-import org.angellock.impl.util.reason.IReason;
+/**
+ * No-op injector that tells ViaVersion our codec handler name.
+ * Since we manually insert {@link DolphinViaCodec} into each channel's pipeline,
+ * there's nothing to inject automatically.
+ */
+public class DolphinViaInjector extends NoopInjector {
 
-import java.util.ArrayList;
-import java.util.HashMap;
+    public static final String CODEC_NAME = "dolphin-via-codec";
 
-@Slf4j
-public abstract class StateMachine<T> {
-    protected final HashMap<Pair<String, T>, LoginState> transitionMap = new HashMap<>(32);
-    protected final ArrayList<String> msgCache = new ArrayList<>();
-
-    public String lookForCache(String msg) {
-        for (String s: this.msgCache){
-            if (msg.contains(s)){
-                return s;
-            }
-        }
-        return "";
+    @Override
+    public String getEncoderName() {
+        return CODEC_NAME;
     }
 
-    public abstract boolean check(T input);
-
-    public abstract void reset();
-
-    public abstract LoginStateMachine resetOnlyWhen(IReason reason);
+    @Override
+    public String getDecoderName() {
+        return CODEC_NAME;
+    }
 }

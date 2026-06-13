@@ -66,6 +66,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
             while (true) {
                 try {
                     Thread.sleep(20L);
+//                    log.info("tick");
                     if (!this.serverSession.isConnected()){
                         this.connectDuration = System.currentTimeMillis();
                         break;
@@ -107,7 +108,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
 
     @Override
     public void onJoin() {
-        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
+        //log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
     }
 
     @Override

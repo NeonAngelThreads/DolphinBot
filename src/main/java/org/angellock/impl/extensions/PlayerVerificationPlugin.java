@@ -130,7 +130,8 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
                     stateMachine.check(msg);
         });
         SessionListener titleListener = new TitlePacketHandler().addExtraAction((titleTextPacket)->{
-            String titleMsg = ((TextComponent) titleTextPacket.getText()).content();
+            TextComponentSerializer componentSerializer = new TextComponentSerializer();
+            String titleMsg = componentSerializer.serialize(titleTextPacket.getText());
             stateMachine.check(titleMsg);
         });
         getListeners().add(chatListener);

@@ -31,6 +31,7 @@ import org.angellock.impl.win32terminal.AnsiEscapes;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
+import org.angellock.impl.protocol.ViaVersionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,7 @@ public class Start {
         OptionParser optionParser = new OptionParser();
 
         AnsiEscapes.enableAnsiSupport();
+        ViaVersionManager.getInstance().initialize();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -125,6 +127,10 @@ public class Start {
 
     private static void getTerminal(RobotPlayer dolphinBot) {
         LineReader reader = AnsiEscapes.getReader();
+        if (reader == null) {
+            log.warn("Terminal reader not available, skipping interactive terminal input.");
+            return;
+        }
         terminalInput = new Thread(() -> {
             while (true) {
                 try {

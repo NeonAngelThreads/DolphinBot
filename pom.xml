@@ -9,8 +9,10 @@
   ~
   ~    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
   ~    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
-  ~    License for more details. You should have received a copy of the GNU General Public License along with this
-  ~    program.  If not, see <https://www.gnu.org/licenses/>.
+  ~    License for more details.
+  ~
+  ~    You should have received a copy of the GNU General Public License along with this program.  If not, see
+  ~    <https://www.gnu.org/licenses/>.
   ~
   ~ https://space.bilibili.com/386644641
   -->
@@ -39,6 +41,14 @@
         <repository>
             <id>opencollab</id>
             <url>https://repo.opencollab.dev/main/</url>
+        </repository>
+        <repository>
+            <id>viaversion</id>
+            <url>https://repo.viaversion.com/</url>
+        </repository>
+        <repository>
+            <id>lenni0451</id>
+            <url>https://maven.lenni0451.net/everything</url>
         </repository>
     </repositories>
 
@@ -102,9 +112,91 @@
             <version>1.5.4</version>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.3.1-jre</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.1.0</version>
+        </dependency>
+
+        <!-- ViaVersion Dependencies -->
+        <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-common</artifactId>
+            <version>5.9.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viabackwards-common</artifactId>
+            <version>5.9.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viarewind-common</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.raphimc</groupId>
+            <artifactId>ViaLegacy</artifactId>
+            <version>3.0.16</version>
+        </dependency>
+
+        <!-- netminecraft: the Minecraft networking library used by ViaProxy.
+             Provides MCPipeline, MinecraftChannelInitializer, NetClient, packet types,
+             and all the low-level codec infrastructure that ViaVersion needs. -->
+        <dependency>
+            <groupId>net.raphimc.netminecraft</groupId>
+            <artifactId>all</artifactId>
+            <version>3.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.lenni0451</groupId>
+            <artifactId>MCPing</artifactId>
+            <version>1.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.lenni0451</groupId>
+            <artifactId>Reflect</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+
+        <!-- ViaProxy runtime dependencies (loaded reflectively in ViaProxyEmbedder from a
+             standalone ViaProxy JAR we ship alongside the bot). The bot does NOT need to
+             compile against ViaProxy sources. -->
+        <dependency>
+            <groupId>net.lenni0451</groupId>
+            <artifactId>optconfig</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.lenni0451</groupId>
+            <artifactId>LambdaEvents</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.22.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
         </dependency>
     </dependencies>
 
@@ -125,29 +217,22 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.angellock.impl.Start</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptorRefs>
-                        <descriptorRef>
-                            jar-with-dependencies
-                        </descriptorRef>
-                    </descriptorRefs>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.angellock.impl.Start</mainClass>
+                                </transformer>
+                            </transformers>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
