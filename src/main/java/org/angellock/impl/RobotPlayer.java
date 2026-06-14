@@ -124,10 +124,6 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
         BotManager.bots().put(getProfileName(), this);
     }
 
-    public void callHandleableEvent(AbstractEvent event){
-        this.getPluginManager().event().broadcastEvent(event);
-    }
-
     @Override
     public void onKicked(KickReason reason) {
         return;

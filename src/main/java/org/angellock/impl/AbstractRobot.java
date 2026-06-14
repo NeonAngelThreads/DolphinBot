@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
+import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.events.handlers.ChatCommandHandler;
 import org.angellock.impl.events.handlers.DisconnectReasonHandler;
 import org.angellock.impl.events.handlers.PlayerEmergeHandler;
@@ -252,8 +253,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
         this.serverSession.addListener((IConnectListener) event -> onJoin());
         this.serverSession.addListener(new DisconnectReasonHandler(this));
-        this.serverSession.addListener(new ServerChatCommandHandler(this.commands));
-        this.serverSession.addListener(new ChatCommandHandler(this.commands));
+        this.serverSession.addListener(new ServerChatCommandHandler(this.commands, this));
+        this.serverSession.addListener(new ChatCommandHandler(this.commands, this));
         this.serverSession.addListener(new EntityMovePacket());
         this.serverSession.addListener(new PlayerEmergeHandler(this));
         this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
@@ -268,7 +269,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
         this.mainTickingEventLoop();
     }
-    
+
+    public void callHandleableEvent(AbstractEvent event){
+        this.getPluginManager().event().broadcastEvent(event);
+    }
+
     /**
      * Get the detected server protocol version
      */

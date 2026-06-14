@@ -16,24 +16,33 @@
 
 package org.angellock.impl.events.handlers;
 
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.AbstractCommandSerializer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.AbstractEventProcessor;
+import org.angellock.impl.events.game.PlayerChatEvent;
 import org.angellock.impl.util.PlainTextSerializer;
 import org.angellock.impl.util.XinCommandSerializer;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerChatPacket;
 
 public class ChatCommandHandler extends AbstractEventProcessor<ClientboundPlayerChatPacket> {
-    private final AbstractCommandSerializer serializer = new XinCommandSerializer();
-    public ChatCommandHandler(CommandSpec commands) {
+    private final AbstractCommandSerializer serializer;
+    public ChatCommandHandler(CommandSpec commands, AbstractRobot robotPlayer) {
+        this.serializer = new XinCommandSerializer(robotPlayer);
         this.addExtraAction((chat) -> {
             PlainTextSerializer nameSerializer = new PlainTextSerializer();
             String sender = nameSerializer.serialize(chat.getName());
             String commandMsg = chat.getContent();
             CommandResponse meta = serializer.serialize(commandMsg, sender);
-            commands.executeCommand(meta);
+            if (meta == null){
+                robotPlayer.callHandleableEvent(new PlayerChatEvent(sender, commandMsg));
+            } else {
+                commands.executeCommand(meta);
+            }
         });
     }
 

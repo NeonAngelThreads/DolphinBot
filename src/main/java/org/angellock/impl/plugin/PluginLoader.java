@@ -108,6 +108,11 @@ public class PluginLoader{
             );
 
             log.error(ConsoleTokens.standardizeText(ConsoleTokens.GRAY + e.toString()));
+        } catch (Throwable throwable){
+            log.error(ConsoleTokens.colorizeText("&4Failed to load plugin " +
+                    pluginManifest + "&c Reason &l&5"+ throwable.getMessage())
+            );
+
         }
         return null;
     }

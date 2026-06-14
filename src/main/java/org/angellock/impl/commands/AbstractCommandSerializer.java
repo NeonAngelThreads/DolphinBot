@@ -16,24 +16,31 @@
 
 package org.angellock.impl.commands;
 
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.events.game.PlayerChatEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 
-public abstract class AbstractCommandSerializer implements Serializable {
+public abstract class AbstractCommandSerializer {
     private final char chineseExclamation = '！';
     private final char exclamation = '!';
-
+    private final AbstractRobot robotPlayer;
+    public AbstractCommandSerializer(AbstractRobot robotPlayer) {
+        this.robotPlayer = robotPlayer;
+    }
     public @Nullable CommandResponse serialize(String stringCommand){
-        int exclamationIndex = stringCommand.indexOf(exclamation);
-        int chineseExclamationIndex = stringCommand.indexOf(chineseExclamation);
-        if(exclamationIndex == -1){
-            if(chineseExclamationIndex == -1){
-                return null;
+
+        PlayerChatEvent msgPart = getEvent(stringCommand);
+        if (msgPart != null) {
+            String[] commands = this.splitCommands(msgPart.getMessage(), exclamation, chineseExclamation);
+            if (commands != null){
+                return extractCommandMeta(msgPart, commands);
             }
-            return extractCommandMeta(stringCommand, chineseExclamation);
+            robotPlayer.callHandleableEvent(new PlayerChatEvent(msgPart.getPlayer(), msgPart.getMessage()));
         }
-        return extractCommandMeta(stringCommand, exclamation);
+        return null;
     }
 
     public @Nullable CommandResponse serialize(String command, String commandSender) {
@@ -48,6 +55,21 @@ public abstract class AbstractCommandSerializer implements Serializable {
         return null;
     }
 
-    protected abstract @Nullable CommandResponse extractCommandMeta(String msg, char target);
+    public String[] splitCommands(String msg, char...chars){
+        for (char ch: chars) {
+            if (msg.indexOf(ch) != -1) {
+                msg = msg.substring(msg.indexOf(ch) + 1);
+                String[] commands = msg.split(" ");
+                for (int o = 0; o < commands.length; o++) {
+                    commands[o] = commands[o].trim();
+                }
+                return commands;
+            }
+        }
+        return null;
+    }
 
+    protected abstract @Nullable CommandResponse extractCommandMeta(PlayerChatEvent event, String[] commands);
+
+    public abstract @Nullable PlayerChatEvent getEvent(String raw);
 }

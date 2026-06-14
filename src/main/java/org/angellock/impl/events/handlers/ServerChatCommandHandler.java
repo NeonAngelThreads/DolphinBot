@@ -16,10 +16,13 @@
 
 package org.angellock.impl.events.handlers;
 
+import org.angellock.impl.AbstractRobot;
+import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.AbstractCommandSerializer;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.AbstractEventProcessor;
+import org.angellock.impl.events.game.PlayerChatEvent;
 import org.angellock.impl.util.PlainTextSerializer;
 import org.angellock.impl.util.XinCommandSerializer;
 import org.geysermc.mcprotocollib.network.packet.Packet;
@@ -27,11 +30,11 @@ import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.Clientbound
 
 public class ServerChatCommandHandler extends AbstractEventProcessor<ClientboundSystemChatPacket> {
 
-    public ServerChatCommandHandler(CommandSpec commands) {
+    public ServerChatCommandHandler(CommandSpec commands, AbstractRobot bot) {
         this.addExtraAction((chatPacket -> {
             PlainTextSerializer componentSerializer = new PlainTextSerializer();
             String commandMsg = componentSerializer.serialize(chatPacket.getContent());
-            AbstractCommandSerializer serializer = new XinCommandSerializer();
+            AbstractCommandSerializer serializer = new XinCommandSerializer(bot);
             CommandResponse meta = serializer.serialize(commandMsg);
             commands.executeCommand(meta);
         }));

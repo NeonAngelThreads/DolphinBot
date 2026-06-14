@@ -32,6 +32,11 @@ public class JoinAction extends StateAction {
 
     @Override
     public void execute() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         entityBot.sendPacket(new ServerboundSetCarriedItemPacket(2));
         entityBot.sendPacket(new ServerboundUseItemPacket(
                 Hand.MAIN_HAND,
@@ -39,10 +44,6 @@ public class JoinAction extends StateAction {
                 0,
                 0
         ));
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 }

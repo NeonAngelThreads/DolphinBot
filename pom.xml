@@ -26,7 +26,7 @@
     <artifactId>DolphinBot</artifactId>
     <name>DolphinBot</name>
     <description>Advanced Bot Cluster Framework for Minecraft</description>
-    <version>1.5.0-BETA-full</version>
+    <version>1.6.0-ALPHA-full</version>
     <packaging>
         jar
     </packaging>

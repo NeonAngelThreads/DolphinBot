@@ -38,14 +38,14 @@ public class DolphinViaCodec extends ViaCodecHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("[ViaCodec] INBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
+        log.debug("[ViaCodec] INBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
                 ctx.channel().id().asShortText(),
                 msg.getClass().getSimpleName(),
                 connection.isActive(),
                 connection.shouldTransformPacket(),
                 connection.isClientSide());
         if (msg instanceof io.netty.buffer.ByteBuf buf) {
-            log.info("[ViaCodec] INBOUND readableBytes={}", buf.readableBytes());
+            log.debug("[ViaCodec] INBOUND readableBytes={}", buf.readableBytes());
             if (buf.readableBytes() > 0) {
                 int dumpLen = Math.min(buf.readableBytes(), 32);
                 byte[] dump = new byte[dumpLen];
@@ -54,7 +54,7 @@ public class DolphinViaCodec extends ViaCodecHandler {
                 buf.resetReaderIndex();
                 StringBuilder hex = new StringBuilder();
                 for (byte b : dump) hex.append(String.format("%02x ", b));
-                log.info("[ViaCodec] INBOUND raw bytes: {}", hex.toString().trim());
+                log.debug("[ViaCodec] INBOUND raw bytes: {}", hex.toString().trim());
             }
         }
         try {
@@ -68,14 +68,14 @@ public class DolphinViaCodec extends ViaCodecHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        log.info("[ViaCodec] OUTBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
+        log.debug("[ViaCodec] OUTBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
                 ctx.channel().id().asShortText(),
                 msg.getClass().getSimpleName(),
                 connection.isActive(),
                 connection.shouldTransformPacket(),
                 connection.isClientSide());
         if (msg instanceof io.netty.buffer.ByteBuf buf) {
-            log.info("[ViaCodec] OUTBOUND readableBytes={}", buf.readableBytes());
+            log.debug("[ViaCodec] OUTBOUND readableBytes={}", buf.readableBytes());
             if (buf.readableBytes() > 0) {
                 int dumpLen = Math.min(buf.readableBytes(), 32);
                 byte[] dump = new byte[dumpLen];
@@ -84,7 +84,7 @@ public class DolphinViaCodec extends ViaCodecHandler {
                 buf.resetReaderIndex();
                 StringBuilder hex = new StringBuilder();
                 for (byte b : dump) hex.append(String.format("%02x ", b));
-                log.info("[ViaCodec] OUTBOUND raw bytes (before translation): {}", hex.toString().trim());
+                log.debug("[ViaCodec] OUTBOUND raw bytes (before translation): {}", hex.toString().trim());
             }
         }
         try {

@@ -1,5 +1,5 @@
-## Language: [简体中文](README_CN.md) / `English`
-# DolphinBot-Reloaded
+### Language: [简体中文](README_CN.md) / `English`
+# DolphinBot
 
 <p align="center">
    <img src="assets/logo.jpg" width="350" height="350">
@@ -14,9 +14,8 @@
         <img src="https://forthebadge.com/api/badges/generate?panels=2&primaryLabel=BUILT&secondaryLabel=WITH+HEART%21&primaryBGColor=%23ae3eb6&secondaryBGColor=%23d99cdd&primaryTextColor=%23FFFFFF&primaryFontSize=12&primaryFontWeight=600&primaryLetterSpacing=2&primaryFontFamily=Roboto&primaryTextTransform=uppercase&secondaryTextColor=%23000000&secondaryFontSize=12&secondaryFontWeight=900&secondaryLetterSpacing=2&secondaryFontFamily=Montserrat&secondaryTextTransform=uppercase&primaryIcon=uber&primaryIconColor=%23000000&primaryIconSize=16&primaryIconPosition=left" alt="BUILT WITH HEARTS">
     </a>
 </p>
-
    <div align="center">
-   ✨ A lightweight, reliable, intelligent MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
+   ✨ A lightweight, reliable, cross-version MC bot for general minecraft server, with high-scalability and performance. It integrated plugin loaders like bukkit and easy-used interface styled APIs, allows you to customize event handles. ✨
    </div>
 <p align="center">
   <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">
@@ -45,21 +44,24 @@
      <a href="https://github.com/NeonAngelThreads/DolphinBot/issues">🐛Submit Suggestion/Bug</a>
 </p> 
 
+
 ## Why DolphinBot?
+   - **Cross version**, with ViaVersion integrated, DolphinBot can support multi-version servers ranging from 1.7.x to 1.21.11 & 26.1.
    - **High reliability**, low network utilization, auto-reconnect when disconnected, long term running with no worries for losing connection.  
    - **High programmability**, DolphinBot implemented a **SpringBoot**-like finite **StateMachines**, allows you to easily configure **multiple login-process** for different servers.
    - **High extensibility**, DolphinBot embedded a mature DolphinAPI that contains variety of `packet listeners`, `event systems` and easy-used `event handlers` based on `mc protocol lib`,
      It integrates a bukkit-like plugin API, allowing you to develop custom plugins at very short time.  
    - **Advanced logging system**, DolphinAPI also implemented `TextComponent` serializer to parse rich colors and styles for server messages, with more useful debug information.
    - **High performance**, DolphinBot allows you to start multiple bot instances at single client with low CPU and Memory usage.
-   - **Easy to use**, directly run, you can put the bot profile(s) into config file instead of defining on command-line, fast start.
+   - **Easy to use**, you can put the bot profile(s) into config file instead of defining on command-line, fast start.
 ### **Shortcuts**: [Custom plugin developing guideline](PluginDocs.md)
 ## Features:
    - Easy to register custom commands starting with `!` by using CommandBuilder DolphinAPIs.
    - Can **hot-inject** plugins during the connection of server.
    - Bypassing human verification in most servers including `2b2t.xin`.
    - Supporting to configure bot clusters, and start at once.
-   - Supporting colourful console logging strings expression `colorizeText("&6Hello &lWorld")`.
+
+[//]: # (   - Supporting colourful console logging strings expression `colorizeText&#40;"&6Hello &lWorld"&#41;`.)
    - Automatic answer questions in `2b2t.xin` for speeding up login process.
    - Supporting to configure proxy settings for multiple bots.
    - **Web Console API** - Built-in HTTP API server for remote bot management and control.
@@ -74,8 +76,9 @@
 </p>
 
 ## Introduction:
-   **Features category:**  
-   - [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
+   **Features category:**
+-  [`Cross Version`](#cross-version-support)
+- [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
 - [`Terminal Interactions`](#interactions-in-terminal)
 - [`Packet Debugger`](#config-file-setting)
 - [`Proxy Settings`](#config-file-setting)
@@ -89,6 +92,26 @@
    - [`Player Events`](PluginDocs.md#player-events)
 - [`Force Unicode Chat`](PluginDocs.md#unicode-string-helper)
 
+## Cross Version Support
+
+| Supported Versions | Protocol ID Range | Support Stat |
+|--------------------|-------------------|--------------|
+| 26.1.x             | 775-777           | ✓            |
+| 1.21.x             | 767-774           | ✓ Base       |
+| 1.20.x             | 761-766           | ✓            |
+| 1.19.x             | 759-760           | ✓            |
+| 1.18.x             | 757-758           | ✓            |
+| 1.17.x             | 755-756           | ✓            |
+| 1.16.x             | 735-754           | ✓            |
+| 1.15.x             | 573-578           | ✓            |
+| 1.14.x             | 477-498           | ✓            |
+| 1.13.x             | 393-404           | ✓            |
+| 1.12.x             | 335-340           | ✓            |
+| 1.11.x             | 315-316           | ✓            |
+| 1.10.1             | 210               | ✓            |
+| 1.9.x              | 107-110           | ✓            |
+| 1.8.x              | 47                | ✓            |
+| 1.7.x              | 4-5               | ✓            |
 ## Interactions in Terminal
 - You can send in-game messages or execute commands form the dolphin bot terminal.
 - Built-in commands:

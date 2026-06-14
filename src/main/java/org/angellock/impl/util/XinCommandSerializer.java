@@ -16,35 +16,45 @@
 
 package org.angellock.impl.util;
 
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.AbstractCommandSerializer;
 import org.angellock.impl.commands.CommandResponse;
+import org.angellock.impl.events.game.PlayerChatEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class XinCommandSerializer extends AbstractCommandSerializer {
-    private final Pattern senderPattern = Pattern.compile("<([^>]+)>");
+    private final Pattern senderPattern = ChatPatternsRegistry.SERVER_2B2T_XIN;
+
+    public XinCommandSerializer(AbstractRobot robotPlayer) {
+        super(robotPlayer);
+    }
 
     @Override
-    protected @Nullable CommandResponse extractCommandMeta(String msg, char target) {
-        Matcher matcher = this.senderPattern.matcher(msg);
-        String commandSender;
-        if (matcher.find()) {
-            commandSender = matcher.group(1);
-
-            msg = matcher.replaceAll("").trim().strip();
-            msg = ConsoleTokens.fadeText(msg);
-            if (msg.indexOf(target) < 1) {
-                msg = msg.substring(msg.indexOf(target) + 1);
-                String[] commands = msg.split(" ");
-                for (int o = 0; o < commands.length; o++) {
-                    commands[o] = commands[o].trim();
-                }
-                return new CommandResponse(commands, commandSender);
+    protected @Nullable CommandResponse extractCommandMeta(PlayerChatEvent event, String[] commands) {
+        if (event != null){
+            if (commands != null){
+                return new CommandResponse(commands, event.getPlayer());
             }
             return null;
         }
         return null;
     }
+    @Override
+    public @Nullable PlayerChatEvent getEvent(String raw){
+        Matcher matcher = this.senderPattern.matcher(raw);
+        String commandSender;
+
+        if (matcher.find()) {
+            commandSender = matcher.group(1);
+
+            raw = matcher.replaceAll("").trim().strip();
+            raw = ConsoleTokens.fadeText(raw);
+            return new PlayerChatEvent(commandSender, raw);
+        }
+        return null;
+    }
+
 }
