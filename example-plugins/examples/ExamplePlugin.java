@@ -1,7 +1,6 @@
 package org.angellock.impl.extensions.examples;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.commands.CommandBuilder;
 import org.angellock.impl.state.Action;
 import org.angellock.impl.state.LoginState;
 import org.angellock.impl.state.LoginStateMachine;

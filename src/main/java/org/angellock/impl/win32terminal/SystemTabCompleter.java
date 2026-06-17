@@ -16,12 +16,10 @@
 
 package org.angellock.impl.win32terminal;
 
-import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.ICommandCompleter;
-import org.angellock.impl.commands.terminal.TerminalCommand;
+import org.angellock.impl.commands.TerminalCommand;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.managers.TerminalCommandManager;
-import org.angellock.impl.plugin.PluginManager;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;

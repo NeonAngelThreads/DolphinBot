@@ -18,7 +18,6 @@ package org.angellock.impl.commands;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 
 import java.util.ArrayList;
@@ -27,20 +26,20 @@ import java.util.List;
 public abstract class AbstractCommand {
     @Getter
     protected final String name;
-    protected ICommandAction action;
+    protected ICommandExecutor action;
     @Getter
     @Setter
     protected String description;
     @Getter
     protected List<String> aliases = new ArrayList<>();
 
-    public AbstractCommand(String name, ICommandAction action) {
+    public AbstractCommand(String name, ICommandExecutor action) {
         this.name = name;
         this.action = action;
         this.aliases.add(name);
     }
 
-    public AbstractCommand(String name, ICommandAction action, String[] aliases) {
+    public AbstractCommand(String name, ICommandExecutor action, String[] aliases) {
         this(name, action);
         this.aliases.addAll(List.of(aliases));
     }

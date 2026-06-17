@@ -9,16 +9,22 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
 package org.angellock.impl.commands;
 
-import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.plugin.AbstractPlugin;
 
-public interface ICommandAction {
-    void onCommand(CommandResponse responseEntity, RobotPlayer bot);
+public abstract class AbstractCommandBuilder<T> {
+    protected String commandName = "";
+    protected String description;
+    protected AbstractPlugin provider;
+    protected String usage;
+
+    protected String[] aliases = new String[0];
+
+    public abstract T build(ICommandExecutor action);
 }

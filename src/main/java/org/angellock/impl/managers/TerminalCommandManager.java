@@ -17,12 +17,11 @@
 package org.angellock.impl.managers;
 
 import lombok.Getter;
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.CommandResponse;
 import org.angellock.impl.commands.ICommandCompleter;
-import org.angellock.impl.commands.terminal.TerminalCommand;
+import org.angellock.impl.commands.TerminalCommand;
 import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

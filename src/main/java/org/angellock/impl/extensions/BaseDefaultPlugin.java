@@ -16,21 +16,16 @@
 
 package org.angellock.impl.extensions;
 
-import net.kyori.adventure.text.TextComponent;
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.commands.CommandBuilder;
+import org.angellock.impl.commands.Command;
 import org.angellock.impl.commands.dolphin.completers.LoadPluginCompleter;
 import org.angellock.impl.commands.executors.*;
-import org.angellock.impl.commands.terminal.TerminalCommand;
-import org.angellock.impl.commands.terminal.TerminalCommandBuilder;
+import org.angellock.impl.commands.TerminalCommand;
 import org.angellock.impl.events.handlers.*;
 import org.angellock.impl.extensions.executors.ChatReloadExecutor;
 import org.angellock.impl.extensions.handlers.*;
 import org.angellock.impl.extensions.tasks.RunnableAFKAction;
-import org.angellock.impl.ingame.Player;
-import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.listeners.JoinGameListener;
 import org.angellock.impl.listeners.PlayerListener;
 import org.angellock.impl.managers.ConfigManager;
@@ -90,14 +85,14 @@ public class BaseDefaultPlugin extends AbstractPlugin {
 
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
         getTerminalCommands().registerCommand(new TerminalCommand("warp", new PearlWarpExecutor()));
-        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+        getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("respawn")
                 .withProvider(this)
                 .withDescription("A command to respawn the bot.")
                 .withUsage("/respawn")
                 .build(new RespawnExecutor())
         );
-        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+        getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("reload")
                 .withAliases("rl")
                 .withProvider(this)
@@ -106,7 +101,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
                 .build(new ReloadCommandExecutor())
         );
 
-        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+        getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("license")
                 .withAliases("lic")
                 .withUsage("/license, /lic")
@@ -114,7 +109,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
                 .withProvider(this)
                 .build(new LicenseExecutor())
         );
-        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+        getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("help")
                 .withAliases("h", "?", "？")
                 .withUsage("/help, /?, /h")
@@ -123,7 +118,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
                 .build(new HelpExecutor())
         );
 
-        getTerminalCommands().registerCommand(new TerminalCommandBuilder()
+        getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("reconnect")
                 .withAliases("rc")
                 .withUsage("/reconnect, /rc")
@@ -135,8 +130,7 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         if (robotEntity.config().getDebugSettings().isEnablePacketDebug()) {
             getEvents().registerListeners(new PlayerListener(), this);
         }
-        getCommands().register(new CommandBuilder()
-                .withName("reload")
+        getCommands().register(new Command.Builder().withName("reload")
                 .allowedUsers(robotEntity.getInfoHelper().getOwners())
                 .build(new ChatReloadExecutor())
         );

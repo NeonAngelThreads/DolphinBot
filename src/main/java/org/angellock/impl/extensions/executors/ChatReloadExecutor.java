@@ -16,13 +16,11 @@
 
 package org.angellock.impl.extensions.executors;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.ICommandAction;
-import org.angellock.impl.events.IActions;
+import org.angellock.impl.commands.ICommandExecutor;
 
-public class ChatReloadExecutor implements ICommandAction {
+public class ChatReloadExecutor implements ICommandExecutor {
     @Override
     public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         long timeElapse = System.currentTimeMillis();

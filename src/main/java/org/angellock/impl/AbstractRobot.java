@@ -153,7 +153,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         return this;
     }
     public AbstractRobot buildProtocol(){
-        this.minecraftProtocol = new MinecraftProtocol(this.infoHelper.getName());
+        //this.infoHelper.getName()
+        this.minecraftProtocol = new MinecraftProtocol(new GameProfile(this.infoHelper.getName(), UUID.fromString(this.infoHelper.getName()).toString()), UUID.randomUUID().toString());
         return this;
     }
 
@@ -213,12 +214,12 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                     proxy.start(25567);  // Use different port to avoid conflicts
                 }
 
-                // Create a session for this bot
-                DolphinProxySession session = proxy.createSession(
-                        this.infoHelper.getName(),
-                        serverIP, serverPort,
-                        clientProtocol,
-                        detectedServerProtocol);
+//                // Create a session for this bot
+//                DolphinProxySession session = proxy.createSession(
+//                        this.infoHelper.getName(),
+//                        serverIP, serverPort,
+//                        clientProtocol,
+//                        detectedServerProtocol);
 
                 // Override connection target to go through our local proxy instead.
                 String proxyHost = "127.0.0.1";

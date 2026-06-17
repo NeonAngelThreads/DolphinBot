@@ -19,13 +19,13 @@ package org.angellock.impl.commands.executors;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.ICommandAction;
+import org.angellock.impl.commands.ICommandExecutor;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.object.Direction;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemOnPacket;
 
-public class PearlWarpExecutor implements ICommandAction {
+public class PearlWarpExecutor implements ICommandExecutor {
 
     @Override
     public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {

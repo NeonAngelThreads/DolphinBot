@@ -9,21 +9,16 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.commands.terminal;
+package org.angellock.impl.commands;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.commands.AbstractCommand;
-import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.ICommandAction;
-import org.angellock.impl.commands.ICommandCompleter;
 import org.angellock.impl.plugin.AbstractPlugin;
 
 @Setter
@@ -33,13 +28,48 @@ public class TerminalCommand extends AbstractCommand {
     protected AbstractPlugin provider;
     protected String usage;
 
-    public TerminalCommand(String name, ICommandAction executor) {
+    public TerminalCommand(String name, ICommandExecutor executor) {
         super(name, executor);
     }
 
-    public TerminalCommand(String name, ICommandAction action, ICommandCompleter completer) {
+    public TerminalCommand(String name, ICommandExecutor action, ICommandCompleter completer) {
         super(name, action);
         this.completer = completer;
+    }
+
+    public static class Builder extends AbstractCommandBuilder<TerminalCommand> {
+
+        public Builder withName(String name) {
+            this.commandName = name;
+            return this;
+        }
+        public Builder withUsage(String name){
+            this.usage = name;
+            return this;
+        }
+        public Builder withProvider(AbstractPlugin plugin){
+            this.provider = plugin;
+            return this;
+        }
+        public Builder withDescription(String description){
+            this.description = description;
+            return this;
+        }
+
+        public Builder withAliases(String... aliases){
+            this.aliases = aliases;
+            return this;
+        }
+
+        @Override
+        public TerminalCommand build(ICommandExecutor action) {
+            TerminalCommand command = new TerminalCommand(this.commandName, action);
+            command.setAliases(this.aliases);
+            command.setDescription(this.description);
+            command.setProvider(this.provider);
+            command.setUsage(this.usage);
+            return command;
+        }
     }
 
     @Override

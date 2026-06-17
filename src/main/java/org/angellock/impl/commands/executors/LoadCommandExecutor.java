@@ -16,15 +16,14 @@
 
 package org.angellock.impl.commands.executors;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.ICommandAction;
+import org.angellock.impl.commands.ICommandExecutor;
 import org.angellock.impl.plugin.PluginManager;
 
 import java.io.File;
 
-public class LoadCommandExecutor implements ICommandAction {
+public class LoadCommandExecutor implements ICommandExecutor {
     @Override
     public void onCommand(CommandResponse responseEntity, RobotPlayer bot) {
         if (responseEntity.getCommandList().length > 1) {

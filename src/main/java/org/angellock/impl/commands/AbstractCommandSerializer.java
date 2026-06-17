@@ -38,7 +38,7 @@ public abstract class AbstractCommandSerializer {
             if (commands != null){
                 return extractCommandMeta(msgPart, commands);
             }
-            robotPlayer.callHandleableEvent(new PlayerChatEvent(msgPart.getPlayer(), msgPart.getMessage()));
+            robotPlayer.callHandleableEvent(msgPart);
         }
         return null;
     }

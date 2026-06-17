@@ -16,19 +16,18 @@
 
 package org.angellock.impl.commands.executors;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.commands.terminal.TerminalCommand;
+import org.angellock.impl.commands.ICommandExecutor;
+import org.angellock.impl.commands.TerminalCommand;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
 
-public class HelpExecutor implements org.angellock.impl.commands.ICommandAction {
+public class HelpExecutor implements ICommandExecutor {
     static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3Help"));
 
     @Override

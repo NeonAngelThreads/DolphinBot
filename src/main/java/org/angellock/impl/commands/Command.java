@@ -16,27 +16,64 @@
 
 package org.angellock.impl.commands;
 
-import org.angellock.impl.AbstractRobot;
+import lombok.Getter;
 import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.plugin.AbstractPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Command extends AbstractCommand {
 
     private final List<String> users = new ArrayList<>();
 
-    public Command(String name, ICommandAction action, List<String> users) {
+    public Command(String name, ICommandExecutor action, List<String> users) {
         super(name, action);
         this.users.addAll(users);
     }
 
-    public List<String> getUsers(){
-        return this.users;
+    public void setAction(ICommandExecutor action){
+        this.action = action;
     }
 
-    public void setAction(ICommandAction action){
-        this.action = action;
+    public static class Builder extends AbstractCommandBuilder<Command> {
+        private List<String> users = new ArrayList<>();
+
+        public Builder withName(String name) {
+            this.commandName = name;
+            return this;
+        }
+        public Builder withUsage(String name){
+            this.usage = name;
+            return this;
+        }
+        public Builder withProvider(AbstractPlugin plugin){
+            this.provider = plugin;
+            return this;
+        }
+        public Builder withDescription(String description){
+            this.description = description;
+            return this;
+        }
+
+        public Builder withAliases(String... aliases){
+            this.aliases = aliases;
+            return this;
+        }
+
+        public Builder allowedUsers(List<String> users) {
+            this.users = users;
+            return this;
+        }
+
+        @Override
+        public Command build(ICommandExecutor action) {
+            Command command = new Command(this.commandName, action, this.users);
+            command.setDescription(this.description);
+            command.setAliases(this.aliases);
+            return command;
+        }
     }
 
     @Override

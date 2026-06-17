@@ -25,7 +25,6 @@ public class CommandResponse {
     public static final CommandResponse INVALID = new CommandResponse();
 
     private CommandResponse(){
-
     }
     public CommandResponse(String[] commandName, String sender) {
         this.commandName = commandName;
