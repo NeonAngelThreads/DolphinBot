@@ -86,7 +86,8 @@ public class PluginLoader{
                     }
                 } catch (NoClassDefFoundError e) {
                     log.error(ConsoleTokens.colorizeText("&4Failed to load plugin: " + pluginManifest));
-                    log.error(ConsoleTokens.colorizeText("&7" + e.toString()));
+                    log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
+                    e.printStackTrace();
                 }
             }
 
@@ -102,17 +103,23 @@ public class PluginLoader{
         } catch (IllegalAccessException var12) {
             log.error(ConsoleTokens.colorizeText("&4Error loading plugin: Plugin " +pluginManifest+ "has no public constructor"));
             log.error(ConsoleTokens.colorizeText("&7{}"), var12.toString());
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
+            var12.printStackTrace();
         } catch (MalformedURLException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             log.error(ConsoleTokens.colorizeText("&4Failed to load plugin " +
                     pluginManifest + "&c No such entry class named &l&5"+ pluginManifest.getMainClass())
             );
 
             log.error(ConsoleTokens.standardizeText(ConsoleTokens.GRAY + e.toString()));
+
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
+            e.printStackTrace();
         } catch (Throwable throwable){
             log.error(ConsoleTokens.colorizeText("&4Failed to load plugin " +
-                    pluginManifest + "&c Reason &l&5"+ throwable.getMessage())
+                    pluginManifest + "&c Reason: &l&5"+ throwable.getMessage())
             );
-
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
+            throwable.printStackTrace();
         }
         return null;
     }

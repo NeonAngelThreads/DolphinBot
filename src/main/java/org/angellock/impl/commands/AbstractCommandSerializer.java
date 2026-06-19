@@ -16,12 +16,10 @@
 
 package org.angellock.impl.commands;
 
+import lombok.extern.slf4j.Slf4j;
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.events.game.PlayerChatEvent;
+import org.angellock.impl.api.events.game.PlayerChatEvent;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.Serializable;
 
 public abstract class AbstractCommandSerializer {
     private final char chineseExclamation = '！';
@@ -59,7 +57,7 @@ public abstract class AbstractCommandSerializer {
         for (char ch: chars) {
             if (msg.indexOf(ch) != -1) {
                 msg = msg.substring(msg.indexOf(ch) + 1);
-                String[] commands = msg.split(" ");
+                String[] commands = msg.split("\\s+");
                 for (int o = 0; o < commands.length; o++) {
                     commands[o] = commands[o].trim();
                 }

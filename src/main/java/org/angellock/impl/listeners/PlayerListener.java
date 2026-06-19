@@ -18,8 +18,8 @@ package org.angellock.impl.listeners;
 
 import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.game.EntityMovedEvent;
-import org.angellock.impl.events.game.JoinedGameEvent;
+import org.angellock.impl.api.events.game.EntityMovedEvent;
+import org.angellock.impl.api.events.game.JoinedGameEvent;
 import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

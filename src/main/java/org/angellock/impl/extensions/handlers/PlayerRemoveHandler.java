@@ -17,7 +17,7 @@
 package org.angellock.impl.extensions.handlers;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.events.handlers.PlayerLogInfoHandler;
+import org.angellock.impl.api.handlers.PlayerLogInfoHandler;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.util.ConsoleTokens;

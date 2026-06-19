@@ -14,27 +14,25 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.extensions.handlers;
+package org.angellock.impl.api.handlers;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.api.handlers.SystemChatHandler;
-import org.angellock.impl.util.ConsoleTokens;
-import org.angellock.impl.util.TextComponentSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.angellock.impl.events.AbstractEventProcessor;
+import org.angellock.impl.api.events.game.KeepAliveEvent;
+import org.geysermc.mcprotocollib.network.packet.Packet;
+import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundKeepAlivePacket;
 
-public class SystemChatDisplay extends SystemChatHandler {
+public class KeepAliveHandler extends AbstractEventProcessor<ClientboundKeepAlivePacket> {
 
-    protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&3Chat"));
-    TextComponentSerializer componentSerializer = new TextComponentSerializer();
-    private String lastMsg;
-    public SystemChatDisplay(AbstractRobot bot) {
+    public KeepAliveHandler(AbstractRobot bot) {
+
         this.addExtraAction((packet) -> {
-            String msg = componentSerializer.serialize(packet.getContent());
-            if (!msg.equals(this.lastMsg)) {
-                this.lastMsg = msg;
-                log.info(bot.getBotLabel(), bot.getProfileName()+" "+ ConsoleTokens.colorizeText(msg));
-            }
+            bot.getPluginManager().event().broadcastEvent(new KeepAliveEvent());
         });
+    }
+
+    @Override
+    protected boolean isTargetPacket(Packet packet) {
+        return (packet instanceof ClientboundKeepAlivePacket);
     }
 }

@@ -19,7 +19,7 @@ package org.angellock.impl.util;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.commands.AbstractCommandSerializer;
 import org.angellock.impl.commands.CommandResponse;
-import org.angellock.impl.events.game.PlayerChatEvent;
+import org.angellock.impl.api.events.game.PlayerChatEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -38,7 +38,6 @@ public class XinCommandSerializer extends AbstractCommandSerializer {
             if (commands != null){
                 return new CommandResponse(commands, event.getPlayer());
             }
-            return null;
         }
         return null;
     }
@@ -50,7 +49,7 @@ public class XinCommandSerializer extends AbstractCommandSerializer {
         if (matcher.find()) {
             commandSender = matcher.group(1);
 
-            raw = matcher.replaceAll("").trim().strip();
+            raw = matcher.replaceFirst("").trim().strip();
             raw = ConsoleTokens.fadeText(raw);
             return new PlayerChatEvent(commandSender, raw);
         }

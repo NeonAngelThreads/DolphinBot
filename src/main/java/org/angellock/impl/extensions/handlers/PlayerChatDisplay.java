@@ -17,7 +17,7 @@
 package org.angellock.impl.extensions.handlers;
 
 import org.angellock.impl.AbstractRobot;
-import org.angellock.impl.events.handlers.PlayerChatPacketHandler;
+import org.angellock.impl.api.handlers.PlayerChatPacketHandler;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
 import org.slf4j.Logger;

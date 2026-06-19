@@ -9,20 +9,26 @@
  *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
  *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  *    License for more details. You should have received a copy of the GNU General Public License along with this
- *    program.  If not, see <https://www.gnu.org/licenses/>.
+ *    program. If not, see <https://www.gnu.org/licenses/>.
  *
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.listeners;
+package org.angellock.impl.commands.terminal;
 
-import org.angellock.impl.events.IListener;
-import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.api.events.game.JoinedGameEvent;
+import org.angellock.impl.commands.AbstractBuilder;
+import org.angellock.impl.commands.ICommandExecutor;
+import org.angellock.impl.commands.TerminalCommand;
 
-public class JoinGameListener implements IListener {
-    @EventHandler
-    public void onJoin(JoinedGameEvent event) {
-        (event.getRobot()).setLoginPos(event.getPosition());
+@Deprecated(since = "1.6.0")
+public class TerminalCommandBuilder extends AbstractBuilder<TerminalCommand> {
+    @Override
+    public TerminalCommand build(ICommandExecutor action) {
+        TerminalCommand command = new TerminalCommand(this.commandName, action);
+        command.setAliases(this.aliases);
+        command.setDescription(this.description);
+        command.setProvider(this.provider);
+        command.setUsage(this.usage);
+        return command;
     }
 }

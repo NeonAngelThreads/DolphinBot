@@ -40,46 +40,46 @@ In this section, you will learn:
    ````java
     package org.angellock.impl.extensions;
 
-    import org.angellock.impl.RobotPlayer;
-    import org.angellock.impl.events.handlers.LoginHandler;
-    import org.angellock.impl.providers.AbstractPlugin;
-    
-    public class ExamplePlugin extends AbstractPlugin {
-        @Override
-        public String getPluginName() {
-            return "My First Plugin";
-        }
-    
-        @Override
-        public String getVersion() {
-            return "1.0.0";
-        }
-    
-        @Override
-        public String getDescription() {
-            return "Hello DolphinBot";
-        }
-    
-        @Override
-        public void onDisable() {
-            getLogger().info("Disabling {} - {}", this.getName(), getVersion());
-            //Disable Message
-        }
-    
-        @Override
-        public void onLoad() {
-            getLogger().info("Loading {} - {}", this.getName(), getVersion());
-            // Loading Plugin Message
-        }
-    
-        @Override
-        public void onEnable(RobotPlayer entityBot) {
-            getListeners().add(
-                    new LoginHandler().addExtraAction((loginPacket) -> {
-                        getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
-                    })
-            );
-        }
+import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.api.handlers.LoginHandler;
+import org.angellock.impl.providers.AbstractPlugin;
+
+public class ExamplePlugin extends AbstractPlugin {
+    @Override
+    public String getPluginName() {
+        return "My First Plugin";
+    }
+
+    @Override
+    public String getVersion() {
+        return "1.0.0";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Hello DolphinBot";
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("Disabling {} - {}", this.getName(), getVersion());
+        //Disable Message
+    }
+
+    @Override
+    public void onLoad() {
+        getLogger().info("Loading {} - {}", this.getName(), getVersion());
+        // Loading Plugin Message
+    }
+
+    @Override
+    public void onEnable(RobotPlayer entityBot) {
+        getListeners().add(
+                new LoginHandler().addExtraAction((loginPacket) -> {
+                    getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
+                })
+        );
+    }
 }
 
    ````
@@ -224,7 +224,7 @@ by Implementing `IListener` interface, and annotate `@EventHandler` on methods y
 import org.angellock.impl.events.EventPriority;
 import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.game.PlayerMoveEvent;
+import org.angellock.impl.api.events.game.PlayerMoveEvent;
 import org.angellock.impl.ingame.Player;
 
 public class MyListener implements IListener {
@@ -261,7 +261,7 @@ The only thing you need to do is make `ExamplePlugin` to also implement the `ILi
 ```java
 import org.angellock.impl.events.IListener;
 import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.events.game.EntityEmergedEvent;
+import org.angellock.impl.api.events.game.EntityEmergedEvent;
 import org.angellock.impl.providers.AbstractPlugin;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 

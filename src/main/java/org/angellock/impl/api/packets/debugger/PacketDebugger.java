@@ -1,0 +1,62 @@
+/*
+ * DolphinBot - https://github.com/NeonAngelThreads/DolphinBot
+ * Copyright (C) 2025 NeonAngelThreads (https://github.com/NeonAngelThreads)
+ *
+ *    This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any
+ *    later version.
+ *
+ *    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ *    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ *    License for more details. You should have received a copy of the GNU General Public License along with this
+ *    program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://space.bilibili.com/386644641
+ */
+
+package org.angellock.impl.api.packets.debugger;
+
+import lombok.extern.slf4j.Slf4j;
+import org.angellock.impl.util.ConsoleTokens;
+import org.geysermc.mcprotocollib.network.Session;
+import org.geysermc.mcprotocollib.network.event.session.*;
+import org.geysermc.mcprotocollib.network.packet.Packet;
+
+@Slf4j
+public class PacketDebugger implements SessionListener {
+
+    @Override
+    public void packetReceived(Session session, Packet packet) {
+        log.info(ConsoleTokens.colorizeText("&9Received &1<- &8{}"), packet.toString());
+    }
+
+    @Override
+    public void packetSending(PacketSendingEvent event) {
+
+    }
+
+    @Override
+    public void packetSent(Session session, Packet packet) {
+        log.info(ConsoleTokens.colorizeText("&2Send &1-> &r{}"), packet.toString());
+    }
+
+    @Override
+    public void packetError(PacketErrorEvent event) {
+
+    }
+
+    @Override
+    public void connected(ConnectedEvent event) {
+
+    }
+
+    @Override
+    public void disconnecting(DisconnectingEvent event) {
+
+    }
+
+    @Override
+    public void disconnected(DisconnectedEvent event) {
+
+    }
+}

@@ -17,14 +17,13 @@
 package org.angellock.impl.extensions;
 
 import net.kyori.adventure.text.TextComponent;
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.events.IDisconnectListener;
-import org.angellock.impl.events.handlers.ContainerPacketHandler;
-import org.angellock.impl.events.handlers.LoginHandler;
-import org.angellock.impl.events.handlers.SystemChatHandler;
-import org.angellock.impl.events.handlers.TitlePacketHandler;
+import org.angellock.impl.api.handlers.ContainerPacketHandler;
+import org.angellock.impl.api.handlers.LoginHandler;
+import org.angellock.impl.api.handlers.SystemChatHandler;
+import org.angellock.impl.api.handlers.TitlePacketHandler;
 import org.angellock.impl.extensions.actions.JoinAction;
 import org.angellock.impl.extensions.actions.LoginAction;
 import org.angellock.impl.extensions.actions.RegisterAction;
@@ -40,8 +39,6 @@ import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerAction;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerActionType;
-import org.geysermc.mcprotocollib.protocol.data.game.item.HashedStack;
-import org.geysermc.mcprotocollib.protocol.data.game.item.ItemStack;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerButtonClickPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerClickPacket;
 import org.slf4j.Logger;

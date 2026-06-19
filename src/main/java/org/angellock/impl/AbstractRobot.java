@@ -23,13 +23,13 @@ import lombok.Setter;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.bukkit.AbstractEvent;
-import org.angellock.impl.events.handlers.ChatCommandHandler;
-import org.angellock.impl.events.handlers.DisconnectReasonHandler;
-import org.angellock.impl.events.handlers.PlayerEmergeHandler;
-import org.angellock.impl.events.handlers.ServerChatCommandHandler;
-import org.angellock.impl.events.packets.EntityMovePacket;
-import org.angellock.impl.events.packets.PlayerPositionPacket;
-import org.angellock.impl.events.packets.debugger.PacketDebugger;
+import org.angellock.impl.api.handlers.ChatCommandHandler;
+import org.angellock.impl.api.handlers.DisconnectReasonHandler;
+import org.angellock.impl.api.handlers.PlayerEmergeHandler;
+import org.angellock.impl.api.handlers.ServerChatCommandHandler;
+import org.angellock.impl.api.packets.EntityMovePacket;
+import org.angellock.impl.api.packets.PlayerPositionPacket;
+import org.angellock.impl.api.packets.debugger.PacketDebugger;
 import org.angellock.impl.ingame.Player;
 import org.angellock.impl.ingame.PlayerTracker;
 import org.angellock.impl.managers.BotManager;
@@ -42,9 +42,7 @@ import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.protocol.ProtocolDetector;
 import org.angellock.impl.protocol.via.DolphinProxyServer;
 import org.angellock.impl.protocol.via.DolphinProxySession;
-import org.angellock.impl.protocol.via.MultiVersionPacketCodecFactory;
 import org.angellock.impl.util.ConsoleTokens;
-import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.auth.GameProfile;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
@@ -52,19 +50,15 @@ import org.geysermc.mcprotocollib.network.ClientSession;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
 import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.network.factory.ClientNetworkSessionFactory;
-import org.geysermc.mcprotocollib.network.session.ClientNetworkSession;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.slf4j.spi.LoggingEventBuilder;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -154,7 +148,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     }
     public AbstractRobot buildProtocol(){
         //this.infoHelper.getName()
-        this.minecraftProtocol = new MinecraftProtocol(new GameProfile(this.infoHelper.getName(), UUID.fromString(this.infoHelper.getName()).toString()), UUID.randomUUID().toString());
+        //this.minecraftProtocol = new MinecraftProtocol(new GameProfile(this.infoHelper.getName(), UUID.fromString(this.infoHelper.getName()).toString()), UUID.randomUUID().toString());
+        this.minecraftProtocol = new MinecraftProtocol(this.infoHelper.getName());
         return this;
     }
 
@@ -215,11 +210,11 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                 }
 
 //                // Create a session for this bot
-//                DolphinProxySession session = proxy.createSession(
-//                        this.infoHelper.getName(),
-//                        serverIP, serverPort,
-//                        clientProtocol,
-//                        detectedServerProtocol);
+                DolphinProxySession session = proxy.createSession(
+                        this.infoHelper.getName(),
+                        serverIP, serverPort,
+                        clientProtocol,
+                        detectedServerProtocol);
 
                 // Override connection target to go through our local proxy instead.
                 String proxyHost = "127.0.0.1";
