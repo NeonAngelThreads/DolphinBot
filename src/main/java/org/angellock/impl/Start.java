@@ -136,7 +136,7 @@ public class Start {
                 try {
                     String s = reader.readLine(ConsoleTokens.colorizeText("&lTerminal>&b"));
                     ChatMessageManager messageManager = dolphinBot.getMessageManager();
-                    if (messageManager != null) {
+                    if (messageManager != null && !s.isEmpty()) {
                         dolphinBot.getMessageManager().putMessage(s);
                     }
                 } catch (UserInterruptException w) {

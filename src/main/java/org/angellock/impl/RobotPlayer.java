@@ -66,7 +66,6 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
             while (true) {
                 try {
                     Thread.sleep(20L);
-//                    log.info("tick");
                     if (!this.serverSession.isConnected()){
                         this.connectDuration = System.currentTimeMillis();
                         break;
@@ -86,10 +85,8 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
                 }
                 catch (InterruptedException e){
                     continue;
-                } catch (IllegalArgumentException e) {
-                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, e);
-                } catch (Exception e) {
-                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
+                } catch (Throwable e) {
+                    TranslatableUtil.warnTranslatableOf(EnumSystemEvents.PACKET_ERROR, (Object) e.getStackTrace());
                 }
             }
         } finally {
@@ -132,7 +129,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     @Override
     public void onPreLogin() {
         while (!this.shouldReconnect) {
-            try {Thread.sleep(500L);
+            try {Thread.sleep(100L);
             } catch (InterruptedException ignored) {}
         }
         this.connectTime = System.currentTimeMillis();

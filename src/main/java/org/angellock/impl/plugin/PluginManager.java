@@ -162,16 +162,16 @@ public class PluginManager extends Manager implements IPluginInjectable{
         }
         target.onDisable();
 
-        if (target instanceof AbstractPlugin plugin) {
-            ClassLoader classLoader = plugin.getClassLoader();
-            if (classLoader instanceof URLClassLoader) {
-                try {
-                    ((URLClassLoader) classLoader).close();
-                } catch (IOException e) {
-                    log.error(botInstance.getBotLabel(), ConsoleTokens.colorizeText("&4Failed to close plugin classloader: " + e.getMessage()));
-                }
-            }
-        }
+//        if (target instanceof AbstractPlugin plugin) {
+//            ClassLoader classLoader = plugin.getClassLoader();
+//            if (classLoader instanceof URLClassLoader) {
+//                try {
+//                    ((URLClassLoader) classLoader).close();
+//                } catch (IOException e) {
+//                    log.error(botInstance.getBotLabel(), ConsoleTokens.colorizeText("&4Failed to close plugin classloader: " + e.getMessage()));
+//                }
+//            }
+//        }
     }
 
     public void enable(AbstractPlugin plugin, RobotPlayer provider) {
@@ -179,8 +179,11 @@ public class PluginManager extends Manager implements IPluginInjectable{
         if (!plugin.isEnabled()){
             plugin.setEnabled(true);
             this.registerPlugin(plugin);
-            plugin.onPreEnable(provider);
-
+            try {
+                plugin.onPreEnable(provider);
+            } catch (Exception e) {
+                log.warn(ConsoleTokens.colorizeText("&4[Plugin Warning] Failed to pass plugin \"{}\" pre load method. Skipping it. {}"), plugin.getName(), e.getStackTrace());
+            }
             List<SessionListener> listeners = plugin.getListeners();
             log.info(provider.getBotLabel(),TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LOAD, plugin.getName()));
 

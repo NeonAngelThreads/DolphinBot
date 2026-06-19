@@ -86,6 +86,7 @@ public class LoginStateMachine extends StateMachine<String> {
     @Override
     public boolean check(String input) {
         String key = this.lookForCache(input);
+//        TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
         if (!key.isEmpty()) {
             LoginState nextState = this.transitionMap.get(Pair.of(this.currentState.name(), key));
             StateAction action = this.currentState.getAction();
@@ -93,6 +94,7 @@ public class LoginStateMachine extends StateMachine<String> {
                 action.execute();
             }
             TranslatableUtil.infoTranslatableOf(EnumSystemEvents.LOGIN_STATEMACHINE_TRANSIT, this.currentState);
+
             if (nextState != null) {
                 this.currentState = nextState;
                 StateAction currentAction = currentState.getAction();

@@ -113,7 +113,8 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
             String title = ConsoleTokens.colorizeText(((TextComponent)packet.getTitle()).content().strip());
             log.info(entityBot.getBotLabel(), ConsoleTokens.colorizeText("&7[Inventory] &7Container opened, with containerId: &9{}, &6Title: \"&l{}\""), packet.getContainerId(), title);
             entityBot.sendPacket(new ServerboundContainerButtonClickPacket(packet.getContainerId(), 4));
-            entityBot.sendPacket(new ServerboundContainerClickPacket(packet.getContainerId(),
+            entityBot.sendPacket(new ServerboundContainerClickPacket(
+                    packet.getContainerId(),
                     0,
                     4,
                     ContainerActionType.CLICK_ITEM,

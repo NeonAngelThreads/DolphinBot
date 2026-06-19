@@ -57,20 +57,22 @@ public class QuestionAnswererPlugin extends AbstractPlugin {
     public void onEnable(RobotPlayer entityBot) {
 
         getListeners().add(new SystemChatHandler().addExtraAction((packet) -> {
-            if (!((TextComponent)packet.getContent()).content().isEmpty()) return;
-            TextComponentSerializer textSerializer = new TextComponentSerializer();
-            String msg = textSerializer.serialize(packet.getContent());
+            if (packet.getContent() instanceof TextComponent component){
+                if (!component.content().isEmpty()) return;
+                TextComponentSerializer textSerializer = new TextComponentSerializer();
+                String msg = textSerializer.serialize(component);
 
-            if(msg.contains("接下来问一个问题")){
-                this.lastAnswerTime = System.currentTimeMillis();
-            }
+                if (msg.contains("接下来问一个问题")) {
+                    this.lastAnswerTime = System.currentTimeMillis();
+                }
 
-            if (System.currentTimeMillis() - this.lastAnswerTime < 300L) {
-                QuestionSerializer serializer = new QuestionSerializer(msg, questionManager);
-                serializer.build();
-                if (serializer.isValid()) {
-                    getLogger().info(ConsoleTokens.colorizeText("&b{}"), serializer.getAnswer());
-                    entityBot.getMessageManager().putMessage(serializer.getAnswer());
+                if (System.currentTimeMillis() - this.lastAnswerTime < 300L) {
+                    QuestionSerializer serializer = new QuestionSerializer(msg, questionManager);
+                    serializer.build();
+                    if (serializer.isValid()) {
+                        getLogger().info(ConsoleTokens.colorizeText("&b{}"), serializer.getAnswer());
+                        entityBot.getMessageManager().putMessage(serializer.getAnswer());
+                    }
                 }
             }
         }));

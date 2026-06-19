@@ -98,7 +98,7 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
                 onEnable(this.targetBot);
                 onEnable((AbstractRobot) this.targetBot);
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                log.error("{}", e.getStackTrace());
             }
         }
     }

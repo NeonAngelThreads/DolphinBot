@@ -37,11 +37,8 @@ public class AnsiEscapes {
 
     public interface Kernel32 extends Library {
         Kernel32 INSTANCE = loadWindowsKernel32();
-
         Pointer GetStdHandle(int nStdHandle);
-
         int GetConsoleMode(Pointer hConsoleInput, int[] lpMode);
-
         boolean SetConsoleMode(Pointer hConsoleOutput, int dwMode);
     }
 

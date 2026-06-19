@@ -34,10 +34,8 @@ public class XinCommandSerializer extends AbstractCommandSerializer {
 
     @Override
     protected @Nullable CommandResponse extractCommandMeta(PlayerChatEvent event, String[] commands) {
-        if (event != null){
-            if (commands != null){
-                return new CommandResponse(commands, event.getPlayer());
-            }
+        if (event != null && commands != null){
+            return new CommandResponse(commands, event.getPlayer());
         }
         return null;
     }
