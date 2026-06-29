@@ -383,11 +383,11 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
   in-game command executing.  
     To register a custom command, you need to use `getCommands().register(Command)`.  
     And `.register()` method receives a `Command` object
-  instance, a `Command` instance should be constructed by the `CommandBuilder`:
+  instance, a `Command` instance should be constructed by the `Command.Builder()`:
     ```java
-  Command command = new CommandBuilder().withName('commandName').build((response, botInstance) -> {});
+    Command command = new CommandBuilder().withName('commandName').build(new ICommandExecutor());
   ```
-  `CommandBuilder` has multiple optional chaining methods other from `.withName()`, including:
+  `Command.Builder()` has multiple optional chaining methods other from `.withName()`, including:
     - `.withName(String cmd)`: Specify command name for executing.
     - `.allowedUsers(List<String> users)`: Specify only who can use this command, absent for allowing all players by
       default.
@@ -397,7 +397,7 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
   ```java
     @Override
     public void onEnable(RobotPlayer robot) {
-        getCommands().register(new CommandBuilder().withName("test").allowedUsers("PlayerName").build((response, botInstance) -> {
+        getCommands().register(new Command.Builder().withName("test").allowedUsers("PlayerName").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             
             getLogger().info(Arrays.toString(subCommand));
@@ -408,9 +408,9 @@ public class ExamplePlugin extends AbstractPlugin implements IListener {
   and command sender.  
     **An Example of getting command-sender and command list:**
     ```java
-     @Override
+     import org.angellock.impl.commands.Command;@Override
      public void onEnable(RobotPlayer robot) {
-        getCommands().register(new CommandBuilder().withName("uid").allowedUsers("Melibertan").build((response, botInstance) -> {
+        getCommands().register(new Command.Builder().withName("uid").allowedUsers("Melibertan").build((response, botInstance) -> {
             String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
             String commandSender = response.getSender(); // get player who have sent this command.
         }));

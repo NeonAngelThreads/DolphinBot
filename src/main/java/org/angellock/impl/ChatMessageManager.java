@@ -41,7 +41,9 @@ public class ChatMessageManager{
     }
 
     public void putMessage(String msg){
-        this.chatMessageQueue.offer(msg);
+        if (instance.getSession().isConnected() && !msg.isEmpty()) {
+            this.chatMessageQueue.offer(msg);
+        }
     }
 
     public boolean pollMessage() throws Exception{

@@ -19,6 +19,7 @@ package org.angellock.impl.util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -59,7 +60,9 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
         }
 
         if (component instanceof TranslatableComponent translatableComponent){
-            this.result.append(translatableComponent.key());
+            for (TranslationArgument argument : translatableComponent.arguments()) {
+                this.result.append(((TextComponent)argument.value()).content());
+            }
         }
 
         for (Component child : component.children()){
