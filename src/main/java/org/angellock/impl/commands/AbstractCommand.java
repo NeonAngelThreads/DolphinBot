@@ -23,15 +23,17 @@ import org.angellock.impl.RobotPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
 public abstract class AbstractCommand {
     @Getter
-    protected final String name;
+    protected String name;
     protected ICommandExecutor action;
     @Getter
-    @Setter
     protected String description;
     @Getter
     protected List<String> aliases = new ArrayList<>();
+
+    public AbstractCommand() {}
 
     public AbstractCommand(String name, ICommandExecutor action) {
         this.name = name;

@@ -32,7 +32,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>botLogs\bot-%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxHistory>12</maxHistory>
-            <maxFileSize>1MB</maxFileSize>
+            <maxFileSize>4MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{HH:mm:ss} %highlight(%4level)] [%logger{36}] %cyan(%marker): %msg%n</pattern>

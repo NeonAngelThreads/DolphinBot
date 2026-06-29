@@ -15,7 +15,7 @@
     </a>
 </p>
    <div align="center">
-   ✨ A lightweight, high-scalable and cross-version MC bot for general minecraft server. It equipped bukkit-like plugin manager and easy-used APIs, allows you to customize event handles. ✨
+   ✨ A lightweight, high-scalable and cross-version bot framework for general minecraft server. It equipped bukkit-like plugin manager and easy-used APIs, allows you to customize event handles. ✨
    </div>
 <p align="center">
   <a href="https://github.com/NeonAngelThreads/DolphinBot/releases">

@@ -42,4 +42,14 @@ public class CommandResponse {
     public boolean isFromTerminal(){
         return this.sender.equals("<Terminal>");
     }
+
+    public CommandResponse subResponse(int startIndex) {
+        if (startIndex >= commandName.length) {
+            return new CommandResponse(new String[0], this.sender);
+        }
+        int newLength = commandName.length - startIndex;
+        String[] newCommandName = new String[newLength];
+        System.arraycopy(commandName, startIndex, newCommandName, 0, newLength);
+        return new CommandResponse(newCommandName, this.sender);
+    }
 }

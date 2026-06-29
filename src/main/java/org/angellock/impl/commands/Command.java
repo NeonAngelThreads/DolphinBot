@@ -17,17 +17,22 @@
 package org.angellock.impl.commands;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.angellock.impl.RobotPlayer;
+import org.angellock.impl.api.events.ChatCommandErrorEvent;
 import org.angellock.impl.plugin.AbstractPlugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class Command extends AbstractCommand {
-
-    private final List<String> users = new ArrayList<>();
-
+    @Setter
+    private List<String> users = new ArrayList<>();
+    private final Map<String, Command> subCommands = new HashMap<>();
+    private Command() {}
     public Command(String name, ICommandExecutor action, List<String> users) {
         super(name, action);
         this.users.addAll(users);
@@ -36,16 +41,21 @@ public class Command extends AbstractCommand {
     public void setAction(ICommandExecutor action){
         this.action = action;
     }
-
+    @SuppressWarnings("unused")
     public static class Builder extends AbstractCommandBuilder<Command> {
-        private List<String> users = new ArrayList<>();
-
-        public Builder withName(String name) {
-            this.commandName = name;
+        private final List<String> users = new ArrayList<>();
+        private final Map<String, Command> subCommands = new HashMap<>();
+        private final Command candidate = new Command();
+        public Builder subCommand(String subCommandName, Command subCommand){
+            this.subCommands.put(subCommandName, subCommand);
             return this;
         }
-        public Builder withUsage(String name){
-            this.usage = name;
+        public Builder withName(String name) {
+            this.candidate.setName(name);
+            return this;
+        }
+        public Builder withUsage(String usage){
+            this.usage = usage;
             return this;
         }
         public Builder withProvider(AbstractPlugin plugin){
@@ -53,34 +63,41 @@ public class Command extends AbstractCommand {
             return this;
         }
         public Builder withDescription(String description){
-            this.description = description;
+            this.candidate.setDescription(description);
             return this;
         }
-
         public Builder withAliases(String... aliases){
-            this.aliases = aliases;
+            this.candidate.setAliases(aliases);
             return this;
         }
-
         public Builder allowedUsers(List<String> users) {
-            this.users = users;
+            this.candidate.setUsers(users);
             return this;
         }
-
         @Override
         public Command build(ICommandExecutor action) {
-            Command command = new Command(this.commandName, action, this.users);
-            command.setDescription(this.description);
-            command.setAliases(this.aliases);
-            return command;
+            this.candidate.setAction(action);
+            this.candidate.subCommands.putAll(this.subCommands);
+            return candidate;
         }
     }
 
     @Override
     public boolean activate(CommandResponse entity, RobotPlayer bot) {
-        if (users.contains(entity.getSender()) || users.isEmpty()) {
-            this.action.onCommand(entity, bot);
-            return true;
+        try {
+            if (users.contains(entity.getSender()) || users.isEmpty()) {
+                String[] commandList = entity.getCommandList();
+                if (commandList.length > 0 && subCommands.containsKey(commandList[0])) {
+                    Command subCommand = subCommands.get(commandList[0]);
+                    CommandResponse subEntity = entity.subResponse(1);
+                    return subCommand.activate(subEntity, bot);
+                } else {
+                    this.action.onCommand(entity, bot);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            bot.callHandleableEvent(new ChatCommandErrorEvent(e.getMessage()));
         }
         return false;
     }
