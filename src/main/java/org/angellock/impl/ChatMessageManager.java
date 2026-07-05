@@ -41,7 +41,7 @@ public class ChatMessageManager{
     }
 
     public void putMessage(String msg){
-        if (instance.getSession().isConnected() && !msg.isEmpty()) {
+        if (!msg.isEmpty()) {
             this.chatMessageQueue.offer(msg);
         }
     }
@@ -49,7 +49,9 @@ public class ChatMessageManager{
     public boolean pollMessage() throws Exception{
         String removal = this.chatMessageQueue.poll();
         if(removal != null) {
-            this.sendMessagePacket(removal);
+            if (instance.getSession().isConnected()) {
+                this.sendMessagePacket(removal);
+            }
             return true;
         }
         return false;

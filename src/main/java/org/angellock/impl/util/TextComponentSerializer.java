@@ -24,9 +24,11 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
+import org.angellock.impl.managers.LanguageManager;
 import org.angellock.impl.util.colorutil.SimpleColor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {
@@ -60,9 +62,19 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
         }
 
         if (component instanceof TranslatableComponent translatableComponent){
-            for (TranslationArgument argument : translatableComponent.arguments()) {
-                this.result.append(((TextComponent)argument.value()).content());
-            }
+            String key = translatableComponent.key();
+            List<TranslationArgument> arguments = translatableComponent.arguments();
+            Object[] argValues = arguments.stream()
+                    .map(arg -> {
+                        Component argComponent = arg.asComponent();
+                        if (argComponent instanceof TextComponent textArg) {
+                            return textArg.content();
+                        }
+                        return argComponent.toString();
+                    })
+                    .toArray();
+            String translated = LanguageManager.translate(key, argValues);
+            this.result.append(translated);
         }
 
         for (Component child : component.children()){

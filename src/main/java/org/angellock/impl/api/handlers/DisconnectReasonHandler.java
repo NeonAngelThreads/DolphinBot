@@ -20,6 +20,7 @@ import net.kyori.adventure.text.TranslatableComponent;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.events.IDisconnectListener;
 import org.angellock.impl.util.PlainTextSerializer;
+import org.angellock.impl.util.TextComponentSerializer;
 import org.geysermc.mcprotocollib.network.event.session.DisconnectedEvent;
 
 public class DisconnectReasonHandler implements IDisconnectListener {
@@ -31,7 +32,7 @@ public class DisconnectReasonHandler implements IDisconnectListener {
 
     @Override
     public void onDisconnect(DisconnectedEvent event) {
-        PlainTextSerializer serializer = new PlainTextSerializer();
+        TextComponentSerializer serializer = new TextComponentSerializer();
         String text = serializer.serialize(event.getReason());
         if (text.isBlank()) {
             TranslatableComponent component = ((TranslatableComponent) event.getReason());
