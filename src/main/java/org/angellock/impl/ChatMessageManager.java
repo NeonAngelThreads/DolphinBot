@@ -35,7 +35,6 @@ public class ChatMessageManager{
     @Getter
     private final Queue<String> chatMessageQueue = new ArrayDeque<>();
     private final RobotPlayer instance;
-
     public ChatMessageManager(RobotPlayer bot) {
         this.instance = bot;
     }
@@ -49,38 +48,28 @@ public class ChatMessageManager{
     public boolean pollMessage() throws Exception{
         String removal = this.chatMessageQueue.poll();
         if(removal != null) {
-            if (instance.getSession().isConnected()) {
-                this.sendMessagePacket(removal);
-            }
+            this.sendMessagePacket(removal);
             return true;
         }
         return false;
     }
 
-    private boolean isCommand(String msg){
+    public boolean isCommand(String msg){
         return msg.startsWith("/");
     }
 
     private void sendMessagePacket(String message){
-        if (!this.isCommand(message)) {
+        try {
             MinecraftPacket msgPacket = new ServerboundChatPacket(message, Instant.now().toEpochMilli(), System.currentTimeMillis(), null, 0, new BitSet(), 0);
             log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_MESSAGE_SEND, message));
             this.instance.sendPacket(msgPacket);
-        } else {
-            try {
-                boolean valid = this.instance.commandManager.callCommand(message, instance);
-                if (!valid) {
-                    MinecraftPacket cmd = new ServerboundChatCommandPacket(message.replaceFirst("/", ""));
-                    log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, message));
-                    this.instance.sendPacket(cmd);
-                }
-            } catch (Exception e) {
-                log.warn(instance.getBotLabel(), "An exception occurred: &7{}", e.getMessage());
-            }
+        } catch (Exception e) {
+            log.warn(instance.getBotLabel(), "An exception occurred: &7{}", e.getMessage());
         }
     }
 
     public void sendCommand(String stringCommand){
         this.instance.sendPacket(new ServerboundChatCommandPacket(stringCommand));
+        log.info(instance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.CHAT_COMMAND_SEND, stringCommand));
     }
 }

@@ -33,6 +33,7 @@ public class VerifyAction extends StateAction {
     AbstractRobot robot;
     private static int verifyTimes = 0;
     LoginStateMachine stateMachine;
+    private boolean isByPassedVerification = true;
     public VerifyAction(LoginStateMachine stateMachine, RobotPlayer botInstance) {
         super(botInstance);
         this.stateMachine = stateMachine;
@@ -69,11 +70,11 @@ public class VerifyAction extends StateAction {
         }
     }
     public void resetVerify(){
-        this.robot.setBypassed(false);
+        this.isByPassedVerification = false;
     }
 
     private boolean isBypassed(){
-        return this.entityBot.isByPassedVerification();
+        return this.isByPassedVerification;
     }
 
     public static void setVerifyTimes(int verifyTimes) {

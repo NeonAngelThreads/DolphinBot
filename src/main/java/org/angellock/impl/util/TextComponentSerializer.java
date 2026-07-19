@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {
-
     private StringBuilder result;
     @NotNull
     @Override
@@ -61,7 +60,7 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
             this.result.append(textComponent.content());
         }
 
-        if (component instanceof TranslatableComponent translatableComponent){
+        else if (component instanceof TranslatableComponent translatableComponent){
             String key = translatableComponent.key();
             List<TranslationArgument> arguments = translatableComponent.arguments();
             Object[] argValues = arguments.stream()

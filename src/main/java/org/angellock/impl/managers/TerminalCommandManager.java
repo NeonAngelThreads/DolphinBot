@@ -17,6 +17,7 @@
 package org.angellock.impl.managers;
 
 import lombok.Getter;
+import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.AbstractCommand;
 import org.angellock.impl.commands.CommandResponse;
@@ -27,17 +28,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class TerminalCommandManager {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&9TerminalCommandSystem"));
     @Getter
     public static HashMap<String, TerminalCommand> registeredCommand = new HashMap<>();
-
-    private static HashMap<String, TerminalCommand> aliasCommand = new HashMap<>();
-
     public void registerCommand(TerminalCommand command){
         for (String alias : command.getAliases()) {
-            aliasCommand.put(alias, command);
+            registeredCommand.put(alias, command);
         }
         registeredCommand.put(command.getName().toLowerCase(), command);
     }
@@ -53,25 +52,25 @@ public class TerminalCommandManager {
         return log;
     }
 
-    public boolean callCommand(String msg, RobotPlayer bot) {
-        String[] commandList = msg
-                .replaceFirst("/", "")
-                .strip()
-                .split(" ");
+    public boolean call(String msg, RobotPlayer bot) throws Exception {
+        try {
+            String[] commandList = msg
+                    .replaceFirst("/", "")
+                    .strip()
+                    .split("\\s+");
 
-        if (commandList.length > 0){
-            AbstractCommand cmd = registeredCommand.get(commandList[0].toLowerCase());
-            CommandResponse commandResponse = new CommandResponse(commandList, "<Terminal>");
-            if (cmd != null){
-                cmd.activate(commandResponse, bot);
-                return true;
-            } else {
-                AbstractCommand aliaCmd = aliasCommand.get(commandList[0]);
-                if (aliaCmd != null) {
-                    aliaCmd.activate(commandResponse, bot);
+            if (commandList.length > 0){
+                AbstractCommand cmd = registeredCommand.get(commandList[0].toLowerCase());
+                if (cmd != null){
+                    CommandResponse commandResponse = new CommandResponse(commandList, "<Terminal>");
+                    cmd.activate(commandResponse, bot);
                     return true;
+                } else {
+                    log.warn(bot.getBotLabel(), ConsoleTokens.colorizeText("&6Unknown command: {}, please use /help or /? for available commands."), commandList[0]);
                 }
             }
+        } catch (Exception e) {
+            log.error(bot.getBotLabel(), ConsoleTokens.colorizeText("&cAn unhandled terminal command exception occurred: &7{}"), e.getMessage());
         }
         return false;
     }

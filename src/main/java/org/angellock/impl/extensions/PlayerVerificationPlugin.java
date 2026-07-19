@@ -49,7 +49,6 @@ import java.util.HashMap;
 public class PlayerVerificationPlugin extends AbstractPlugin {
 
     protected static final Logger log = LoggerFactory.getLogger("AutoLogin");
-
     @Override
     public String getPluginName() {
         return "AutomaticVerify";
@@ -78,33 +77,12 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
 
     @Override
     public void onEnable(RobotPlayer entityBot) {
-
-        LoginStateMachine stateMachine = entityBot.getLoginStateMachine();
-
-        StateAction verifyAction = new VerifyAction(stateMachine, entityBot);
-        StateAction registerAction = new RegisterAction(entityBot);
-        StateAction joinAction = new JoinAction(entityBot);
-        StateAction loginAction = new LoginAction(stateMachine, entityBot);
-
-        stateMachine
-                .source(LoginState.DISCONNECTED).whenReceive("离线玩家请注册").goal(LoginState.REGISTER, registerAction)
-                    .and()
-                    .whenReceive("离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
-                    .and()
-                    .whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)
-                .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
-                .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
-                .source(LoginState.LOGIN).whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)
-                .source(LoginState.JOIN).whenReceive("Position in queue").goal(LoginState.IDLE, null)
-                .resetOnlyWhen(KickReason.HUMAN_VERIFICATION)
-                .build();
-
+        StateAction verifyAction = new VerifyAction(entityBot.getLoginStateMachine(), entityBot);
         TextComponentSerializer serializer = new TextComponentSerializer();
-
         getListeners().add((IDisconnectListener) event -> {
             String s = serializer.serialize(event.getReason());
             if (s.contains("请关闭所有外挂后重新进入以完成验证！")){
-                stateMachine.raise(KickReason.HUMAN_VERIFICATION);
+                entityBot.getLoginStateMachine().raise(KickReason.HUMAN_VERIFICATION);
                 verifyAction.execute();
             }
         });
@@ -127,12 +105,12 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         SessionListener chatListener = new SystemChatHandler().addExtraAction((packet) -> {
                     TextComponentSerializer componentSerializer = new TextComponentSerializer();
                     String msg = componentSerializer.serialize(packet.getContent());
-                    stateMachine.check(msg);
+                    entityBot.getLoginStateMachine().check(msg);
         });
         SessionListener titleListener = new TitlePacketHandler().addExtraAction((titleTextPacket)->{
             TextComponentSerializer componentSerializer = new TextComponentSerializer();
             String titleMsg = componentSerializer.serialize(titleTextPacket.getText());
-            stateMachine.check(titleMsg);
+            entityBot.getLoginStateMachine().check(titleMsg);
         });
         getListeners().add(chatListener);
 

@@ -31,7 +31,6 @@ public class RegisterAction extends StateAction {
     @Override
     public void execute() {
         if (System.currentTimeMillis() - this.antiSpam > 3000L){
-            entityBot.setBypassed(true);
             entityBot.getMessageManager().sendCommand(String.format("reg %s %s", entityBot.getPassword(), entityBot.getPassword()));
             VerifyAction.setVerifyTimes(0);
             this.antiSpam = System.currentTimeMillis();

@@ -54,5 +54,5 @@ public abstract class AbstractCommand {
         return this.aliases.contains(alias);
     }
 
-    public abstract boolean activate(CommandResponse entity, RobotPlayer bot);
+    public abstract boolean activate(CommandResponse entity, RobotPlayer bot) throws Exception;
 }

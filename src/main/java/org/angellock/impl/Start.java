@@ -45,10 +45,7 @@ public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
     private static final String ARCHIVE_VERSION = AnsiEscapes.shiftVersionTags(Optional.ofNullable(Start.class.getPackage()
                     .getImplementationVersion()).orElse(ConsoleTokens.colorizeText("&dDEVELOPMENT")));
-    private static Thread terminalInput;
-    private static volatile boolean exit = false;
     private static final boolean win32 = System.getProperty("os.name").toLowerCase().contains("windows");
-    private static GUIWindowManager guiManager;
     @Getter
     private static OptionSet GLOBAL_CONFIG;
     public static void main(String[] args) {
@@ -103,7 +100,7 @@ public class Start {
                 .loadProfiles(profiles);
         BotManager.setInstance(botManager);
         Map<String, RobotPlayer> bots = BotManager.bots();
-        getTerminal(bots.values().iterator().next());
+        initTerminal(bots.values().iterator().next());
 
         // Start HTTP API Server
         int apiPort = (int) GLOBAL_CONFIG.valueOf("api");
@@ -114,7 +111,7 @@ public class Start {
         }
 
         if (GLOBAL_CONFIG.has("gui")){
-            guiManager = new GUIWindowManager(botManager);
+            GUIWindowManager guiManager = new GUIWindowManager(botManager);
             guiManager.startGUI();
         } else {
             AnsiEscapes.printArt(ARCHIVE_VERSION);
@@ -125,27 +122,30 @@ public class Start {
 
     }
 
-    private static void getTerminal(RobotPlayer dolphinBot) {
+    private static void initTerminal(RobotPlayer dolphinBot) {
         LineReader reader = AnsiEscapes.getReader();
         if (reader == null) {
             log.warn("Terminal reader not available, skipping interactive terminal input.");
             return;
         }
-        terminalInput = new Thread(() -> {
+        Thread terminalInput = new Thread(() -> {
             while (true) {
                 try {
                     String s = reader.readLine(ConsoleTokens.colorizeText("&lTerminal>&b"));
                     ChatMessageManager messageManager = dolphinBot.getMessageManager();
                     if (messageManager != null && !s.isEmpty()) {
-                        dolphinBot.getMessageManager().putMessage(s);
+                        if (!messageManager.isCommand(s)) {
+                            messageManager.putMessage(s);
+                        } else {
+                            if (s.charAt(1) == '/') {
+                                messageManager.sendCommand(s.replaceFirst("/+", ""));
+                            } else {
+                                dolphinBot.getCommandManager().call(s, dolphinBot);
+                            }
+                        }
                     }
                 } catch (UserInterruptException w) {
-                    if (exit) {
-                        System.exit(0);
-                    } else {
-                        log.warn("To exit DolphinBot, press Ctrl + C again.");
-                        exit = true;
-                    }
+                    System.exit(0);
                 } catch (Throwable ignored) {
                     try {
                         Thread.sleep(1000L);

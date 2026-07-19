@@ -19,5 +19,5 @@ package org.angellock.impl.commands;
 import org.angellock.impl.RobotPlayer;
 
 public interface ICommandExecutor {
-    void onCommand(CommandResponse responseEntity, RobotPlayer bot);
+    void onCommand(CommandResponse responseEntity, RobotPlayer bot) throws Exception;
 }

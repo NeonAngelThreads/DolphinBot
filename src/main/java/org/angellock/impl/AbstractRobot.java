@@ -44,7 +44,6 @@ import org.angellock.impl.protocol.via.DolphinProxyServer;
 import org.angellock.impl.protocol.via.DolphinProxySession;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
-import org.geysermc.mcprotocollib.auth.GameProfile;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ClientSession;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
@@ -68,39 +67,32 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures {
-    protected ClientSession serverSession;
-    @Getter
-    protected static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
+    protected @Getter ClientSession session;
+    protected static final @Getter Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
-    @Getter
-    protected final PluginManager pluginManager;
+    protected final @Getter PluginManager pluginManager;
     protected MinecraftProtocol minecraftProtocol;
     protected ConfigManager globalConfig;
     protected long connectDuration;
-    protected boolean isByPassedVerification = true;
-    @Setter
-    protected @Getter GameMode serverGamemode = GameMode.ADVENTURE;
-    @Getter
-    private BotManager botManager = BotManager.getInstance();
+    protected @Setter @Getter GameMode serverGamemode = GameMode.ADVENTURE;
+    private @Getter BotManager botManager = BotManager.getInstance();
     protected ProxyInfo proxyInfo;
     protected @Getter ProfileObject infoHelper = new ProfileObject();
-    
-    // Cross-version support
-    private com.viaversion.viaversion.api.protocol.version.ProtocolVersion detectedServerProtocol;
-
-    @Getter
-    protected final TerminalCommandManager commandManager = new TerminalCommandManager();
+    private @Getter com.viaversion.viaversion.api.protocol.version.ProtocolVersion detectedServerProtocol;
+    protected final @Getter TerminalCommandManager commandManager = new TerminalCommandManager();
     protected final CommandSpec commands = new CommandSpec(this);
-
+    @Getter
+    private Marker botLabel;
     public AbstractRobot(ConfigManager configManager, PluginManager pluginManager){
         this.globalConfig = configManager.buildConfig();
         this.infoHelper.setName(this.globalConfig.getConfigValue("username"));
         this.infoHelper.setPassword(this.globalConfig.getConfigValue("password"));
         this.infoHelper.setServer(this.globalConfig.config().getServer());
         this.infoHelper.setPort(this.globalConfig.config().getPort());
-
+        if (this.infoHelper.getName() != null) {
+            this.botLabel = MarkerFactory.getMarker(this.infoHelper.getName());
+        }
         this.pluginManager = pluginManager;
-
     }
 
     public AbstractRobot enableProxy(ProxyInfo proxyInfo){
@@ -111,6 +103,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public AbstractRobot withName(String userName){
         if (this.infoHelper.getName() == null) {
             this.infoHelper.setName(userName);
+            this.botLabel = MarkerFactory.getMarker(userName);
         }
         return this;
     }
@@ -181,20 +174,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         log.info("Client protocol: {} (ID: {}) - using built-in protocol",
                 clientProtocol.getName(), clientProtocol.getVersion());
 
-        // ── CRITICAL FIX (GitHub Issue #686 Solution): Use server-version PacketCodec when translating ──
-        // When client and server protocols differ, we MUST create a MinecraftProtocol with a
-        // PacketCodec configured for the TARGET SERVER's version (not the client's version).
-        //
-        // Why? Because mcprotocollib generates packets using the codec's protocol version.
-        // If we use the default codec (version 774), all packets will be in 1.21.11 format,
-        // and the server won't understand them → "Outdated client" error.
-        //
-        // By using the server's version, mcprotocollib generates packets that the server
-        // can understand directly. ViaVersion then translates these packets to the format
-        // the client (mcprotocollib) expects.
-        //
-        // This implements the multi-version strategy from:
-        // https://github.com/GeyserMC/MCProtocolLib/issues/686
         if (detectedServerProtocol.getVersion() != clientProtocol.getVersion()) {
             log.info("Client protocol ({}) != server protocol ({}). Starting ViaVersion translation proxy.",
                     clientProtocol.getName(), detectedServerProtocol.getName());
@@ -209,7 +188,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                     proxy.start(25567);  // Use different port to avoid conflicts
                 }
 
-//                // Create a session for this bot
                 DolphinProxySession session = proxy.createSession(
                         this.infoHelper.getName(),
                         serverIP, serverPort,
@@ -225,7 +203,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                         serverIP, serverPort);
 
                 // Connect mcprotocollib through the proxy
-                this.serverSession =
+                this.session =
                         ClientNetworkSessionFactory.factory()
                         .setRemoteSocketAddress(new InetSocketAddress(proxyHost, proxyPort))
                         .setProtocol(this.minecraftProtocol)
@@ -240,25 +218,25 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
             }
         } else {
             // Protocols match – direct connection (no proxy needed)
-            this.serverSession = ClientNetworkSessionFactory.factory()
+            this.session = ClientNetworkSessionFactory.factory()
                     .setRemoteSocketAddress(new InetSocketAddress(serverIP, serverPort))
                     .setProtocol(this.minecraftProtocol)
                     .setProxy(this.proxyInfo)
                     .create();
         }
 
-        this.serverSession.addListener((IConnectListener) event -> onJoin());
-        this.serverSession.addListener(new DisconnectReasonHandler(this));
-        this.serverSession.addListener(new ServerChatCommandHandler(this.commands, this));
-        this.serverSession.addListener(new ChatCommandHandler(this.commands, this));
-        this.serverSession.addListener(new EntityMovePacket());
-        this.serverSession.addListener(new PlayerEmergeHandler(this));
-        this.serverSession.addListener(new PlayerPositionPacket((RobotPlayer) this));
-        if (this.config().getDebugSettings().isEnablePacketDebug()) { this.serverSession.addListener(new PacketDebugger()); }
+        this.session.addListener((IConnectListener) event -> onJoin());
+        this.session.addListener(new DisconnectReasonHandler(this));
+        this.session.addListener(new ServerChatCommandHandler(this.commands, this));
+        this.session.addListener(new ChatCommandHandler(this.commands, this));
+        this.session.addListener(new EntityMovePacket());
+        this.session.addListener(new PlayerEmergeHandler(this));
+        this.session.addListener(new PlayerPositionPacket((RobotPlayer) this));
+        if (this.config().getDebugSettings().isEnablePacketDebug()) { this.session.addListener(new PacketDebugger()); }
         
-        this.serverSession.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
+        this.session.setFlag(BuiltinFlags.WRITE_TIMEOUT, -1);
         log.info("Bot '{}' attempting to connect...", this.infoHelper.getName());
-        this.serverSession.connect(true);
+        this.session.connect(true);
 
         log.info("Bot '{}' connected, starting main event loop...", this.infoHelper.getName());
         this.connectDuration = System.currentTimeMillis();
@@ -269,18 +247,8 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public void callHandleableEvent(AbstractEvent event){
         this.getPluginManager().event().broadcastEvent(event);
     }
-
-    /**
-     * Get the detected server protocol version
-     */
-    public com.viaversion.viaversion.api.protocol.version.ProtocolVersion getDetectedProtocol() {
-        return detectedServerProtocol;
-    }
-
     public abstract void mainTickingEventLoop();
-
     public abstract boolean canSendMessages();
-
     public void scheduleReconnect() {
         TranslatableUtil.infoTranslatableOf(EnumSystemEvents.RECONNECT);
         try {
@@ -294,29 +262,13 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public void scheduleConnect() {
         this.reconnectScheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
     }
-
-    public void setBypassed(boolean bypassed) {
-        this.isByPassedVerification = bypassed;
-    }
-
     @Override
     public void sendPacket(MinecraftPacket packet) {
-        this.serverSession.send(packet);
+        this.session.send(packet);
     }
-
-    @Override
-    public Session getSession(){
-        return this.serverSession;
-    }
-
     public long getConnectTime() {
         return connectDuration;
     }
-
-    public boolean isByPassedVerification() {
-        return isByPassedVerification;
-    }
-
     public String getProfileName() {
         return (this.infoHelper.getProfileName() != null) ? this.infoHelper.getProfileName(): this.infoHelper.getName();
     }
@@ -325,11 +277,6 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
         this.infoHelper.setProfileName(name);
         return this;
     }
-
-    public Marker getBotLabel(){
-        return MarkerFactory.getMarker(this.getInfoHelper().getName());
-    }
-
     public Map<UUID, Player> getOnlinePlayers() {
         return PlayerTracker.getOnlinePlayers();
     }

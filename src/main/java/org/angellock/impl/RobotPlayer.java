@@ -20,7 +20,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.angellock.impl.api.state.LoginState;
 import org.angellock.impl.api.state.LoginStateMachine;
-import org.angellock.impl.events.bukkit.AbstractEvent;
+import org.angellock.impl.api.state.StateAction;
+import org.angellock.impl.extensions.actions.JoinAction;
+import org.angellock.impl.extensions.actions.LoginAction;
+import org.angellock.impl.extensions.actions.RegisterAction;
+import org.angellock.impl.extensions.actions.VerifyAction;
 import org.angellock.impl.ingame.IPlayer;
 import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.managers.ConfigManager;
@@ -40,15 +44,35 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
     private long connectTime;
     private long lastMsgTime = 0L;
     private final long msgDelay;
-    private volatile @Setter boolean shouldReconnect = true;
+    @Setter
+    private volatile boolean shouldReconnect = true;
     @Getter
     private final ChatMessageManager messageManager;
     @Getter
     private final LoginStateMachine loginStateMachine = new LoginStateMachine(LoginState.DISCONNECTED);
-    protected @Setter Position loginPos = new Position();
+    @Setter
+    protected Position loginPos = new Position();
 
     public RobotPlayer(ConfigManager configManager, PluginManager pluginManager) {
         super(configManager, pluginManager);
+
+        LoginStateMachine stateMachine = this.loginStateMachine;
+        StateAction registerAction = new RegisterAction(this);
+        StateAction joinAction = new JoinAction(this);
+        StateAction loginAction = new LoginAction(stateMachine, this);
+
+        stateMachine
+                .source(LoginState.DISCONNECTED).whenReceive("离线玩家请注册").goal(LoginState.REGISTER, registerAction)
+                .and()
+                .whenReceive("离线玩家请登陆").goal(LoginState.LOGIN, loginAction)
+                .and()
+                .whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)
+                .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
+                .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
+                .source(LoginState.LOGIN).whenReceive("登陆成功").goal(LoginState.JOIN, joinAction)
+                .source(LoginState.JOIN).whenReceive("Position in queue").goal(LoginState.IDLE, null)
+                .resetOnlyWhen(KickReason.HUMAN_VERIFICATION)
+                .build();
         this.messageManager = new ChatMessageManager(this);
         this.msgDelay = Long.parseLong(Optional
                 .ofNullable(
@@ -66,7 +90,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
             while (true) {
                 try {
                     Thread.sleep(20L);
-                    if (!this.serverSession.isConnected()){
+                    if (!this.session.isConnected()){
                         this.connectDuration = System.currentTimeMillis();
                         break;
                     } else if (connect) {
@@ -90,7 +114,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
                 }
             }
         } finally {
-            this.serverSession.disconnect("");
+            this.session.disconnect("");
             if (BotManager.getBotByProfileName(getProfileName()) != null){
                 scheduleReconnect();
             }
@@ -105,7 +129,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
 
     @Override
     public void onJoin() {
-        //log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
+        log.info(this.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.SERVER_CONNECTION_ESTABLISHED, this.getProfileName()));
     }
 
     @Override
@@ -123,7 +147,7 @@ public class RobotPlayer extends AbstractRobot implements IPlayer {
 
     @Override
     public void onKicked(KickReason reason) {
-        return;
+
     }
 
     @Override

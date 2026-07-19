@@ -73,7 +73,7 @@ public class TerminalCommand extends AbstractCommand {
     }
 
     @Override
-    public boolean activate(CommandResponse entity, RobotPlayer bot) {
+    public boolean activate(CommandResponse entity, RobotPlayer bot) throws Exception {
         if (entity.isFromTerminal()){
             action.onCommand(entity, bot);
             return true;
