@@ -1,4 +1,7 @@
 ### Language: [简体中文](README_CN.md) / `English`
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/074f136567354de9a7d846ca34df43b5)](https://app.codacy.com/gh/NeonAngelThreads/DolphinBot?utm_source=github.com&utm_medium=referral&utm_content=NeonAngelThreads/DolphinBot&utm_campaign=Badge_Grade)
+
 # DolphinBot
 
 <p align="center">
