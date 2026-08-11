@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: "[feature wanted]"
-labels: good first issue, help wanted
+labels: help wanted
 assignees: NeonAngelThreads
 
 ---
