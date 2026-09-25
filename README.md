@@ -80,8 +80,8 @@
 -  [`Cross Version`](#cross-version-support)
 - [`Hot-Reloading Plugin`](#hot-swapping-plugins-in-game)
 - [`Terminal Interactions`](#interactions-in-terminal)
-- [`Packet Debugger`](#config-file-setting)
-- [`Proxy Settings`](#config-file-setting)
+- [`Packet Debugger`](#config-file-setting-)
+- [`Proxy Settings`](#config-file-setting-)
 - [`DolphinBot Web Dashboard`](#web-console)
 
 **Implemented Event APIs:**
@@ -93,6 +93,8 @@
 - [`Force Unicode Chat`](PluginDocs.md#unicode-string-helper)
 
 ## Cross Version Support
+**Now DolphinBot is capable of switching between multiple minecraft versions dynamically.**  
+DolphinBot automatically detects server protocol version and chooses best version to use, the available version list is ranging from below:
 
 | Supported Versions | Protocol ID Range | Support Stat |
 |--------------------|-------------------|--------------|
@@ -112,6 +114,12 @@
 | 1.9.x              | 107-110           | ✓            |
 | 1.8.x              | 47                | ✓            |
 | 1.7.x              | 4-5               | ✓            |
+
+You can debug ViaVersion in DolphinBot to inspect how packets are being translated.
+To enable debug mode of viaversion, you can add JVM option `-Dvia.debug=true` to java.
+```bash 
+java -Dvia.debug=true -jar "DolphinBot-[version]-full.jar"
+```
 ## Interactions in Terminal
 - You can send in-game messages or execute commands form the dolphin bot terminal.
 - Built-in commands:
@@ -153,14 +161,15 @@ In this section, you will understand below how-tos:
      ```bash
      java -jar "DolphinBot-[version]-full.jar" --username=[username] --password=[password] --skin-recorder=[enable/disable]
      ```
-   | Command Lines      | Description                                                                |
+   | Command Arguments  | Description                                                                |
    |--------------------|----------------------------------------------------------------------------|
-   | `--username`       | in-game displaying name of bot.                                            |
-   | `--password`       | password for login or register.                                            |
-   | `--auto-reconnect` | whether reconnect to server when got kicked or disconnect by some reasons. |
-    | `--skin-recorder`  | whether automatic capture and save online players' skins.                  |
-   | `--server`         | target server address.                                                     |
-   | `--port`           | target server port.                                                        |
+   | `--username`       | In-game displaying name of bot.                                            |
+   | `--password`       | Password for login or register.                                            |
+   | `--auto-reconnect` | Whether reconnect to server when got kicked or disconnect by some reasons. |
+    | `--skin-recorder`  | Whether automatic capture and save online players' skins.                  |
+   | `--server`         | Target server address.                                                     |
+   | `--port`           | Target server port.                                                        |
+|  | `-Dvia.debug=true` | Enables the via version packet debugging.                                  |
 
    Example:
      ```bash

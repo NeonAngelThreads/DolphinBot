@@ -17,6 +17,8 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.platform.ViaCodecHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import lombok.extern.slf4j.Slf4j;
+import org.angellock.impl.dolphin.DolphinCodecDebugger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,33 +30,27 @@ import org.slf4j.LoggerFactory;
  * with added error logging. Does NOT manually fix protocol versions; ViaVersion handles
  * all protocol state internally via the VersionProvider and handshake processing.</p>
  */
+@Slf4j
 public class DolphinViaCodec extends ViaCodecHandler {
-
-    private static final Logger log = LoggerFactory.getLogger("DolphinVia");
-
+    private static final boolean debug = "true".equalsIgnoreCase(System.getProperty("via.debug"));
+    private final DolphinCodecDebugger debugger;
     public DolphinViaCodec(UserConnection user) {
         super(user);
+        debugger = debug ? new DolphinCodecDebugger.Impl() : new DolphinCodecDebugger.EmptyImpl();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.debug("[ViaCodec] INBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
-                ctx.channel().id().asShortText(),
-                msg.getClass().getSimpleName(),
-                connection.isActive(),
-                connection.shouldTransformPacket(),
-                connection.isClientSide());
+        debugger.debugPacket("[ViaCodec] INBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}", ctx, msg, connection);
         if (msg instanceof io.netty.buffer.ByteBuf buf) {
-            log.debug("[ViaCodec] INBOUND readableBytes={}", buf.readableBytes());
+            debugger.debugReadableByte("[ViaCodec] INBOUND readableBytes={}", buf);
             if (buf.readableBytes() > 0) {
                 int dumpLen = Math.min(buf.readableBytes(), 32);
                 byte[] dump = new byte[dumpLen];
                 buf.markReaderIndex();
                 buf.readBytes(dump);
                 buf.resetReaderIndex();
-                StringBuilder hex = new StringBuilder();
-                for (byte b : dump) hex.append(String.format("%02x ", b));
-                log.debug("[ViaCodec] INBOUND raw bytes: {}", hex.toString().trim());
+                debugger.debugByte("[ViaCodec] INBOUND raw bytes: {}", dump);
             }
         }
         try {
@@ -68,23 +64,16 @@ public class DolphinViaCodec extends ViaCodecHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        log.debug("[ViaCodec] OUTBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}",
-                ctx.channel().id().asShortText(),
-                msg.getClass().getSimpleName(),
-                connection.isActive(),
-                connection.shouldTransformPacket(),
-                connection.isClientSide());
+        debugger.debugPacket("[ViaCodec] OUTBOUND on channel {}: msgType={}, active={}, shouldTransform={}, clientSide={}", ctx, msg, connection);
         if (msg instanceof io.netty.buffer.ByteBuf buf) {
-            log.debug("[ViaCodec] OUTBOUND readableBytes={}", buf.readableBytes());
+            debugger.debugReadableByte("[ViaCodec] OUTBOUND readableBytes={}", buf);
             if (buf.readableBytes() > 0) {
                 int dumpLen = Math.min(buf.readableBytes(), 32);
                 byte[] dump = new byte[dumpLen];
                 buf.markReaderIndex();
                 buf.readBytes(dump);
                 buf.resetReaderIndex();
-                StringBuilder hex = new StringBuilder();
-                for (byte b : dump) hex.append(String.format("%02x ", b));
-                log.debug("[ViaCodec] OUTBOUND raw bytes (before translation): {}", hex.toString().trim());
+                debugger.debugByte("[ViaCodec] OUTBOUND raw bytes (before translation): {}", dump);
             }
         }
         try {
