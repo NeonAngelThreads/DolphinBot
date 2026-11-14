@@ -3,7 +3,7 @@
 # DolphinBot
 DolphinBot은 GeyserMC MCProtocolLib 1.21.11-SNAPSHOT(프로토콜 774) 기반의 헤드리스 Minecraft 봇 프레임워크입니다.
 <p align="center">
-   <img src="assets/logo.jpg" width="350" height="350">
+   <img src="../../assets/logo.jpg" width="350" height="350">
    <br>
     <a href="https://www.oracle.com/java/technologies/downloads/">
         <img src="https://forthebadge.com/badges/made-with-java.svg" alt="java"/>
@@ -71,7 +71,7 @@ DolphinBot은 GeyserMC MCProtocolLib 1.21.11-SNAPSHOT(프로토콜 774) 기반�
 ## 스크린샷:
 ### Windows Server 2019에서 실행:
 <p align="center">
-   <img src="assets/dev2.png">
+   <img src="../../assets/dev2.png">
 </p>
 
 ## 소개:
@@ -177,7 +177,7 @@ java -Dvia.debug=true -jar "DolphinBot-[version].jar"
      java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
      ```
    <p align="center">
-     <img src="assets/dolphinbot-profile.png" alt="profile list">
+     <img src="../../assets/dolphinbot-profile.png" alt="profile list">
    </p>
          
 > [!NOTE]

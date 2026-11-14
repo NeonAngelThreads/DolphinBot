@@ -3,7 +3,7 @@
 # DolphinBot
 DolphinBot é um framework de bots Minecraft headless baseado em GeyserMC MCProtocolLib 1.21.11-SNAPSHOT (protocolo 774).
 <p align="center">
-   <img src="assets/logo.jpg" width="350" height="350">
+   <img src="../../assets/logo.jpg" width="350" height="350">
    <br>
     <a href="https://www.oracle.com/java/technologies/downloads/">
         <img src="https://forthebadge.com/badges/made-with-java.svg" alt="java"/>
@@ -72,7 +72,7 @@ DolphinBot é um framework de bots Minecraft headless baseado em GeyserMC MCProt
 ## Capturas:
 ### Executando no Windows Server 2019:
 <p align="center">
-   <img src="assets/dev2.png">
+   <img src="../../assets/dev2.png">
 </p>
 
 ## Introdução:
@@ -178,7 +178,7 @@ Nesta seção:
      java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
      ```
    <p align="center">
-     <img src="assets/dolphinbot-profile.png" alt="profile list">
+     <img src="../../assets/dolphinbot-profile.png" alt="profile list">
    </p>
          
 > [!NOTE]

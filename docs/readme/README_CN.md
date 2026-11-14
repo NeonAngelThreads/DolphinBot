@@ -3,7 +3,7 @@
 # DolphinBot
 DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtocolLib 1.21.11-SNAPSHOT（协议 774）构建。
 <p align="center">
-   <img src="assets/logo.jpg" width="350" height="350">
+   <img src="../../assets/logo.jpg" width="350" height="350">
    <br>
     <a href="https://www.oracle.com/java/technologies/downloads/">
         <img src="https://forthebadge.com/badges/made-with-java.svg" alt="java"/>
@@ -70,7 +70,7 @@ DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtoco
 ## 截图：
 ### 在 Windows Server 2019 上运行：
 <p align="center">
-   <img src="assets/dev2.png">
+   <img src="../../assets/dev2.png">
 </p>
 
 ## 介绍：
@@ -176,7 +176,7 @@ java -Dvia.debug=true -jar "DolphinBot-[version].jar"
      java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
      ```
    <p align="center">
-     <img src="assets/dolphinbot-profile.png" alt="profile list">
+     <img src="../../assets/dolphinbot-profile.png" alt="profile list">
    </p>
          
 > [!NOTE]
