@@ -1,4 +1,5 @@
-### Language: [简体中文](README_CN.md) / `English`
+### Language: 
+[简体中文](README_CN.md) / [한국어](README_KO.md) / [Español](README_ES.md) / [Français](README_FR.md) / [Русский](README_RU.md) / [Português](README_PT.md) / English
 # DolphinBot
 DolphinBot is a headless Minecraft bot framework built on GeyserMC MCProtocolLib 1.21.11-SNAPSHOT (protocol 774).
 <p align="center">
@@ -58,10 +59,7 @@ DolphinBot is a headless Minecraft bot framework built on GeyserMC MCProtocolLib
 ## Features:
    - Easy to register custom commands starting with `!` by using CommandBuilder DolphinAPIs.
    - Can **hot-inject** plugins during the connection of server.
-   - Bypassing human verification in most servers including `2b2t.xin`.
    - Supporting to configure bot clusters, and start at once.
-
-[//]: # (   - Supporting colourful console logging strings expression `colorizeText&#40;"&6Hello &lWorld"&#41;`.)
    - Automatic answer questions in `2b2t.xin` for speeding up login process.
    - Supporting to configure proxy settings for multiple bots.
    - **Web Console API** - Built-in HTTP API server for remote bot management and control.
