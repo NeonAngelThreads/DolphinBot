@@ -17,7 +17,6 @@
 package org.angellock.impl.plugin;
 
 import com.google.gson.Gson;
-import org.angellock.impl.extensions.BaseDefaultPlugin;
 import org.angellock.impl.util.ConsoleTokens;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -41,9 +40,6 @@ public class PluginLoader{
     private static final Logger log = LoggerFactory.getLogger(PluginLoader.class);
     private final Gson gson = new Gson();
 
-    public Plugin loadDefaultPlugin(){
-        return new BaseDefaultPlugin();
-    }
     public @Nullable Plugin loadPluginClass(File pluginFile){
         Manifest pluginManifest = this.getManifestOf(pluginFile);
         if (pluginManifest == null){
@@ -57,7 +53,7 @@ public class PluginLoader{
             URLClassLoader classLoader = new URLClassLoader(urls, this.getClass().getClassLoader());
             Class<?> jarClass;
             try {
-                jarClass = Class.forName(pluginManifest.getMainClass(), true, classLoader);
+                jarClass = Class.forName(pluginManifest.getEntry(), true, classLoader);
 
                 if(Plugin.class.isAssignableFrom(jarClass)){
                     Constructor<?> constructor = jarClass.getDeclaredConstructor();
@@ -70,7 +66,7 @@ public class PluginLoader{
                 }
 
             } catch (ClassNotFoundException var11) {
-                log.warn(ConsoleTokens.colorizeText("&6Cannot find entry class '" + pluginManifest.getMainClass() + "'" + var11));
+                log.warn(ConsoleTokens.colorizeText("&6Cannot find entry class '" + pluginManifest.getEntry() + "'" + var11));
                 log.warn(ConsoleTokens.colorizeText("&6Trying to load fallback entry class &d'Plugin.class'"));
                 try {
                     ServiceLoader<Plugin> serviceLoader = ServiceLoader.load(Plugin.class, classLoader);
@@ -86,8 +82,7 @@ public class PluginLoader{
                     }
                 } catch (NoClassDefFoundError e) {
                     log.error(ConsoleTokens.colorizeText("&4Failed to load plugin: " + pluginManifest));
-                    log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
-                    e.printStackTrace();
+                    log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"), e);
                 }
             }
 
@@ -102,24 +97,20 @@ public class PluginLoader{
 
         } catch (IllegalAccessException var12) {
             log.error(ConsoleTokens.colorizeText("&4Error loading plugin: Plugin " +pluginManifest+ "has no public constructor"));
-            log.error(ConsoleTokens.colorizeText("&7{}"), var12.toString());
-            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
-            var12.printStackTrace();
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"), var12);
         } catch (MalformedURLException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             log.error(ConsoleTokens.colorizeText("&4Failed to load plugin " +
-                    pluginManifest + "&c No such entry class named &l&5"+ pluginManifest.getMainClass())
+                    pluginManifest + "&c No such entry class named &l&5"+ pluginManifest.getEntry())
             );
 
             log.error(ConsoleTokens.standardizeText(ConsoleTokens.GRAY + e.toString()));
 
-            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
-            e.printStackTrace();
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"), e);
         } catch (Throwable throwable){
             log.error(ConsoleTokens.colorizeText("&4Failed to load plugin " +
                     pluginManifest + "&c Reason: &l&5"+ throwable.getMessage())
             );
-            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"));
-            throwable.printStackTrace();
+            log.error(ConsoleTokens.colorizeText("&cPLUGIN \"{}\" LOADING FAILED: [STACK TRACE] ->"), throwable);
         }
         return null;
     }

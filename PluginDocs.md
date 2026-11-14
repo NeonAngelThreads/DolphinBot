@@ -1,560 +1,164 @@
-### **[<- Back to README.md](README.md)**
-# Customized Plugin Developing Guide
-In this section, you will learn:
-- **1. Plugin Jar Structures**
-- **2. To Create a Simple Plugin**
-- **3. Understand Plugin Lifecycles**  
+> [!TIP] Quick Navigation  
+> - 返回 [README.md](./README.md)
+> ### `English` / [简体中文](./PluginDocs_CN.md) 
 
+# DolphinBot Plugin Development Guide
 
-## 1. Plugin Structure
-  Plugin jar files are supposed to be contained the plugin manifest file `plugin.json` inside the root of jar file.  
-  **Jar file structure:**  
-  ````text 
-    MyPlugin.jar
-      ├─plugin.json
-      └─org
-        └─me
-          └─plugin
-            └─MyPlugin.java
-   ````
-  Manifest file `plugin.json` is aiming to specify the **entry class** of plugin, plugin name and version.  
-  **An example for configuring the `plugin.json`:**
-  ````json
-   {
-      "entry": "org.me.plugin.MyPlugin",
-      "name": "MyPlugin",
-      "version": "1.0.0"
-   }
-  ````
-  1. **How Entry Class Being Located**:   
-    When loading a plugin, DolphinBot will locate the target entry class defined in `plugin.json`, if `plugin.json` not existing, 
-    it will scan all classes that extends `AbstractPlugin`, if class not found, it will skip and ignore this plugin.  
+DolphinBot is a headless Minecraft bot framework built on GeyserMC **MCProtocolLib 1.21.11-SNAPSHOT** (protocol 774). Plugins are JAR files dropped into `plugins/`, discovered at runtime, and wired through three simple lifecycle hooks plus a rich event / command / packet-API surface.
 
-## 2. Build A Simple Plugin
-  Before start, you need to add DolphinAPI dependency. There are following steps:  
-  - Download `DolphinBot-<NEWEST-VERSION>-RELEASE.jar` jar archive.  
-  - Add this archive as dependency to your project.     
+This guide is organised as a **top-level index page** with self-contained deep-dives in the [docs/en-us/](./docs/en-us/) directory. You can jump in anywhere.
 
-  Every single plugin entry class needs to extend the `AbstractPlugin` class:
+---
 
-   ````java
-    package org.angellock.impl.extensions;
+## Table of Contents
+
+| # | Topic | What you'll learn |
+|---|-------|-------------------|
+| 1 | [Plugin Structure](docs/en-us/01-Plugin-Structure.md) | JAR layout, `plugin.json` manifest, entry-class resolution |
+| 2 | [Quick Start](docs/en-us/02-Quick-Start.md) | Build a minimal plugin from scratch — copy-paste ready |
+| 3 | [Lifecycle](docs/en-us/03-Lifecycle.md) | `onLoad` / `onEnable` / `onDisable`, per-bot vs global scope |
+| 4 | [LoginStateMachine](docs/en-us/04-LoginStateMachine.md) | Chain-style state machine for custom server login flows |
+| 5 | [Event System](docs/en-us/05-Event-System.md) | `@EventHandler`, `IListener`, priority levels, built-in events |
+| 6 | [Packet Listeners](docs/en-us/06-Packet-Listeners.md) | `getListeners()`, `AbstractEventProcessor`, custom handlers |
+| 7 | [Commands](docs/en-us/07-Commands.md) | In-game (`!cmd`) + terminal (`/cmd`) command systems |
+| 8 | [Chat & Message API](docs/en-us/08-Chat-Message.md) | `MessageManager`, bot-to-bot messaging, `UStringHelper` |
+| 9 | [Player Entity API](docs/en-us/09-Player-Entity.md) | `Player` objects, distance checks, movement tracking |
+| 10 | [Actions-Core Architecture](docs/en-us/10-Actions-Core-Architecture.md) | Modular interaction plugin — the SPI you'll most likely extend |
+| 11 | [Actions-Core API](docs/en-us/11-Actions-Core-API.md) | `ModuleContext`, `ActionsModule`, `Action`, `ActionQueue` |
+| 12 | [Actions-Core World](docs/en-us/12-Actions-Core-World.md) | `WorldCache`, `InventoryCache`, chunk decoding, entity tracking |
+| 13 | [Actions-Core Registries](docs/en-us/13-Actions-Core-Registries.md) | Data-driven block / tool properties (vanilla-accurate break times) |
+| 14 | [Actions-Core Commands](docs/en-us/14-Actions-Core-Commands.md) | Built-in commands (`/whereiam`, `/goto`, `/harvest`…) and Executor pattern |
+
+---
+
+## Quick Start
+
+### 1. Plugin structure
+Plugin jar files are supposed to be contained the plugin manifest file plugin.json inside the root of jar file.
+```text
+my-plugin.jar
+├── plugin.json                    ← manifest at JAR root
+└── org/
+    └── me/
+        └── plugin/
+            └── MyPlugin.class     ← compiled entry class
+```
+
+### 2. plugin.json
+Manifest file plugin.json is aiming to specify the entry class of plugin, plugin name and version.  
+**An example for configuring the plugin.json:**
+```json
+{
+  "entry": "org.me.plugin.MyPlugin",
+  "name": "MyPlugin",
+  "version": "1.0.0"
+}
+```
+**How Entry Class Being Located:**  
+When loading a plugin, DolphinBot will locate the target entry class defined in plugin.json, if plugin.json not existing, it will scan all classes that extends AbstractPlugin, if class not found, it will skip and ignore this plugin.
+
+### 3. Entry class
+Plugin entry class should extend the AbstractPlugin class:  
+```java
+package org.me.plugin;
 
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.api.handlers.LoginHandler;
-import org.angellock.impl.providers.AbstractPlugin;
+import org.angellock.impl.plugin.AbstractPlugin;
 
-public class ExamplePlugin extends AbstractPlugin {
-    @Override
-    public String getPluginName() {
-        return "My First Plugin";
-    }
+public class MyPlugin extends AbstractPlugin {
+    @Override public String getPluginName() { return "MyPlugin"; }
+    @Override public String getVersion()   { return "1.0.0"; }
+    @Override public String getDescription() { return "Hello DolphinBot"; }
 
     @Override
-    public String getVersion() {
-        return "1.0.0";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Hello DolphinBot";
+    public void onEnable(RobotPlayer bot) {
+        getLogger().info("Hello, " + bot.getProfileName() + "!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("Disabling {} - {}", this.getName(), getVersion());
-        //Disable Message
-    }
-
-    @Override
-    public void onLoad() {
-        getLogger().info("Loading {} - {}", this.getName(), getVersion());
-        // Loading Plugin Message
-    }
-
-    @Override
-    public void onEnable(RobotPlayer entityBot) {
-        getListeners().add(
-                new LoginHandler().addExtraAction((loginPacket) -> {
-                    getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode().name());
-                })
-        );
-    }
-}
-
-   ````
-  - You can also refer to the example plugin in folder `/example-plugin/example_plugin` for help, or you can base on this demo plugin as your template to develop your own plugin.  
-- After you package your plugin, put the packaged plugin in folder `/plugins` (Global plugin directory).
-- If you only want to apply a plugin to a specified bot, put plugin into `/plugin/<Bot Profile Name>` (Automatically
-  generated by DolphinBot.)
-
-## 3. Programmable Login State Machine:
-DolphinBot is now supporting you to customize different login processes. previously, when the bot joins to another server, the login process
-may be different, in this case, you may need to by modify large scope of code in order to change different login mechanism for
-different servers. However, this is an error-pron modification, also time-consuming, the code will be lack of manageability and maintainability
-simply unactionable if you frequently join to difference servers.   
-
-Now, you can use only several lines of code to implement different log-in logics for different servers.  
-## `LoginStateMachine.java`:
-**Methods:**
-### `source(LoginState initialState)` :  
-This method is used to specify the precondition (a source state) for a process of states transiting.
-usually calling before `whenReceive(String msg)` method.
-
-Note: If you want to define multiple state transition on a state, you don't need to add this method.
-### `whenRecive(String msg)`:
-Most important method block, allows you to define when the state (you define on method `source`) should be transited.
-when server inform the message that contains the text you specified. then it will transit state to next, and do next action (`goal` method).
-
-### `goal(LoginState nextState, Action action)`:
-Define what state should transit to, and what action(s) should be done in this new state.
-
-These methods aiming to build the chain calling style for simplicity.  
-**Here is an example:**
-
-```java
-
-import org.angellock.impl.api.state.LoginStateMachine;
-
-@Override
-public void onEnable(RobotPlayer entityBot) {
-
-    LoginStateMachine loginStateMachine = new LoginStateMachine();
-
-    loginStateMachine
-            .source(LoginState.IDLE).whenReceive("请登录").goal(LoginState.LOGIN, loginAction) // from IDLE transit to LOGIN
-            .source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction) // From LOGIN state transit to JOIN
-            .resetOnlyWhen(KickReason.HUMAN_VERIFICATION) // If bot was kicked by server, it will restart from IDLE state.
-            .build(); // This method will build the state machine object without return value
-}
-```
-**Explanation:**  
-**`.source(LoginState.IDLE).whenReceive("请登录").goal(LoginState.LOGIN, loginAction)` meaning:**   
-This will implement a simple auto-login system. When DolphinBot join the server, it will keep capture server message, if
-"请登录" (of course, you can customize it) message was detected, then the login state will transit from `IDLE` to `LOGIN`, and do the login actions you specified.  
-
-`.source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction)` **meaning**:  
-After doing the login action, it will try to capture "已成功登录" message, if it detected, state will transit from `LOGIN` to `JOIN`,
-then do join actions.  
-
-**`.resetOnlyWhen(KickReason.HUMAN_VERIFICATION)` meaning:**  
-If the bot receive kick message of human-verification or disconnected from server, it will restart from initial state `IDLE` 
-in order to make the state machine running correctly on next time join to the server.
-
-### How to build an advanced login process?
-If you want to add multiple branches to a state node to build a more powerful and advanced login process,
-you can simply add `.and()` branch statement in that state node. **For example:**
-
-```java
-
-import org.angellock.impl.api.state.LoginStateMachine;
-
-@Override
-public void onEnable(RobotPlayer entityBot) {
-
-    LoginStateMachine loginStateMachine = new LoginStateMachine();
-
-    stateMachine
-            .source(LoginState.IDLE).whenReceive("请进行机器人验证").goal(LoginState.VERIFY, verifyAction)
-            .and() // branch
-            .whenReceive("请登录").goal(LoginState.LOGIN, loginAction)
-            .source(LoginState.VERIFY).whenReceive("机器人验证已完毕").goal(LoginState.REGISTER, registerAction)
-            .source(LoginState.REGISTER).whenReceive("已成功注册").goal(LoginState.JOIN, joinAction)
-            .source(LoginState.LOGIN).whenReceive("已成功登录").goal(LoginState.JOIN, joinAction)
-            .resetOnlyWhen(KickReason.HUMAN_VERIFICATION)
-            .build(); // This method will build the state machine object without return value
-}
-```
-**Explanation:**  
-
-Similarly, you can define a state transition from `IDLE` to `VERIFY` when received "请进行机器人验证" message.
-The difference is that there is an `.and()` method call in `IDLE` state node, and what below it is another 
-state transition logic blockchain `.whenReceive("请登录")`.
-
-This will implement a more intelligent login system, it can detect multiple server messages simultaneously on single state node.
-At state `IDLE`, it will try to capture "请进行机器人验证" and "请登录" two messages, if the server inform "请进行机器人验证",
-the state will transit from `IDLE` to `VERIFY`, for "请登录" case, the state will transit from `IDLE` to `LOGIN`.
-
-Note that the block `.whenReceive("请登录").goal(LoginState.LOGIN, loginAction)` did not have statement block `.source(LoginState initialState)` 
-because this transiting condition is built on `.source(LoginState.IDLE)` as initial state.
-
-## `LoginState.java`:   
-This is an enumeration class that contains 6 different kinds of login states. There are:  
-`LOGIN, REGISTER, VERIFY, IDLE, DISCONNECTED, JOIN`   
-These states are managed by `LoginStateMachine.java`
-
-| Log-in States | Meaning                                                  |
-|---------------|----------------------------------------------------------|
-| IDLE        | State reset, or the initial state when you join a server. |
-| REGISTER           | Player registering procces.                              |
-| VERIFY        | Human verification proccess.                             |
-| LOGIN          | Player log-in to the server.                             |
-| DISCONNECTED       | When the player disconnects from the server.             |
-|  JOIN      | Join to the main server after logged-in.                 |
-
-
-
-## 3. Register Event Handlers:
-
-In order to make DolphinAPI more easy-used and scalable, DolphinBot also provides a Bukkit-like Event APIs.
-
-### `@EventHandler` Annotation:
-
-- The `@EventHandler` is aimed mark methods as handleable actions. Whenever `@EventHandler` is declared on methods,
-  it will inject the inner method code into `EventDispatcher` by using reflects.  
-  `@EventHandler` has an optional parameter, namely handling priority, which is classified by `EventPriority` enum.
-  Absent for `EventPriority.NORMAL`.
-
-There are 6 different priority level:
-
-| Event Priority | Description                                     |
-|----------------|-------------------------------------------------|
-| LOWEST         | Lowest priority, might be ignored by dispatcher |
-| LOW            | Low but above lowest                            |
-| NORMAL         | Default level, meets normal tasks               |
-| HIGH           | Above NORMAL                                    |
-| HIGHEST        | Above the HIGH level                            |
-| MONITOR        | More than HIGHEST level, may consume more CPU   |
-
-**Examples:**  
-Create a class named `MyListener`
-by Implementing `IListener` interface, and annotate `@EventHandler` on methods you want to handle.
-
-```java
-import org.angellock.impl.events.EventPriority;
-import org.angellock.impl.events.IListener;
-import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.api.events.game.PlayerMoveEvent;
-import org.angellock.impl.ingame.Player;
-
-public class MyListener implements IListener {
-    @EventHandler(EventPriority.HIGHEST)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        System.out.println("Warning! the player " + player.getName() + " is moving!");
-    }
-
-    @EventHandler(EventPriority.LOW)
-    public void onPlayerChat(PlayerChatEvent event) {
-        Player sender = event.getSender();
-        String msg = event.getMessage();
-        System.out.println("In-Game message: " + sender.getName() + " has sent " + msg);
+        getLogger().info("Goodbye.");
     }
 }
 ```
 
-After that, you need to register the listener class `MyListener` you just create.  
-Added below code to `onEnable()` method in `ExamplePlugin`:
+### 4. Drop it
 
-```java
-...
-@Override
-public void onEnable(RobotPlayer entityBot) {
-    registerEvent(new MyListener());
-}
+```text
+target/plugins/my-plugin.jar          ← plugin applies to every bot
+target/plugins/<ProfileName>/my-plugin.jar  ← applies to one bot only
 ```
 
-Alternately you can put `@EventHandler` methods into `ExamplePlugin` class instead of creating new listener class,
-The only thing you need to do is make `ExamplePlugin` to also implement the `IListener` interface:  
-**Here is Example:**
+> [!IMPORTANT]
+> The framework expects a **shaded JAR** (all dependencies bundled). See [Building](docs/en-us/02-Quick-Start.md#maven-pomxml-template) for the Maven template.
 
-```java
-import org.angellock.impl.events.IListener;
-import org.angellock.impl.events.annotations.EventHandler;
-import org.angellock.impl.api.events.game.EntityEmergedEvent;
-import org.angellock.impl.providers.AbstractPlugin;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
+---
 
-public class ExamplePlugin extends AbstractPlugin implements IListener {
-    @Override
-    public void onEnable(RobotPlayer entityBot) {
-        registerEvent(this); // Because plugin class implemented IListener, so it is also a Listener Type.
-    }
+## Actions-Core: The Built-In Modular Plugin
 
-    @EventHandler // None Parameter for default event priority.
-    public onTestEvent(EntityEmergedEvent event) {
-        EntityType entityType = event.getEntity();
-        System.out.println("An Entity emerges: " + entityType.name());
-    }
+DolphinBot ships with `Actions-Core` — a **fully modular interaction plugin** that demonstrates every pattern in this guide. It's the recommended starting point for anything that needs:
 
-    @Override
-    public String getPluginName() {
-        return "My First Plugin";
-    }
-
-    @Override
-    public String getVersion() {
-        return "1.0.0";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Hello DolphinBot";
-    }
-
-    @Override
-    public void onDisable() {
-        getLogger().info("Disabling {} - {}", this.getName(), getVersion());
-        //Disable Message
-    }
-
-    @Override
-    public void onLoad() {
-        getLogger().info("Loading {} - {}", this.getName(), getVersion());
-        // Loading Plugin Message
-    }
-}
-```
-
-### Dolphin's Event Listeners
-
-- Available Event Listeners:
-
-  | Event Listener       | Only Triggered When                                       |
-    |----------------------|-----------------------------------------------------------|
-  | PlayerMoveEvent      | Triggered when a nearby player moves                      |
-  | EntityEmergedEvent   | An entity generated, player emerged, or projectile thrown |
-  | PlayerChatEvent      | When a player send a in-game message.                     |
-|  MessageDispatchEvent | Customized Message payloads send from other bot by user   |
+- ✅ Block interaction (place, dig, interact)
+- ✅ Movement / pathfinding
+- ✅ Terrain queries (chunk decoding, block lookup)
+- ✅ Inventory-aware tool selection
+- ✅ Asynchronous multi-plugin coordination
 
 > [!NOTE]
-> - Every single handling method should annotate with `@EventHandler`.
-    - All handling method should be public.
-    - Remember to register the all listener classes.
+> Actions-Core is **not optional dependency** of the framework — it's a regular plugin JAR. You can use it as-is, extend its modules, or rip it out entirely.
 
-## 4. Deep Understand DolphinAPIs:
+### Architecture at a glance
 
-- ### 4.1. Listeners and PacketEvents:
-- In above plugin code, at `onEnable()` method, we used `getListeners()` method to get the collection of packet listeners in this plugin.  
-    
-   ````java
-    @Override
-    public void onEnable(RobotPlayer entityBot) {
-        getListeners().add(
-                new LoginHandler().addExtraAction((loginPacket) -> {
-                    getLogger().info(loginPacket.getCommonPlayerSpawnInfo().getGameMode());
-                })
-        );
-    }
-   ````
-   Above code implements an informant that will print current gamemode info once the bot join to or be redirected to a server.  
-   **Code Explanation:**  
-   `getListeners()` returns an iterable list of `AbstractEventProcessor`, allows you to use `add()` to register various packet handlers.  
-   Packet handlers includes `LoginHandler`, `SystemChatHandler`, `PlayerLogInfo.UpdateHandler`, `PlayerLogInfo.RemoveHander`, `JoinedGameHandler` and so on.  
-   - **Customize Handlers:**  
-    Excepting implemented handlers, you can make custom packet handlers by **extending** `AbstractEventProcessor` class:  
-    For example, if you want to create a custom handler that listens and handles `ClientboundPlayerChatPacket`, you should **extend**
-    the `AbstractEventProcessor` class:
-   ````java
-    package org.angellock.impl.extensions;
-    
-    import org.angellock.impl.events.AbstractEventProcessor;
-    import org.geysermc.mcprotocollib.network.packet.Packet;
-    import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.ClientboundPlayerChatPacket;
-    
-    public class MyHandler extends AbstractEventProcessor<ClientboundPlayerChatPacket> { // specifying target packet type.
-        @Override
-        protected boolean isTargetPacket(Packet packet) {
-            return (packet instanceof ClientboundPlayerChatPacket); // filtering out other packet type.
-        }
-    }
-
-   ````
-   After that, you can use your packet handler ``MyHandler`` class to register your custom listener at your custom plugin.
-  By using `.addExtraAction()`, you can add your wanted action towards `MyHandler`. Finally, add it to the global listener.  
-   ````java
-    import org.angellock.impl.extensions.examples.MyHandler;
-
-    @Override
-    public void onEnable(RobotPlayer entityBot) {
-        getListeners().add(
-                new MyHandler().addExtraAction((playerChatPacket) -> {
-                    getLogger().info(playerChatPacket.getContent()); // Example Action.
-                })
-        );
-    }
-   ````
-
-- ### 4.2. Commands System:
-- Command system implements an advanced and easy-used CommandAPI, it encapsulates varied base classes
-  including `CommandSerializer`, `CommandBuilder` and so on, allowing you to register custom commands on your plugin
-  with several simple codes.  
-    DolphinCommandAPI adopts `!` or `！` (namely English exclamation & Chinese exclamation) character as prefix of command for
-  in-game command executing.  
-    To register a custom command, you need to use `getCommands().register(Command)`.  
-    And `.register()` method receives a `Command` object
-  instance, a `Command` instance should be constructed by the `Command.Builder()`:
-    ```java
-    Command command = new CommandBuilder().withName('commandName').build(new ICommandExecutor());
-  ```
-  `Command.Builder()` has multiple optional chaining methods other from `.withName()`, including:
-    - `.withName(String cmd)`: Specify command name for executing.
-    - `.allowedUsers(List<String> users)`: Specify only who can use this command, absent for allowing all players by
-      default.
-      - `.build()`: At the end, call `.build()` to construct command. It returns a `Command` object.  
-    For example, if you want to register a command that could be triggered by chat message `!test`, only for player `PlayerName` uses, 
-    and prints sub-commands you passed, the code looks like this:
-  ```java
-    @Override
-    public void onEnable(RobotPlayer robot) {
-        getCommands().register(new Command.Builder().withName("test").allowedUsers("PlayerName").build((response, botInstance) -> {
-            String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
-            
-            getLogger().info(Arrays.toString(subCommand));
-        }));
-     }
-  ```
-  The `response` parameter inside the lambda expression is an object of `CommandResponse`, it wrapped command meta-infos and call-infos, including sub-command list,
-  and command sender.  
-    **An Example of getting command-sender and command list:**
-    ```java
-     import org.angellock.impl.commands.Command;@Override
-     public void onEnable(RobotPlayer robot) {
-        getCommands().register(new Command.Builder().withName("uid").allowedUsers("Melibertan").build((response, botInstance) -> {
-            String[] subCommand = response.getCommandList(); // get command list contains main-command and sub-command.
-            String commandSender = response.getSender(); // get player who have sent this command.
-        }));
-     }
-    ```
-    For each plugin has individual command system, and every command system is base on `SystemChatPacket` and `PlayerChatPacket` listening.  
-    The command sender and command list is serialized by `CommandSerializer`.
-- ### 4.3.Chat Message Manager:
-    In-game chat messages sends is managed by `MessageManager`.  
-    For each bot has a message manager.  
-    Message manager aimed to send in-game chat message and chat commands.
-- 
-    You can use `.sendCommand(String stringCommand)` to send command.  
--   Each unsent message and command is stored in a Queue, these message and command will be sent in a specified delay (you can change it in config file.).
-## Dolphin Message API:
-Message APIs are aimed to help you to connect one or more bot between bots, that is, you can notify notifications to a bot on some situation, once a bot received the message, you can specify what action should be done by the bot.
-
-1. To use the dolphin message API, you need to register an event listener containing a method to handle the incoming message.  
-2. Register it on you custom plugin.  
-3. Then, you need to broadcast the message payload content from a bot.  
-
-**Here is a simple example:**   
-**Step 1:**    
-Defining a message listener on a receiver bot:  
-ExampleMessageListener.java
-
-```java
-import org.angellock.impl.events.IListener;
-import org.angellock.impl.api.events.MessageBroadcastEvent;
-
-public class ExampleMessageListener implements IListener {
-    @EventHandler
-    public void onMessage(MessageBroadcastEvent event) {
-        log.info("message payload: {}", event.getMessage());
-        // Do something...
-    }
-}
+```text
+Actions-Core
+├── api/                ← SPI (no impl)
+│   ├── ActionsModule       interface with onEnable / onLogin / onDisable
+│   └── ModuleContext       per-bot wiring: bot, simulator, world, inventory, queue
+├── modules/            ← functional units (zero cross-references)
+│   ├── AimModule
+│   ├── BlockInteractModule   registers /interact /place /harvest
+│   ├── MovementModule        registers /whereiam /goto /collect
+│   └── executors/*           ICommandExecutor classes (one per command)
+├── action/             ← serial execution + pathfinding
+│   ├── Action           abstract unit of work
+│   ├── ActionQueue      daemon worker; race-free across plugins
+│   ├── Pathfinder       A* on the WorldCache grid
+│   └── actions/*        6 concrete actions (Goto, Harvest, Place, ...)
+├── world/              ← passive models (packet-driven)
+│   ├── WorldCache       chunks + block overrides + item entities
+│   ├── InventoryCache   hotbar slots (SetContent + SetSlot)
+│   ├── BlockNames       global-id ↔ "minecraft:stone" via ViaVersion
+│   ├── BlockProperties  vanilla break-time / correct-tool data class
+│   ├── BlockPropertiesRegistry   JSON-backed block properties
+│   └── ToolProperties   tool category + mining-speed registry
+├── simulation/
+│   └── VanillaActionSimulator    implements PlayerActionSimulator SPI
+└── commands/ (deleted — modules register directly)
 ```
-Step 2:
 
-```java
-import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.plugin.AbstractPlugin;
+Jump to [Actions-Core Architecture](docs/en-us/10-Actions-Core-Architecture.md) for the deep dive.
 
-public class MessagePlugin extends AbstractPlugin {
-    @Override
-    public void onEnable(RobotPlayer robot){
-        getEvents().registerListeners(new ExampleMessageListener(), this);
-    }
-}
-```
-Step 3:
-Defining a message sender plugin in sender bot.
+---
 
-```java
-import org.angellock.impl.api.message.BotMessage;
-import org.angellock.impl.plugin.AbstractPlugin;
+## 🧭 Which Section Do I Need?
 
-public class SendMsgPlugin extends AbstractPlugin {
-    @Override
-    public void onEnable(RobotPlayer robot) {
-        if (...){ // when the sending condition is meet
-            BotManager.getBotByName("bot#1") // you can specify on which bot you want to send to. (you define on config file)
-                    .callHandleableEvent(new MessageBroadcastEvent("something you want to send"));
-            
-            // alternately, you can use DispatchMessage() to distribute messages to all bots.
-            entityBot.getBotManager().distributeMessage("something.");
-        }
-    }
-}
-```
-## Player Events:
-DolphinAPI also implemented player event system, allowing you to detect and predict online players on server.  
-   - `Player` class:  
-    Every `Player` object represents an individual player in the scope of server stimulation distance.  
-    It provides position information. position data is automatically updated by the robot instance.  
-    **An Example of Player Event Use:**  
-        Below code implements that auto capture position of a moving player.  
-        ```java
-        import org.angellock.impl.providers.AbstractPlugin;
-        public class TestPlayerPlugin extends AbstractPlugin {
-            @Override
-            public void onEnable(RobotPlayer robot) {
-                getListeners().add(new EntityMovePacket().addExtraAction((movepacket)->{
-                    getLogger().info("Moving player position: "+robot.getOnlinePlayers().get(movepacket.getEntityId()).getPosition());
-                }));
-            }
-     
-            @Override
-            public String getPluginName() {
-                return "TestPlugin";
-            }
-            @Override
-            public String getVersion() {
-                return "1.0.0";
-            }
-            @Override
-            public String getDescription() {
-                return "TestPlugin";
-            }
-            @Override
-            public void onDisable() {
-                getLogger().info("disabling plugin!");
-            }
-        }
-        ```
-        If you want to detect the moving player distance from your bot, you can use `player.getPosition().getDistance(bot.getPosition())`:  
-        **Here is Example:**  
-        This code presents that if a player is 7 blocks close to your bot, bot will auto quit the game.
-        ````java
-        import org.angellock.impl.ingame.IPlayer;
-        ...
-            @Override
-            public void onEnable(RobotPlayer robot) {
-                IPlayer target = robot.getOnlinePlayers().get(movepacket.getEntityId());
-                if(target != null){
-                    if(target.getPosition().getDistance(robot.getPosition()) < 7){
-                        robot.getSession().disconnect("Test");
-                    }
-                }
-            }
-        ````
-## Unicode String Helper
-Dolphin bot provides `UStringHelper` class to help you to convert the common text (including digits) into other Unicode characters,
- which can obfuscate server to bypass key word censoring.  
-**Example:**
-````java
-String message = "TestText123 789";
-String stringUUID = UStringHelper.forceUnicode(message);
-````
+| I want to… | Read first |
+|------------|------------|
+| Write a basic plugin | [Quick Start](docs/en-us/02-Quick-Start.md) → [Lifecycle](docs/en-us/03-Lifecycle.md) |
+| React to packets | [Packet Listeners](docs/en-us/06-Packet-Listeners.md) |
+| Register chat / terminal commands | [Commands](docs/en-us/07-Commands.md) |
+| Custom server login flow | [LoginStateMachine](docs/en-us/04-LoginStateMachine.md) |
+| Extend Actions-Core / write a new module | [Actions-Core Architecture](docs/en-us/10-Actions-Core-Architecture.md) → [Actions-Core API](docs/en-us/11-Actions-Core-API.md) |
+| Make bots find / mine / place blocks | [Actions-Core World](docs/en-us/12-Actions-Core-World.md) + [Registries](docs/en-us/13-Actions-Core-Registries.md) |
+| Multi-bot coordination | [Chat & Message API](docs/en-us/08-Chat-Message.md) |
 
-## 5. How a Plugin Works
-  1. **Base Plugin Events**:  
-   Every single plugin exists in form of a jar file managed by `PluginManager`. The `PluginManager` is used to enable
-   and register plugins or disable them.  
-   Each plugin has 3 base simple loading handlers:
-     1. **The `onLoad()` Method.**
-     2. **The `onRegister()` Method.**
-     3. **The `onDisable()` Method.**  
-     - The differences between method `onLoad()` and `onRegister()`:  
-       `onLoad()` method is called only when plugin internal classes and resources is being loading.  
-       `onRegister()` method is called only when plugin classes loads was completed and register its wrapped listeners.
-  2. **Lifecycle of a Plugin** :  
-     When bot initialized, it will scan for all plugins in the plugin folder, and then fetches **entry class**, at this phase, `onLoad()` method will be called.  
-     Once a bot pre-enter to a server, `PluginLoader` will load all registered listeners of target plugins as `IActions` 
-     listener, after that, 
-     `PluginManager` will register them as global plugins, at this phase, `onEnable()` method will be called.
+---
+
+> [!NOTE]
+> All code examples target Java 17 and are compiled against `DolphinBot-1.6.0-ALPHA-full-shaded.jar` (system scope in the module POM). The Actions-Core submodule under this repository demonstrates every pattern end-to-end.
+
+---
+
+## License
+
+Same as DolphinBot — GPL-3.0. See the top-level [LICENSE](./LICENSE) file.

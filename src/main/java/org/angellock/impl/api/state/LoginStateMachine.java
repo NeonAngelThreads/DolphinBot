@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.util.TranslatableUtil;
-import org.angellock.impl.util.reason.IReason;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+
 
 @Slf4j
 public class LoginStateMachine extends StateMachine<String> {
@@ -31,7 +31,7 @@ public class LoginStateMachine extends StateMachine<String> {
     private LoginState currentState;
     private final LoginState initialState;
     private String message;
-    private IReason resetCondition;
+    private String resetCondition;
 
     public LoginStateMachine(LoginState initialState) {
         this.currentState = initialState;
@@ -48,13 +48,13 @@ public class LoginStateMachine extends StateMachine<String> {
     }
 
     @Override
-    public LoginStateMachine resetOnlyWhen(IReason reason) {
+    public LoginStateMachine resetOnlyWhen(String reason) {
         this.resetCondition = reason;
         return this;
     }
 
-    public void raise(IReason reason) {
-        if (reason == this.resetCondition) {
+    public void raise(String reason) {
+        if (Objects.equals(reason, this.resetCondition)) {
             this.reset();
         }
     }

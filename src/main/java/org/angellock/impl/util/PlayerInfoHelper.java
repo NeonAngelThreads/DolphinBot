@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerInfoHelper {
-    private String onlineSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
-    private String crackedSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
-    private boolean captureSkins;
+    private final String onlineSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_ONLINE);
+    private final String crackedSuffix = TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLAYER_INFO_CRACKED);
+    private final boolean captureSkins;
 
     public PlayerInfoHelper(boolean captureSkins) {
         this.captureSkins = captureSkins;
@@ -37,10 +37,6 @@ public class PlayerInfoHelper {
         String state = (playerProperty.isEmpty()) ? this.crackedSuffix : this.onlineSuffix;
         String playerName = player.getName();
         UUID playerUUID = player.getId();
-//        if (!playerProperty.isEmpty() && this.captureSkins) {
-//            log.info(ConsoleTokens.colorizeText("&e{} 的正版皮肤: &7{}"), playerName, playerProperty);
-//        }
-        //TODO Move this code to skin recorder class
 
         return ConsoleTokens.colorizeText("&b" + playerName + state + "&7" + playerUUID);
 

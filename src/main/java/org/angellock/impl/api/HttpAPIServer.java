@@ -16,32 +16,16 @@
 
 package org.angellock.impl.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.websocket.LogWebSocketHandler;
 import org.angellock.impl.api.websocket.handlers.*;
 import org.angellock.impl.api.websocket.handlers.info.PlayersHandler;
-import org.angellock.impl.managers.BotManager;
 import org.angellock.impl.util.ConsoleTokens;
-import org.angellock.impl.util.reason.KickReason;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -50,11 +34,10 @@ public class HttpAPIServer {
     private static HttpAPIServer instance;
     private final HttpServer server;
     private final LogWebSocketHandler logWebSocketServer;
-    private final int wsPort;
 
     public HttpAPIServer(int port) throws IOException {
         instance = this;
-        this.wsPort = port + 1;
+        int wsPort = port + 1;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
         this.server.setExecutor(Executors.newCachedThreadPool());
 

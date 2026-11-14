@@ -39,7 +39,6 @@ public class ViaPacketListener extends SessionAdapter {
         if (translator == null) {
             return;
         }
-        
         try {
             Packet originalPacket = event.getPacket();
             log.debug("Sending packet: {}", originalPacket.getClass().getSimpleName());
@@ -53,7 +52,6 @@ public class ViaPacketListener extends SessionAdapter {
         if (translator == null) {
             return;
         }
-        
         try {
             log.debug("Received packet: {}", packet.getClass().getSimpleName());
         } catch (Exception e) {
@@ -64,6 +62,6 @@ public class ViaPacketListener extends SessionAdapter {
     @Override
     public void connected(ConnectedEvent event) {
         log.info("Session connected with protocol translation: Client={}, Server={}", 
-                translator.getClientVersion().getName(), translator.getServerVersion().getName());
+                translator.clientVersion().getName(), translator.serverVersion().getName());
     }
 }

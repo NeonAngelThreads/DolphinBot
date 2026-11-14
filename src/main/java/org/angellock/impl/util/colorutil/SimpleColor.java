@@ -22,9 +22,9 @@ import org.angellock.impl.util.IComparable;
 
 @Getter
 public class SimpleColor implements IComparable<ConsoleTokens> {
-    private short R;
-    private short G;
-    private short B;
+    private final short R;
+    private final short G;
+    private final short B;
 
     public SimpleColor(short r, short g, short b) {
         this.R = r;

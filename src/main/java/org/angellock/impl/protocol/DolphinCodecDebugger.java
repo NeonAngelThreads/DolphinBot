@@ -14,7 +14,7 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.dolphin;
+package org.angellock.impl.protocol;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.buffer.ByteBuf;

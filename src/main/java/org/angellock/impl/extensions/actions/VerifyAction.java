@@ -21,7 +21,6 @@ import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.LoginState;
 import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.api.state.StateAction;
-import org.angellock.impl.events.EventPriority;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TimingUtil;
 import org.slf4j.Logger;
@@ -68,9 +67,6 @@ public class VerifyAction extends StateAction {
             entityBot.getSession().disconnect("Interrupted");
             throw new RuntimeException();
         }
-    }
-    public void resetVerify(){
-        this.isByPassedVerification = false;
     }
 
     private boolean isBypassed(){

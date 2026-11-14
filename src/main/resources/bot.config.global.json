@@ -12,7 +12,7 @@
   "reconnect-delay": 5000,
   "debug-settings": {
     "enable-packet-debug": false,
-    "packet-warning": true
+    "show-warns": true
   },
   "other": {
     "enable-skin-recorder": false

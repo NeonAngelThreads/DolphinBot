@@ -16,12 +16,11 @@
 
 package org.angellock.impl.util;
 
+import lombok.Getter;
 import org.angellock.impl.Start;
 import org.angellock.impl.util.colorutil.SimpleColor;
 import org.angellock.impl.win32terminal.Win32ColorSerializer;
 
-import java.security.Provider;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +45,9 @@ public enum ConsoleTokens implements IComparable<SimpleColor>{
     RESET_ALL("\u001B[0m", '~', SimpleColor.invalid()),
     NONE("", Character.MAX_VALUE, SimpleColor.invalid());
     private final String colorToken;
+    @Getter
     private final char colorCode;
+    @Getter
     private final SimpleColor hexColor;
     private static final Pattern foreground_pattern = Pattern.compile("[&§]([0-9a-flonNRU])");
     private static final Function<String, String> colorizeAction = Start.isWindows() ? Win32ColorSerializer::serialize : (msg)->{
@@ -83,10 +84,6 @@ public enum ConsoleTokens implements IComparable<SimpleColor>{
         return this.colorToken;
     }
 
-    public char getColorCode() {
-        return colorCode;
-    }
-
     public static ConsoleTokens parseColorFormCode(char code){
         for (ConsoleTokens instance: values()){
             if (instance.colorCode == Character.toUpperCase(code)){
@@ -102,10 +99,6 @@ public enum ConsoleTokens implements IComparable<SimpleColor>{
             return ConsoleDecorations.ITALIC.name();
         }
         return parseColorFormCode(code).name();
-    }
-
-    public SimpleColor getHexColor(){
-        return this.hexColor;
     }
 
     public static ConsoleTokens findMostSimilarANSIColor(SimpleColor searcher){

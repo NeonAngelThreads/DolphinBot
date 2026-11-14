@@ -16,11 +16,8 @@
 
 package org.angellock.impl;
 
-import org.angellock.impl.util.reason.KickReason;
-
 public interface IOptionalProcedures {
     void onJoin();
     void onQuit(String reason);
-    void onKicked(KickReason reason);
     void onPreLogin();
 }

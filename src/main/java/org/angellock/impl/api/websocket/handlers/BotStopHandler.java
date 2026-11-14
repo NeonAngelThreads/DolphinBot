@@ -20,7 +20,7 @@ import com.sun.net.httpserver.HttpExchange;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.websocket.APIResponseHandler;
 import org.angellock.impl.managers.BotManager;
-import org.angellock.impl.util.reason.KickReason;
+
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +39,7 @@ public class BotStopHandler extends APIResponseHandler {
             String botName = getResponseBody(exchange).get("botName");
             RobotPlayer bot = BotManager.getBotByProfileName(botName);
             if (bot != null && bot.getSession() != null) {
-                bot.getSession().disconnect(KickReason.CLOSED_BY_API.name());
+                bot.getSession().disconnect("CLOSED_BY_API");
                 bot.setShouldReconnect(false);
                 this.sendResponse(exchange, 200, Map.of("success", true, "message", "Bot stopped successfully"));
             } else {

@@ -19,15 +19,11 @@
 package org.angellock.impl.protocol;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Getter
-public class PacketTranslator {
+public record PacketTranslator(ProtocolVersion clientVersion, ProtocolVersion serverVersion) {
     private static final Logger log = LoggerFactory.getLogger(PacketTranslator.class);
-    private final ProtocolVersion clientVersion;
-    private final ProtocolVersion serverVersion;
 
     public PacketTranslator(ProtocolVersion clientVersion, ProtocolVersion serverVersion) {
         this.clientVersion = clientVersion;
@@ -37,7 +33,7 @@ public class PacketTranslator {
 
     private void initializeConnection() {
         try {
-            log.info("Packet translator initialized (stub): Client={}, Server={}", 
+            log.info("Packet translator initialized (stub): Client={}, Server={}",
                     clientVersion.getName(), serverVersion.getName());
             log.info("Note: Full packet translation requires deeper Netty integration");
         } catch (Exception e) {
@@ -49,7 +45,7 @@ public class PacketTranslator {
         if (clientVersion.equals(serverVersion)) {
             return rawData;
         }
-        
+
         try {
             // Stub implementation
             return rawData;
@@ -63,7 +59,7 @@ public class PacketTranslator {
         if (clientVersion.equals(serverVersion)) {
             return serverData;
         }
-        
+
         try {
             // Stub implementation
             return serverData;

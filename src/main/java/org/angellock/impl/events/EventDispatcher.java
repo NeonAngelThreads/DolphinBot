@@ -61,15 +61,14 @@ public class EventDispatcher {
         }
     }
 
-    public void callEvent(AbstractEvent event) throws Exception{
+    public void callEvent(AbstractEvent event){
         HandlerMapper list = event.getMapper();
         for (ActiveListener registeredListener : list.getRegisteredListenersInOrder()) {
             try {
                 registeredListener.call(event);
                 return;
             } catch (InvocationTargetException | IllegalAccessException e) {
-                log.warn(ConsoleTokens.colorizeText("&6Error: could not pass event {}, details: {}"), event, e.getMessage());
-                e.printStackTrace();
+                log.warn(ConsoleTokens.colorizeText("&6Error: could not pass event {}, details: {}"), event, e);
             }
         }
     }

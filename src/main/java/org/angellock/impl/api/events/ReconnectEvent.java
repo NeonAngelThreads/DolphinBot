@@ -23,7 +23,6 @@ public class ReconnectEvent extends AbstractEvent {
 
     public static HandlerMapper mapper = new HandlerMapper();
 
-
     @Override
     public HandlerMapper getMapper() {
         return null;

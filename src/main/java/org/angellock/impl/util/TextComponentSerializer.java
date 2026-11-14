@@ -32,14 +32,13 @@ import java.util.List;
 import java.util.Set;
 
 public class TextComponentSerializer implements ComponentSerializer<Component, Component, String> {
-    private StringBuilder result;
     @NotNull
     @Override
     public Component deserialize(@NotNull String input) {
         return Component.newline();
     }
 
-    private void serializeColorAndStyle(Component component){
+    private void serializeColorAndStyle(Component component, StringBuilder result){
         Style style = component.style();
         TextColor color = style.color();
         ConsoleTokens colorToken = ConsoleTokens.NONE; // fallback color target
@@ -47,17 +46,17 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
             SimpleColor textColour = SimpleColor.parseColorFromHex(color.asHexString().substring(1));
             colorToken = ConsoleTokens.findMostSimilarANSIColor(textColour);
         }
-        this.result.append(colorToken);
+        result.append(colorToken);
         Set<TextDecoration> decorations = style.decorations().keySet();
 
         for (TextDecoration decoration: decorations){
             if(style.decoration(decoration) == TextDecoration.State.TRUE){
-                this.result.append(ConsoleDecorations.valueOf(decoration.name()));
+                result.append(ConsoleDecorations.valueOf(decoration.name()));
             }
         }
 
         if (component instanceof TextComponent textComponent){
-            this.result.append(textComponent.content());
+            result.append(textComponent.content());
         }
 
         else if (component instanceof TranslatableComponent translatableComponent){
@@ -66,26 +65,28 @@ public class TextComponentSerializer implements ComponentSerializer<Component, C
             Object[] argValues = arguments.stream()
                     .map(arg -> {
                         Component argComponent = arg.asComponent();
-                        if (argComponent instanceof TextComponent textArg) {
-                            return textArg.content();
-                        }
-                        return argComponent.toString();
+                        return unpack(argComponent, new StringBuilder());
                     })
                     .toArray();
             String translated = LanguageManager.translate(key, argValues);
-            this.result.append(translated);
+            result.append(translated);
         }
 
         for (Component child : component.children()){
-            this.serializeColorAndStyle(child);
+            this.serializeColorAndStyle(child, result);
         }
     }
 
     @NotNull
     @Override
     public String serialize(@NotNull Component component) {
-        result = new StringBuilder();
-        this.serializeColorAndStyle(component);
+        StringBuilder result = new StringBuilder();
+        this.serializeColorAndStyle(component, result);
         return result.toString() + ConsoleTokens.RESET_ALL;
+    }
+
+    public String unpack(@NotNull Component component, StringBuilder result) {
+        this.serializeColorAndStyle(component, result);
+        return result.toString();
     }
 }

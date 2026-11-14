@@ -19,7 +19,6 @@ package org.angellock.impl.api.websocket.handlers;
 import com.sun.net.httpserver.HttpExchange;
 import org.angellock.impl.api.websocket.APIResponseHandler;
 import org.angellock.impl.managers.BotManager;
-import org.angellock.impl.util.reason.KickReason;
 
 import java.io.IOException;
 import java.util.Map;

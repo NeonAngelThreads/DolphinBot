@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.URLClassLoader;
 import java.util.*;
 
 public class PluginManager extends Manager implements IPluginInjectable{
@@ -76,14 +74,6 @@ public class PluginManager extends Manager implements IPluginInjectable{
         this.registeredPlugins.putIfAbsent(plugin.getName().toLowerCase(), (AbstractPlugin) plugin);
     }
 
-    public void keepScheduleThreadsAlive(){
-        for (AbstractPlugin plugin: this.registeredPlugins.values()){
-            if (!plugin.schedulerThread.isAlive()){
-                plugin.schedulerThread.start();
-            }
-        }
-    }
-
     public void listRegisterInfo(AbstractRobot botInstance) {
         Set<String> pl = botInstance.getRegisteredCommands().getRegisteredCommands().keySet();
         if (!pl.isEmpty()){
@@ -95,7 +85,7 @@ public class PluginManager extends Manager implements IPluginInjectable{
         log.info(botInstance.getBotLabel(), TranslatableUtil.getFormattedMessage(EnumSystemEvents.PLUGIN_LISTENER_LOAD, listeners.size()));
     }
 
-    public void loadAllPlugins(RobotPlayer botInstance) throws Exception{
+    public void loadAllPlugins(RobotPlayer botInstance){
         if(!this.registeredPlugins.isEmpty()){
             for (AbstractPlugin plugin : this.registeredPlugins.values()) {
                 enable(plugin, botInstance);

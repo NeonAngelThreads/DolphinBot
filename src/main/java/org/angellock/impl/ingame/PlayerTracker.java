@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class PlayerTracker {
     @Getter
     private final static Map<UUID, Player> onlinePlayers = new HashMap<>();

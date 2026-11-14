@@ -24,6 +24,7 @@ import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.IConnectListener;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.api.handlers.ChatCommandHandler;
+import org.angellock.impl.api.handlers.ClientLoginFinishedHandler;
 import org.angellock.impl.api.handlers.DisconnectReasonHandler;
 import org.angellock.impl.api.handlers.PlayerEmergeHandler;
 import org.angellock.impl.api.handlers.ServerChatCommandHandler;
@@ -41,13 +42,11 @@ import org.angellock.impl.plugin.PluginManager;
 import org.angellock.impl.plugin.SessionProvider;
 import org.angellock.impl.protocol.ProtocolDetector;
 import org.angellock.impl.protocol.via.DolphinProxyServer;
-import org.angellock.impl.protocol.via.DolphinProxySession;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
 import org.geysermc.mcprotocollib.network.BuiltinFlags;
 import org.geysermc.mcprotocollib.network.ClientSession;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
-import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.network.factory.ClientNetworkSessionFactory;
 import org.geysermc.mcprotocollib.protocol.MinecraftProtocol;
 import org.geysermc.mcprotocollib.protocol.codec.MinecraftPacket;
@@ -66,7 +65,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractRobot implements ISendable, SessionProvider, IOptionalProcedures {
+public abstract class AbstractRobot implements SessionProvider, IOptionalProcedures {
     protected @Getter ClientSession session;
     protected static final @Getter Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&aDolphinBot"));
     private final ScheduledExecutorService reconnectScheduler = Executors.newScheduledThreadPool(1);
@@ -188,7 +187,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
                     proxy.start(25567);  // Use different port to avoid conflicts
                 }
 
-                DolphinProxySession session = proxy.createSession(
+                proxy.createSession(
                         this.infoHelper.getName(),
                         serverIP, serverPort,
                         clientProtocol,
@@ -227,6 +226,7 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
 
         this.session.addListener((IConnectListener) event -> onJoin());
         this.session.addListener(new DisconnectReasonHandler(this));
+        this.session.addListener(new ClientLoginFinishedHandler(this));
         this.session.addListener(new ServerChatCommandHandler(this.commands, this));
         this.session.addListener(new ChatCommandHandler(this.commands, this));
         this.session.addListener(new EntityMovePacket());
@@ -262,8 +262,13 @@ public abstract class AbstractRobot implements ISendable, SessionProvider, IOpti
     public void scheduleConnect() {
         this.reconnectScheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
     }
-    @Override
     public void sendPacket(MinecraftPacket packet) {
+        // TEMP DEBUG: prove the interaction packets actually leave the client.
+        if (packet instanceof org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemOnPacket p) {
+            log.info("[Dbg] -> UseItemOn {} face={} seq={} cursor=({},{},{})", p.getPosition(), p.getFace(), p.getSequence(), p.getCursorX(), p.getCursorY(), p.getCursorZ());
+        } else if (packet instanceof org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSwingPacket) {
+            log.info("[Dbg] -> Swing");
+        }
         this.session.send(packet);
     }
     public long getConnectTime() {

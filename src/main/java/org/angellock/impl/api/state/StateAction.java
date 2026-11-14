@@ -16,7 +16,6 @@
 
 package org.angellock.impl.api.state;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 
 public abstract class StateAction {

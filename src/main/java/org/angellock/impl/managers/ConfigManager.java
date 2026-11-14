@@ -23,10 +23,8 @@ import lombok.Setter;
 import org.angellock.impl.DolphinConfig;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.Start;
-import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TranslatableUtil;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +93,7 @@ public class ConfigManager {
     private void loadConfig(){
         coreSettings = this.configHelper.loadBotConfig();
     }
+    // TODO
     public void reloadConfig(){
         this.flushConfig();
         this.loadConfig();

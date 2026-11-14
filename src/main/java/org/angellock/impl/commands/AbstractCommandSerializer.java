@@ -16,7 +16,6 @@
 
 package org.angellock.impl.commands;
 
-import lombok.extern.slf4j.Slf4j;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.api.events.game.PlayerChatEvent;
 import org.jetbrains.annotations.Nullable;

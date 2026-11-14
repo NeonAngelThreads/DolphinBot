@@ -29,10 +29,6 @@ public class EventManager {
     }
 
     public void broadcastEvent(AbstractEvent event){
-        try {
-            this.dispatcher.callEvent(event);
-        } catch (Exception e) {
-            TranslatableUtil.errorTranslatableOf(EnumSystemEvents.PLUGIN_ERROR, e);
-        }
+        this.dispatcher.callEvent(event);
     }
 }

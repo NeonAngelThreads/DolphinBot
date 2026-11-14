@@ -16,11 +16,18 @@
 
 package org.angellock.impl.ingame;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.angellock.impl.ingame.abstracts.IPlayer;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.auth.GameProfile;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 
+@Getter
+@SuppressWarnings("unused")
 public class Player implements IPlayer{
     private int id;
+    @Setter
     private GameProfile profile;
     private Position position;
 
@@ -33,24 +40,17 @@ public class Player implements IPlayer{
         this.profile = profile;
     }
 
-    public GameProfile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(GameProfile profile) {
-        this.profile = profile;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Position getPosition() {
-        return position;
+    @Override
+    public void interactBlock(double x, double y, double z) {
     }
 
     @Override
-    public void interactBlock(double x, double y, double z) {
+    public void interactBlock(int x, int y, int z) {
+
+    }
+
+    @Override
+    public void useItem(Hand hand) {
 
     }
 
@@ -76,5 +76,33 @@ public class Player implements IPlayer{
         return position.getDistance(player.getPosition());
     }
 
+    @Override
+    public float getYRot() {
+        return 0;
+    }
 
+    @Override
+    public float getXRot() {
+        return 0;
+    }
+
+    @Override
+    public void setRotation(float yRot, float xRot) {
+
+    }
+
+    @Override
+    public void setFeetPosition(double x, double y, double z) {
+
+    }
+
+    @Override
+    public int nextUseSequence() {
+        return 0;
+    }
+
+    @Override
+    public void aimAt(double targetX, double targetY, double targetZ) {
+
+    }
 }

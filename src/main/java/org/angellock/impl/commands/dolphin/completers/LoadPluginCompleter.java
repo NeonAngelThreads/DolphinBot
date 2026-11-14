@@ -27,7 +27,6 @@ public class LoadPluginCompleter implements ICommandCompleter {
 
     @Override
     public List<String> complete(String[] cmdList) {
-
         AbstractRobot bot = BotManager
                 .bots()
                 .values()

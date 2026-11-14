@@ -18,6 +18,7 @@ package org.angellock.impl.events.bukkit;
 
 import org.angellock.impl.events.HandlerMapper;
 
+@SuppressWarnings("unused")
 public abstract class AbstractEvent {
     private final boolean async;
 

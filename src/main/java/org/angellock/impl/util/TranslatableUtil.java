@@ -17,13 +17,11 @@
 package org.angellock.impl.util;
 
 import org.angellock.impl.EnumSystemEvents;
-import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.managers.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class TranslatableUtil {

@@ -16,6 +16,7 @@
 
 package org.angellock.impl.util;
 
+import lombok.Getter;
 import org.angellock.impl.managers.QuestionManager;
 
 import java.util.HashMap;
@@ -24,8 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QuestionSerializer {
+    @Getter
     private String question;
-    private Map<String, String> answers = new HashMap<>();
+    private final Map<String, String> answers = new HashMap<>();
     private boolean validQuestion;
     private final String stringQuestion;
     private final QuestionManager questionManager;
@@ -49,7 +51,7 @@ public class QuestionSerializer {
     }
 
     private void serializeAnswer(String stringAnswer){
-        Pattern answerPattern = Pattern.compile("([A-Z])\\.([\\u4e00-\\u9fa5\\w.]+)"); // [\u4e00-\u9fa5] Chinese character scope
+        Pattern answerPattern = Pattern.compile("([A-Z])\\.([\\u4e00-\\u9fa5\\w.]+)"); // Chinese character scope
         Matcher answerMatcher = answerPattern.matcher(stringAnswer);
 
         while (answerMatcher.find()){
@@ -57,10 +59,6 @@ public class QuestionSerializer {
             String value = answerMatcher.group(2);
             this.answers.put(value, key);
         }
-    }
-
-    public String getQuestion(){
-        return this.question;
     }
 
     public String getAnswer(){

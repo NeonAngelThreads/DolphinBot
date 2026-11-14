@@ -16,6 +16,7 @@
 
 package org.angellock.impl.api.events.game;
 
+import lombok.Getter;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.ingame.Player;
@@ -24,6 +25,7 @@ import org.angellock.impl.util.math.Position;
 public class PlayerMoveEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     private final Player targetPlayer;
+    @Getter
     private final Position movePosition;
 
     public PlayerMoveEvent(Player targetPlayer, Position movePosition) {
@@ -33,10 +35,6 @@ public class PlayerMoveEvent extends AbstractEvent {
 
     public Player getPlayer() {
         return targetPlayer;
-    }
-
-    public Position getMovePosition() {
-        return movePosition;
     }
 
     public static HandlerMapper getHandlers() {

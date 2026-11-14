@@ -24,7 +24,6 @@ import lombok.Setter;
 import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.EnumSystemEvents;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.api.events.MessageBroadcastEvent;
 import org.angellock.impl.api.events.NotificationBroadcastEvent;
 import org.angellock.impl.extensions.PluginsProvider;
 import org.angellock.impl.plugin.AbstractPlugin;
@@ -34,7 +33,6 @@ import org.angellock.impl.util.ProxyObject;
 import org.angellock.impl.util.TranslatableUtil;
 import org.angellock.impl.util.strings.JsonStrings;
 import org.geysermc.mcprotocollib.network.ProxyInfo;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,13 +248,6 @@ public class BotManager extends ResourceHelper {
     public void startAll(){
         for (RobotPlayer bot: bots.values()){
             bot.scheduleConnect();
-            while (bot.getServerGamemode() == GameMode.ADVENTURE){
-                try {
-                    Thread.sleep(5000L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 

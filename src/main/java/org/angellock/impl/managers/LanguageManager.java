@@ -20,6 +20,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import org.angellock.impl.Start;
 import org.angellock.impl.managers.utils.Manager;
 import org.angellock.impl.util.ConsoleTokens;
@@ -46,6 +47,7 @@ public class LanguageManager {
     private static final String DEFAULT_LANG = "en_us";
 
     private static final Map<String, String> LANGUAGE_FILENAME_MAP = new HashMap<>();
+    @Getter
     private static File langDirectory;
 
     static {
@@ -59,7 +61,9 @@ public class LanguageManager {
         langDirectory = new File(basePath, "lang");
         
         if (!langDirectory.exists()) {
-            langDirectory.mkdirs();
+            if (langDirectory.mkdirs()){
+                log.warn("Failed to create directory.");
+            }
         }
         
         for (String fileName : LANGUAGE_FILENAME_MAP.values()) {
@@ -113,7 +117,7 @@ public class LanguageManager {
         String fileName = LANGUAGE_FILENAME_MAP.getOrDefault(lowerLang, DEFAULT_LANG + ".json");
         JsonObject langData = loadLanguageFile(fileName);
         
-        if (langData == null || langData.size() == 0) {
+        if (langData == null || langData.isEmpty()) {
             fileName = DEFAULT_LANG + ".json";
             langData = loadLanguageFile(fileName);
         }
@@ -163,7 +167,4 @@ public class LanguageManager {
         return result.toString();
     }
 
-    public static File getLangDirectory() {
-        return langDirectory;
-    }
 }

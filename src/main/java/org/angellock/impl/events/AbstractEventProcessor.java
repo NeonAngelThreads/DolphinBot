@@ -33,26 +33,27 @@ import java.util.List;
 
 public abstract class AbstractEventProcessor<T extends Packet> extends SessionAdapter {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTokens.colorizeText("&l&9PacketHandlers"));
-    private final long DELAY;
     protected List<IActions<T>> actionList = new ArrayList<>();
-    private static final boolean showWarn = false;
+    private interface Warner{
+        default void atEvent(PacketErrorEvent event) {}
+    }
+
+    private final Warner warnerImpl = ConfigManager.global().getDebugSettings().isShowWarns() ? new Warner() {
+        @Override
+        public void atEvent(PacketErrorEvent event) {
+            log.warn(ConsoleTokens.colorizeText("&eA packet error was detected: &7At event &6" + event));
+            log.error(ConsoleTokens.colorizeText("&7" + event.getCause().toString()));
+        }
+    } : new Warner() {};
+
     protected IActions<T> preAction = (T) -> {
     };
-
-    public AbstractEventProcessor(long filterDelay){
-        this.DELAY = filterDelay;
-    }
-    public AbstractEventProcessor(){
-        this(0);
-    }
-    public AbstractEventProcessor(IActions<T> action, long filterDelay){
-        this(filterDelay);
+    public AbstractEventProcessor(IActions<T> action){
         this.actionList.add(action);
     }
-    public AbstractEventProcessor(IActions<T> action){
-        this(action, 0);
-    }
+    public AbstractEventProcessor(){}
     @Override
+    @SuppressWarnings("unchecked")
     public void packetReceived(Session session, Packet packet){
         try {
             if(packet != null && this.isTargetPacket(packet)){
@@ -74,10 +75,7 @@ public abstract class AbstractEventProcessor<T extends Packet> extends SessionAd
 
     @Override
     public void packetError(PacketErrorEvent event) {
-        if (this.showWarn) {
-            log.warn(ConsoleTokens.colorizeText("&eA packet error was detected: &7At event &6" + event));
-            log.error(ConsoleTokens.colorizeText("&7" + event.getCause().toString()));
-        }
+        this.warnerImpl.atEvent(event);
         event.setSuppress(false);
     }
 

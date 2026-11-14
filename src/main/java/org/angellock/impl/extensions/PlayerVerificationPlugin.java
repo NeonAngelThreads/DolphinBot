@@ -35,7 +35,6 @@ import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.TextComponentSerializer;
 import org.angellock.impl.util.TranslatableUtil;
-import org.angellock.impl.util.reason.KickReason;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerAction;
 import org.geysermc.mcprotocollib.protocol.data.game.inventory.ContainerActionType;
@@ -82,7 +81,6 @@ public class PlayerVerificationPlugin extends AbstractPlugin {
         getListeners().add((IDisconnectListener) event -> {
             String s = serializer.serialize(event.getReason());
             if (s.contains("请关闭所有外挂后重新进入以完成验证！")){
-                entityBot.getLoginStateMachine().raise(KickReason.HUMAN_VERIFICATION);
                 verifyAction.execute();
             }
         });

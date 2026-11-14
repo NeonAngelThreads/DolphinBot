@@ -16,11 +16,13 @@
 
 package org.angellock.impl.api.events.game;
 
+import lombok.Getter;
 import org.angellock.impl.events.HandlerMapper;
 import org.angellock.impl.events.bukkit.AbstractEvent;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
+@Getter
 public class EntityEmergedEvent extends AbstractEvent {
     private static final HandlerMapper HANDLERS = new HandlerMapper();
     private final EntityType entity;
@@ -29,14 +31,6 @@ public class EntityEmergedEvent extends AbstractEvent {
     public EntityEmergedEvent(EntityType entity, Position position) {
         this.entity = entity;
         this.position = position;
-    }
-
-    public EntityType getEntity() {
-        return entity;
-    }
-
-    public Position getPosition() {
-        return position;
     }
 
     @Override

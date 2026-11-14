@@ -16,13 +16,9 @@
 
 package org.angellock.impl.extensions.actions;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
-import org.angellock.impl.api.state.LoginState;
 import org.angellock.impl.api.state.LoginStateMachine;
 import org.angellock.impl.api.state.StateAction;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 
 public class LoginAction extends StateAction {
     LoginStateMachine stateMachine;

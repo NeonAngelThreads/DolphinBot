@@ -16,11 +16,8 @@
 
 package org.angellock.impl.extensions.actions;
 
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.api.state.StateAction;
-import org.angellock.impl.util.ConsoleTokens;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.ServerboundChatCommandPacket;
 
 public class RegisterAction extends StateAction {
     private long antiSpam = 0L;

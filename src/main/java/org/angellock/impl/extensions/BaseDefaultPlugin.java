@@ -32,21 +32,11 @@ import org.angellock.impl.managers.ConfigManager;
 import org.angellock.impl.plugin.AbstractPlugin;
 import org.angellock.impl.util.PlayerInfoHelper;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.player.HandPreference;
-import org.geysermc.mcprotocollib.protocol.data.game.setting.ChatVisibility;
-import org.geysermc.mcprotocollib.protocol.data.game.setting.ParticleStatus;
-import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundClientInformationPacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundSetCarriedItemPacket;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.player.ServerboundUseItemPacket;
-
-import java.time.Instant;
-import java.util.ArrayList;
 
 public class BaseDefaultPlugin extends AbstractPlugin {
     private static final String VERSION = "1.2.6";
     private static final String NAME = "Base-default-plugin";
-    private static final String DISC = "Base system commands, Event handlers provider";
-    private Thread tickThread = null;
+    private static final String DISC = "Base system commands, Event handler";
     private PlayerInfoHelper helper;
 
     @Override
@@ -67,9 +57,6 @@ public class BaseDefaultPlugin extends AbstractPlugin {
     @Override
     public void onDisable() {
         this.getListeners().clear();
-        if (this.tickThread != null) {
-            this.tickThread.interrupt();
-        }
     }
 
     @Override
@@ -84,7 +71,6 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         getEvents().registerListeners(new JoinGameListener(), this);
 
         getTerminalCommands().registerCommand(new TerminalCommand("load", new LoadCommandExecutor()), new LoadPluginCompleter());
-        getTerminalCommands().registerCommand(new TerminalCommand("warp", new PearlWarpExecutor()));
         getTerminalCommands().registerCommand(new TerminalCommand.Builder()
                 .withName("respawn")
                 .withProvider(this)
@@ -142,22 +128,17 @@ public class BaseDefaultPlugin extends AbstractPlugin {
         getListeners().add(new TitleMessageDisplay(robotEntity));
         getListeners().add(new PlayerRemoveHandler(this.helper, robotEntity));
 
-        if (robotEntity.config().isAntiAFK()) {
-            this.tickThread = new Thread(new RunnableAFKAction(robotEntity));
-            this.tickThread.start();
-        }
+//            this.tickThread = new Thread(new RunnableAFKAction(robotEntity));
+//            this.tickThread.start();
+
 
     }
 
     public void joinGame(AbstractRobot player){
-        player.sendPacket(new ServerboundClientInformationPacket("en-us", player.config().getMaxChunkView(), ChatVisibility.FULL, true, new ArrayList<>(), HandPreference.RIGHT_HAND, true, true, ParticleStatus.ALL));
-
-        player.sendPacket(new ServerboundSetCarriedItemPacket(1));
-        player.sendPacket(new ServerboundUseItemPacket(
-                            Hand.MAIN_HAND,
-                            (int) Instant.now().toEpochMilli(),
-                            (float) Math.random()*90,
-                            (float) Math.random()*90
-                    ));
+        // NOTE: ServerboundClientInformationPacket + brand payload are sent during the
+        // configuration phase by ClientLoginFinishedHandler, matching the vanilla client.
+        RobotPlayer robot = (RobotPlayer) player;
+        robot.ensureHasSentCarriedItem(1);
+        robot.useItem(Hand.MAIN_HAND);
     }
 }

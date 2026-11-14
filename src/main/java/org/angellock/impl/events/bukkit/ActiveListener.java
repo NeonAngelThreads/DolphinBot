@@ -16,6 +16,7 @@
 
 package org.angellock.impl.events.bukkit;
 
+import lombok.Getter;
 import org.angellock.impl.events.EventPriority;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +25,9 @@ import java.lang.reflect.Method;
 public class ActiveListener {
     private final Object listenerInstance;
     private final Method action;
+    @Getter
     private final Class<?> eventType;
+    @Getter
     private EventPriority priority = EventPriority.NORMAL;
 
     public ActiveListener(Object listenerInstance, Method action, Class<?> eventType) {
@@ -37,14 +40,6 @@ public class ActiveListener {
     public ActiveListener(Object listenerInstance, Method action, Class<?> eventType, EventPriority priority) {
         this(listenerInstance, action, eventType);
         this.priority = priority;
-    }
-
-    public EventPriority getPriority() {
-        return priority;
-    }
-
-    public Class<?> getEventType() {
-        return eventType;
     }
 
     public void call(AbstractEvent event) throws InvocationTargetException, IllegalAccessException {

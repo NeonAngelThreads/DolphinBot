@@ -9,6 +9,7 @@ import net.raphimc.vialegacy.protocol.release.r1_2_4_5tor1_3_1_2.provider.OldAut
 /**
  * Stub for old auth provider (pre-1.3). Not used in modern server connections.
  */
+@Deprecated
 public class DolphinOldAuthProvider extends OldAuthProvider {
 
     @Override

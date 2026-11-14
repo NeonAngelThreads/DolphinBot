@@ -21,12 +21,28 @@ import org.angellock.impl.events.AbstractEventProcessor;
 import org.angellock.impl.api.events.game.JoinedGameEvent;
 import org.angellock.impl.util.math.Position;
 import org.geysermc.mcprotocollib.network.packet.Packet;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.PositionElement;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.player.ClientboundPlayerPositionPacket;
+
+import java.util.List;
 
 public class PlayerPositionPacket extends AbstractEventProcessor<ClientboundPlayerPositionPacket> {
     public PlayerPositionPacket(RobotPlayer robot) {
         this.addExtraAction((packet->{
-            robot.getPluginManager().event().broadcastEvent(new JoinedGameEvent(new Position(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()), robot));
+            // ClientPacketListener.handleMovePlayer: resolve relative flags against the
+            // current position/rotation before accepting the teleport.
+            List<PositionElement> relatives = packet.getRelatives();
+            double x = relatives.contains(PositionElement.X) ? robot.getPosition().getX() + packet.getPosition().getX() : packet.getPosition().getX();
+            double y = relatives.contains(PositionElement.Y) ? robot.getPosition().getY() + packet.getPosition().getY() : packet.getPosition().getY();
+            double z = relatives.contains(PositionElement.Z) ? robot.getPosition().getZ() + packet.getPosition().getZ() : packet.getPosition().getZ();
+            float yRot = relatives.contains(PositionElement.Y_ROT) ? robot.getYRot() + packet.getYRot() : packet.getYRot();
+            float xRot = relatives.contains(PositionElement.X_ROT) ? robot.getXRot() + packet.getXRot() : packet.getXRot();
+
+            // Reply AcceptTeleportation + PosRot, otherwise the server keeps
+            // awaitingPositionFromClient set and ignores all block interactions.
+            robot.onServerTeleport(packet.getId(), x, y, z, yRot, xRot);
+
+            robot.getPluginManager().event().broadcastEvent(new JoinedGameEvent(new Position(x, y, z), robot));
         }));
     }
 

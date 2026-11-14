@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Setter
+@SuppressWarnings("unused")
 public abstract class AbstractCommand {
     @Getter
     protected String name;

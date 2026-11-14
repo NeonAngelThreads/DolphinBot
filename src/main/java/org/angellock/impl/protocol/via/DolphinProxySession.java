@@ -19,6 +19,8 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.raphimc.netminecraft.constants.ConnectionState;
 import net.raphimc.netminecraft.constants.MCPipeline;
@@ -41,26 +43,44 @@ public final class DolphinProxySession {
     public static final AttributeKey<DolphinProxySession> SESSION_KEY =
             AttributeKey.valueOf("dolphin_proxy_session");
 
+    @Getter
     private Channel clientChannel;
+    @Getter
     private Channel serverChannel;
 
+    @Setter
+    @Getter
     private ProtocolVersion clientProtocolVersion = ProtocolVersion.unknown;
+    @Setter
+    @Getter
     private ProtocolVersion serverProtocolVersion = ProtocolVersion.unknown;
 
+    @Getter
     private ConnectionState clientConnectionState = ConnectionState.HANDSHAKING;
+    @Getter
     private ConnectionState serverConnectionState = ConnectionState.HANDSHAKING;
 
+    @Setter
+    @Getter
     private String targetHost;
+    @Getter
+    @Setter
     private int targetPort;
+    @Setter
+    @Getter
     private String botName;
 
     /** Whether we have successfully connected to the backend server */
+    @Setter
     private volatile boolean serverConnected;
 
+    @Setter
     private UserConnection clientUserConnection;
+    @Setter
     private UserConnection serverUserConnection;
 
     /** Login Hello packet sent by the client (used for encryption handshake) */
+    @Setter
     private C2SLoginHelloPacket loginHelloPacket;
 
     /** Buffer for packets that arrive before the handshake is complete. */
@@ -131,19 +151,10 @@ public final class DolphinProxySession {
         return ch == null ? null : ch.attr(SESSION_KEY).get();
     }
 
-    public Channel getClientChannel() { return clientChannel; }
     public void setClientChannel(Channel c) { this.clientChannel = c; c.attr(SESSION_KEY).set(this); }
 
-    public Channel getServerChannel() { return serverChannel; }
     public void setServerChannel(Channel c) { this.serverChannel = c; c.attr(SESSION_KEY).set(this); }
 
-    public ProtocolVersion getClientProtocolVersion() { return clientProtocolVersion; }
-    public void setClientProtocolVersion(ProtocolVersion v) { this.clientProtocolVersion = v; }
-
-    public ProtocolVersion getServerProtocolVersion() { return serverProtocolVersion; }
-    public void setServerProtocolVersion(ProtocolVersion v) { this.serverProtocolVersion = v; }
-
-    public ConnectionState getClientConnectionState() { return clientConnectionState; }
     public void setClientConnectionState(ConnectionState s) {
         this.clientConnectionState = s;
         if (clientChannel != null) {
@@ -153,7 +164,6 @@ public final class DolphinProxySession {
         syncViaState(s);
     }
 
-    public ConnectionState getServerConnectionState() { return serverConnectionState; }
     public void setServerConnectionState(ConnectionState s) {
         this.serverConnectionState = s;
         if (serverChannel != null) {
@@ -193,15 +203,6 @@ public final class DolphinProxySession {
         }
     }
 
-    public String getTargetHost() { return targetHost; }
-    public void setTargetHost(String h) { this.targetHost = h; }
-
-    public int getTargetPort() { return targetPort; }
-    public void setTargetPort(int p) { this.targetPort = p; }
-
-    public String getBotName() { return botName; }
-    public void setBotName(String n) { this.botName = n; }
-
     /**
      * Get the custom PacketRegistry for the target server's protocol version.
      * @return The server-version PacketRegistry, or null if not set
@@ -219,15 +220,12 @@ public final class DolphinProxySession {
     }
 
     public boolean isServerConnected() { return serverConnected; }
-    public void setServerConnected(boolean b) { this.serverConnected = b; }
 
     public UserConnection getUserConnection() { return clientUserConnection; }
-    public void setClientUserConnection(UserConnection u) { this.clientUserConnection = u; }
+
     public UserConnection getServerUserConnection() { return serverUserConnection; }
-    public void setServerUserConnection(UserConnection u) { this.serverUserConnection = u; }
 
     public C2SLoginHelloPacket getLoginHelloPacket() { return loginHelloPacket; }
-    public void setLoginHelloPacket(C2SLoginHelloPacket p) { this.loginHelloPacket = p; }
 
     /** Queue a packet for later replay (during handshake phase). */
     public void queuePendingPacket(Packet packet) {

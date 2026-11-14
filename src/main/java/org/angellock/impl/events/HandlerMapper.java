@@ -24,6 +24,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@SuppressWarnings("unused")
 public class HandlerMapper {
     private final EnumMap<EventPriority, CopyOnWriteArrayList<ActiveListener>> handlers = new EnumMap<>(EventPriority.class);
 

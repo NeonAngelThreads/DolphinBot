@@ -14,10 +14,32 @@
  * https://space.bilibili.com/386644641
  */
 
-package org.angellock.impl.extensions.listeners;
+package org.angellock.impl.ingame.abstracts;
 
-import org.angellock.impl.events.IListener;
+import org.angellock.impl.util.math.Position;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.player.Hand;
 
-public class ChatReloadListener implements IListener {
+@SuppressWarnings("unused")
+public interface IPlayer {
+    double getDistanceFromOthers(IPlayer player);
 
+    Position getPosition();
+
+    float getYRot();
+
+    float getXRot();
+
+    void setRotation(float yRot, float xRot);
+
+    void setFeetPosition(double x, double y, double z);
+
+    int nextUseSequence();
+
+    void aimAt(double targetX, double targetY, double targetZ);
+
+    void interactBlock(double x, double y, double z);
+
+    void interactBlock(int x, int y, int z);
+
+    void useItem(Hand hand);
 }

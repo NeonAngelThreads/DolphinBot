@@ -1,6 +1,6 @@
 ### Language: [简体中文](README_CN.md) / `English`
 # DolphinBot
-
+DolphinBot is a headless Minecraft bot framework built on GeyserMC MCProtocolLib 1.21.11-SNAPSHOT (protocol 774).
 <p align="center">
    <img src="assets/logo.jpg" width="350" height="350">
    <br>
@@ -93,7 +93,7 @@
 - [`Force Unicode Chat`](PluginDocs.md#unicode-string-helper)
 
 ## Cross Version Support
-**Now DolphinBot is capable of switching between multiple minecraft versions dynamically.**  
+**Now DolphinBot is capable of switching between multiple minecraft versions dynamically.**   
 DolphinBot automatically detects server protocol version and chooses best version to use, the available version list is ranging from below:
 
 | Supported Versions | Protocol ID Range | Support Stat |
@@ -115,10 +115,10 @@ DolphinBot automatically detects server protocol version and chooses best versio
 | 1.8.x              | 47                | ✓            |
 | 1.7.x              | 4-5               | ✓            |
 
-You can debug ViaVersion in DolphinBot to inspect how packets are being translated.
+You can debug ViaVersion in DolphinBot to inspect how packets are being translated.  
 To enable debug mode of viaversion, you can add JVM option `-Dvia.debug=true` to java.
 ```bash 
-java -Dvia.debug=true -jar "DolphinBot-[version]-full.jar"
+java -Dvia.debug=true -jar "DolphinBot-[version].jar"
 ```
 ## Interactions in Terminal
 - You can send in-game messages or execute commands form the dolphin bot terminal.
@@ -166,10 +166,9 @@ In this section, you will understand below how-tos:
    | `--username`       | In-game displaying name of bot.                                            |
    | `--password`       | Password for login or register.                                            |
    | `--auto-reconnect` | Whether reconnect to server when got kicked or disconnect by some reasons. |
-    | `--skin-recorder`  | Whether automatic capture and save online players' skins.                  |
+   | `--skin-recorder`  | Whether automatic capture and save online players' skins.                  |
    | `--server`         | Target server address.                                                     |
    | `--port`           | Target server port.                                                        |
-|  | `-Dvia.debug=true` | Enables the via version packet debugging.                                  |
 
    Example:
      ```bash
@@ -337,7 +336,6 @@ each profile name, should be split with ";".
   "packet-filter-delay": 0,
   "msg-send-delay": 0,
   "max-chunk-view": 12,
-  "anti-AFK": true,
   "language": "zh",
   "connect-timing-out": 2000,
   "reconnect-delay": 5000,
@@ -366,12 +364,7 @@ each profile name, should be split with ";".
    | `enable-packet-debug`  | Whether enable packet debugger.                                            |
    | `packet-warning`       | Showing packet errors or not.                                              |
    | `language`             | The UI locale settings. (Supports `zh`, `en` languages currently)          |
-   | `anti-AFK`             | Whether bypassing AFK（Away From Keyboard) detection.                       |
 
-## Hot Swapping Plugins In-Game
-Dolphin bot supports you to **hot-reload** and **hot-load** (**hot injection**) plugins in server, without quit the entire client and reconnecting to server.
-You can send `!reload <pluginName>` dolphin command in server chat.  
-Alternatively, you can type `reload plugin.jar` in the terminal to hot-reload plugins.
 
 ## Web Console
 DolphinBot now includes a built-in Web Console for remote bot management and control. This allows you to manage your bots through a modern web interface without needing direct terminal access.

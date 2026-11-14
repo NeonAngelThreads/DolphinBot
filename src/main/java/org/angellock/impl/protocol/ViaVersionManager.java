@@ -27,16 +27,19 @@ import com.viaversion.viabackwards.ViaBackwardsPlatformImpl;
 import com.viaversion.viarewind.ViaRewindPlatformImpl;
 import com.viaversion.viaversion.platform.NoopInjector;
 import com.viaversion.viaversion.platform.UserConnectionViaVersionPlatform;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.raphimc.vialegacy.ViaLegacyPlatformImpl;
 import org.angellock.impl.protocol.via.DolphinViaInjector;
 import org.angellock.impl.protocol.via.DolphinViaPlatformLoader;
+import org.angellock.impl.util.ConsoleTokens;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+@Getter
 @Slf4j
 public class ViaVersionManager {
     private static ViaVersionManager instance;
@@ -46,7 +49,10 @@ public class ViaVersionManager {
     private ViaVersionManager() {
         this.dataFolder = new File("viaversion");
         if (!this.dataFolder.exists()) {
-            this.dataFolder.mkdirs();
+            boolean success = this.dataFolder.mkdirs();
+            if (!success){
+                log.error(ConsoleTokens.colorizeText("&4 Failed to create config directory."));
+            }
         }
     }
 
@@ -107,14 +113,6 @@ public class ViaVersionManager {
 
     public ProtocolVersion getNativeClientProtocol() {
         return ProtocolVersion.v1_21_11;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public File getDataFolder() {
-        return dataFolder;
     }
 
     public void shutdown() {

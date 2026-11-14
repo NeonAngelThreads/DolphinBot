@@ -69,7 +69,6 @@ public abstract class ResourceHelper extends AbstractJsonAccessor {
                 log.error(ConsoleTokens.colorizeText("&dCould not extract fallback config file &3." + File.separator + getFullFileName()));
             }
         }
-//        this.configPath = Path.of(output, getFullFileName());
     }
 
     public String getFullFileName(){

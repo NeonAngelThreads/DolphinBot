@@ -19,6 +19,7 @@ package org.angellock.impl.ingame;
 import lombok.Data;
 
 @Data
+@Deprecated
 public class PlayerProfileObject {
     String timestamp;
     String profileId;

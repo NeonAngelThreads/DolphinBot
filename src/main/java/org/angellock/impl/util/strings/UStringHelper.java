@@ -44,7 +44,7 @@ public class UStringHelper {
                 continue;
             }
             stringBuilder.append(ch);
-
+            stringBuilder.append(charMap.get(ch));
         }
 
         return stringBuilder.toString();

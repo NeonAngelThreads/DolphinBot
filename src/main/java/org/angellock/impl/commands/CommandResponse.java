@@ -22,7 +22,6 @@ public class CommandResponse {
     private String[] commandName;
     @Getter
     private String sender;
-    public static final CommandResponse INVALID = new CommandResponse();
 
     private CommandResponse(){
     }

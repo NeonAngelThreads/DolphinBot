@@ -16,6 +16,8 @@
 
 package org.angellock.impl.util;
 
+import lombok.Getter;
+
 public enum ConsoleDecorations {
     BOLD("\u001B[1m", 'L'),
     UNDERLINED("\u001B[4m", 'n'),
@@ -27,6 +29,7 @@ public enum ConsoleDecorations {
     NONE("", Character.MIN_VALUE);
 
     private final String colorToken;
+    @Getter
     private final char colorCode;
     ConsoleDecorations(String ansiCode, char styleCode) {
         this.colorToken = ansiCode;
@@ -36,10 +39,6 @@ public enum ConsoleDecorations {
     @Override
     public String toString() {
         return this.colorToken;
-    }
-
-    public char getColorCode() {
-        return colorCode;
     }
 
     public static ConsoleDecorations parseColorFormCode(String name){

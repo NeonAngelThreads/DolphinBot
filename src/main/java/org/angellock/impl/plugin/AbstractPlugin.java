@@ -18,18 +18,14 @@ package org.angellock.impl.plugin;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.angellock.impl.AbstractRobot;
 import org.angellock.impl.RobotPlayer;
 import org.angellock.impl.commands.CommandSpec;
 import org.angellock.impl.events.EventDispatcher;
 import org.angellock.impl.managers.TerminalCommandManager;
 import org.angellock.impl.managers.utils.Manager;
-import org.angellock.impl.util.ConsoleTokens;
 import org.angellock.impl.util.wrapper.LoggerWrapper;
 import org.geysermc.mcprotocollib.network.event.session.SessionListener;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -96,14 +92,11 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
         if (this.listeners.isEmpty()) {
             try {
                 onEnable(this.targetBot);
-                onEnable((AbstractRobot) this.targetBot);
             } catch (Throwable e) {
-                log.error("{}", e.getStackTrace());
+                log.error("Fetal error: ", e);
             }
         }
     }
-    @Deprecated
-    public void onEnable(final AbstractRobot entityBot){};
     public abstract void onEnable(final RobotPlayer entityBot);
 
     public abstract String getPluginName();
@@ -113,7 +106,7 @@ public abstract class AbstractPlugin extends Manager implements Plugin {
             return this.getPluginName();
         }
         else {
-            String pluginName = getPluginManifest().getPluginName();
+            String pluginName = getPluginManifest().getName();
             if(!pluginName.isEmpty()){
                 return pluginName;
             }

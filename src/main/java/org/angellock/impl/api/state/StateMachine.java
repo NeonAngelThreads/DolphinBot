@@ -18,7 +18,6 @@ package org.angellock.impl.api.state;
 
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
-import org.angellock.impl.util.reason.IReason;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,5 +40,5 @@ public abstract class StateMachine<T> {
 
     public abstract void reset();
 
-    public abstract LoginStateMachine resetOnlyWhen(IReason reason);
+    public abstract LoginStateMachine resetOnlyWhen(String reason);
 }

@@ -18,9 +18,7 @@ import com.viaversion.viaversion.platform.ViaCodecHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.extern.slf4j.Slf4j;
-import org.angellock.impl.dolphin.DolphinCodecDebugger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.angellock.impl.protocol.DolphinCodecDebugger;
 
 /**
  * Netty channel handler that delegates packet reads to ViaVersion's translation pipeline.
