@@ -8,7 +8,7 @@ Six terminal commands ship with Actions-Core. They're registered by their owning
 
 | Command | Arguments | Owner Module | What it does |
 |---------|-----------|--------------|--------------|
-| `/whereiam` | — | MovementModule | Logs world, position, rotation, block below feet |
+| `/whereami` | — | MovementModule | Logs world, position, rotation, block below feet |
 | `/goto` | `<x> <y> <z>` | MovementModule | Pathfinds to the target; walks, jumps, climbs as needed |
 | `/harvest` | `<block> [x y z]` | BlockInteractModule | Finds (or takes) the target block, equips best tool, digs with START/FINISH |
 | `/place` | `<block> <x> <y> <z>` | BlockInteractModule | Switches to the item in hotbar, right-clicks to place |
@@ -18,7 +18,7 @@ Six terminal commands ship with Actions-Core. They're registered by their owning
 ## Usage examples
 
 ```
-/whereiam
+/whereami
   [whereiam] world=minecraft:overworld dimension=0
              pos=(-46.56, 117.00, -544.49)
              block=(-47, 117, -545) rot=(yaw 162.7, pitch 33.9)

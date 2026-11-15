@@ -36,16 +36,16 @@ Every plugin gets its **own command namespace** — commands don't collide acros
 
 ## Terminal commands (`getTerminalCommands()`)
 
-Triggered by typing `/command` in the bot's **console** (not in-game). Used for operator-level control. This is the system Actions-Core uses for `/whereiam`, `/goto`, etc.
+Triggered by typing `/command` in the bot's **console** (not in-game). Used for operator-level control. This is the system Actions-Core uses for `/whereami`, `/goto`, etc.
 
 ```java
 @Override
 public void onEnable(RobotPlayer bot) {
     getTerminalCommands().registerCommand(
         new TerminalCommand.Builder()
-            .withName("whereiam")
+            .withName("whereami")
             .withDescription("Show current world and coordinates.")
-            .withUsage("/whereiam")
+            .withUsage("/whereami")
             .withProvider(this)
             .build((r, b) -> {
                 var pos = b.getPosition();

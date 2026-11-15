@@ -1,6 +1,7 @@
 > [!TIP] Quick Navigation  
 > - 返回 [README.md](./README.md)
 > ### `English` / [简体中文](./PluginDocs_CN.md) 
+> _(Want to propose a new translation? Create a PR to let me know!)_
 
 # DolphinBot Plugin Development Guide
 
@@ -55,7 +56,7 @@ Manifest file plugin.json is aiming to specify the entry class of plugin, plugin
 }
 ```
 **How Entry Class Being Located:**  
-When loading a plugin, DolphinBot will locate the target entry class defined in plugin.json, if plugin.json not existing, it will scan all classes that extends AbstractPlugin, if class not found, it will skip and ignore this plugin.
+When loading a plugin, DolphinBot will locate the target entry class defined in `plugin.json`, if `plugin.json` not existing, it will scan all classes that extends AbstractPlugin, if class not found, it will skip and ignore this plugin.
 
 ### 3. Entry class
 Plugin entry class should extend the AbstractPlugin class:  
@@ -85,8 +86,8 @@ public class MyPlugin extends AbstractPlugin {
 ### 4. Drop it
 
 ```text
-target/plugins/my-plugin.jar          ← plugin applies to every bot
-target/plugins/<ProfileName>/my-plugin.jar  ← applies to one bot only
+./plugins/my-plugin.jar                         ← plugin applies to every bot
+./plugins/<ProfileName>/my-plugin.jar           ← applies to one bot only
 ```
 
 > [!IMPORTANT]
@@ -96,61 +97,32 @@ target/plugins/<ProfileName>/my-plugin.jar  ← applies to one bot only
 
 ## Actions-Core: The Built-In Modular Plugin
 
-DolphinBot ships with `Actions-Core` — a **fully modular interaction plugin** that demonstrates every pattern in this guide. It's the recommended starting point for anything that needs:
+DolphinBot ships with `Actions-Core`, A **fully modular interactive dependency library** that enables arbitrary in-game interactions driven by terminal commands. It also serves as a starting point for extending and creating your own custom interactions:
 
 - ✅ Block interaction (place, dig, interact)
 - ✅ Movement / pathfinding
-- ✅ Terrain queries (chunk decoding, block lookup)
+- ✅ Terrain queries (chunk decoding, block digging/placement, block lookup)
 - ✅ Inventory-aware tool selection
 - ✅ Asynchronous multi-plugin coordination
 
 > [!NOTE]
-> Actions-Core is **not optional dependency** of the framework — it's a regular plugin JAR. You can use it as-is, extend its modules, or rip it out entirely.
+> Actions-Core is **an optional dependency** for the framework; it is a standard plugin JAR. You can use it directly or extend its modules.
 
-### Architecture at a glance
-
-```text
-Actions-Core
-├── api/                ← SPI (no impl)
-│   ├── ActionsModule       interface with onEnable / onLogin / onDisable
-│   └── ModuleContext       per-bot wiring: bot, simulator, world, inventory, queue
-├── modules/            ← functional units (zero cross-references)
-│   ├── AimModule
-│   ├── BlockInteractModule   registers /interact /place /harvest
-│   ├── MovementModule        registers /whereiam /goto /collect
-│   └── executors/*           ICommandExecutor classes (one per command)
-├── action/             ← serial execution + pathfinding
-│   ├── Action           abstract unit of work
-│   ├── ActionQueue      daemon worker; race-free across plugins
-│   ├── Pathfinder       A* on the WorldCache grid
-│   └── actions/*        6 concrete actions (Goto, Harvest, Place, ...)
-├── world/              ← passive models (packet-driven)
-│   ├── WorldCache       chunks + block overrides + item entities
-│   ├── InventoryCache   hotbar slots (SetContent + SetSlot)
-│   ├── BlockNames       global-id ↔ "minecraft:stone" via ViaVersion
-│   ├── BlockProperties  vanilla break-time / correct-tool data class
-│   ├── BlockPropertiesRegistry   JSON-backed block properties
-│   └── ToolProperties   tool category + mining-speed registry
-├── simulation/
-│   └── VanillaActionSimulator    implements PlayerActionSimulator SPI
-└── commands/ (deleted — modules register directly)
-```
-
-Jump to [Actions-Core Architecture](docs/en-us/10-Actions-Core-Architecture.md) for the deep dive.
+Jump to [Instructions for Actions-Core](docs/en-us/14-Actions-Core-Commands.md) for the deep dive.
 
 ---
 
 ## 🧭 Which Section Do I Need?
 
-| I want to… | Read first |
-|------------|------------|
-| Write a basic plugin | [Quick Start](docs/en-us/02-Quick-Start.md) → [Lifecycle](docs/en-us/03-Lifecycle.md) |
-| React to packets | [Packet Listeners](docs/en-us/06-Packet-Listeners.md) |
-| Register chat / terminal commands | [Commands](docs/en-us/07-Commands.md) |
-| Custom server login flow | [LoginStateMachine](docs/en-us/04-LoginStateMachine.md) |
-| Extend Actions-Core / write a new module | [Actions-Core Architecture](docs/en-us/10-Actions-Core-Architecture.md) → [Actions-Core API](docs/en-us/11-Actions-Core-API.md) |
+| I want to… | Read first                                                                                                         |
+|------------|--------------------------------------------------------------------------------------------------------------------|
+| Write a basic plugin | [Quick Start](docs/en-us/02-Quick-Start.md) → [Lifecycle](docs/en-us/03-Lifecycle.md)                              |
+| React to packets | [Packet Listeners](docs/en-us/06-Packet-Listeners.md)                                                              |
+| Register chat / terminal commands | [Commands](docs/en-us/07-Commands.md)                                                                              |
+| Custom server login flow | [LoginStateMachine](docs/en-us/04-LoginStateMachine.md)                                                            |
+| Extend Actions-Core / write a new module | [Actions-Core API](docs/en-us/11-Actions-Core-API.md)                                                              |
 | Make bots find / mine / place blocks | [Actions-Core World](docs/en-us/12-Actions-Core-World.md) + [Registries](docs/en-us/13-Actions-Core-Registries.md) |
-| Multi-bot coordination | [Chat & Message API](docs/en-us/08-Chat-Message.md) |
+| Multi-bot coordination | [Chat & Message API](docs/en-us/08-Chat-Message.md)                                                                |
 
 ---
 

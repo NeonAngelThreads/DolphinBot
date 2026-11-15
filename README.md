@@ -1,5 +1,5 @@
 ### Language: 
-[简体中文](README_CN.md) / [한국어](README_KO.md) / [Español](README_ES.md) / [Français](README_FR.md) / [Русский](README_RU.md) / [Português](README_PT.md) / English
+[简体中文](docs/readme/README_CN.md) / [한국어](docs/readme/README_KO.md) / [Español](docs/readme/README_ES.md) / [Français](docs/readme/README_FR.md) / [Русский](docs/readme/README_RU.md) / [Português](docs/readme/README_PT.md) / English
 # DolphinBot
 DolphinBot is a headless Minecraft bot framework built on GeyserMC MCProtocolLib 1.21.11-SNAPSHOT (protocol 774).
 <p align="center">
@@ -428,13 +428,12 @@ The built-in HTTP API provides the following endpoints:
 - Can I join the DolphinBot development?  
     Sure! you can become the **second contributor** of DolphinBot team! you can join at any time freely. 
 
-### Our First Contributor:
-1. huangdihd - (Fixed a critical bug in commit(`#372990a`)
 ## Community
   - Encountered a bug? issues and suggestions are welcome!  
   My Bilibili space:
   https://m.bilibili.com/space/386644641  
   - If you like DolphinBot, a **star** helps a lot!
+  - Want to propose a new translation? Create a PR to let me know!
 
 ## License
 GPL-3.0 or later, see the [full LICENSE](LICENSE).

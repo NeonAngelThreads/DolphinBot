@@ -1,6 +1,7 @@
 > [!TIP] 快速导航  
 > - 返回 [README.md](./README.md)
 > ### [English](./PluginDocs.md) / `简体中文`
+> _(想提出新的翻译？欢迎提交 PR 告诉我！)_
 
 # DolphinBot 插件开发指南
 
@@ -84,8 +85,8 @@ public class MyPlugin extends AbstractPlugin {
 ### 4. 扔进插件目录
 
 ```text
-target/plugins/my-plugin.jar          ← 对所有 Bot Profile 生效
-target/plugins/<ProfileName>/my-plugin.jar  ← 仅对某一个 Bot Profile 生效
+./plugins/my-plugin.jar                     ← 对所有 Bot Profile 生效
+./plugins/<ProfileName>/my-plugin.jar       ← 仅对某一个 Bot Profile 生效
 ```
 
 > [!IMPORTANT]
@@ -95,32 +96,53 @@ target/plugins/<ProfileName>/my-plugin.jar  ← 仅对某一个 Bot Profile 生�
 
 ## Actions-Core：内置的模块化插件
 
-DolphinBot 自带 `Actions-Core`——一个**全模块化的交互插件**，展示了本指南覆盖的所有模式。它是你扩展功能的首选起点：
+DolphinBot 自带 `Actions-Core`——一个**全模块化的交互依赖库**，提供了终端命令驱动的游戏任意交互。它也可以成为你扩展自定义交互起点：
 
-- ✅ 方块交互（放置、挖掘、右键）
+- ✅ 方块交互（放置、挖掘、交互）
 - ✅ 移动 / 寻路
-- ✅ 地形查询（区块解码、方块查找）
+- ✅ 地形管理（区块解码、方块放置/挖掘、方块查找）
 - ✅ 背包感知的工具选择
 - ✅ 多插件并发时的异步安全保障
 
 > [!NOTE]
-> Actions-Core **不是框架的可选依赖**——它是普通的插件 JAR。你可以直接使用它、扩展它的模块、或完全移除它。
+> Actions-Core **是框架的可选依赖**，它是普通的插件 JAR。你可以直接使用它、也可以扩展它的模块。
 
-深入阅读 [Actions-Core 架构](docs/zh-cn/10-Actions-Core-架构.md)。
+深入阅读 [Actions-Core 用法](docs/zh-cn/14-Actions-Core-命令.md)。
 
 ---
 
-## 🧭 我该从哪篇开始读？
+## Dolphinbot插件市场
+正在寻找符合你需求的插件？[这个链接](https://github.com/NeonAngelThreads/dolphinbot-plugins)提供了官方和社区插件，涵盖了
+目前可用的自DolphinBot 1.7.0以上版本的**功能插件**、**依赖库插件**、**元插件**三种插件类型。
 
-| 我要…… | 先读这篇 |
-|--------|---------|
-| 写一个基础插件 | [快速上手](docs/zh-cn/02-快速上手.md) → [生命周期](docs/zh-cn/03-生命周期.md) |
-| 对包作出响应 | [包监听器](docs/zh-cn/06-包监听器.md) |
-| 注册聊天/终端命令 | [命令系统](docs/zh-cn/07-命令系统.md) |
-| 自定义服务器登录流程 | [LoginStateMachine](docs/zh-cn/04-LoginStateMachine.md) |
-| 扩展 Actions-Core / 写新模块 | [Actions-Core 架构](docs/zh-cn/10-Actions-Core-架构.md) → [Actions-Core API](docs/zh-cn/11-Actions-Core-API.md) |
+> [!NOTE]    
+> *  **功能插件**： 提供具体功能的插件，如实现了DolphinBot、其他**依赖库插件**的原生接口、SPI的实现。一个**功能插件**可能依赖一个或多个
+> **依赖库插件**或**元插件**。
+> * **依赖库插件**： 提供一套具体的接口，如SPI，用于被一个或多个**功能插件**依赖和实现，同时也可以选择性的提供一些基本的功能（如[Actions-core]()）。
+> 一个**依赖库插件**可能依赖一个或多个**依赖库插件**或**元插件**。
+> * **元插件**：只提供和定义针对特定服务器的基本交互协议（保证正常进入主服务器为最终目的），如特定`登录流程`/`验证流程`/`进入主大厅的流程`的实现。
+> 因为某些复杂的流程可能涉及自定义交互（如移动、实体交互、方块交互），因此一个**元插件**可能也依赖一个或多个**依赖库插件**（如[Actions-core]()）。
+
+上述的插件类型在[dolphinbot-plugins仓库](https://github.com/NeonAngelThreads/dolphinbot-plugins)中公开，所有基于DolphinBot的插件
+都使用与 DolphinBot 相同的**GPL-3.0**协议（见每个插件的LICENSE文件）
+
+## 分享你制作的插件
+想为DolphinBot社区做出贡献？欢迎在[issue](https://github.com/NeonAngelThreads/dolphinbot-plugins/issues)/[PR](https://github.com/NeonAngelThreads/dolphinbot-plugins/pulls)面板中提出一切的插件投稿！
+
+希望在Bilibili频道上亮相自己实现的有趣插件？欢迎在[bilibili@颜控小帕](https://space.bilibili.com/386644641)私信与我联系。
+
+## 我该从哪篇开始读？
+
+| 我要…… | 建议先读                                                                                      |
+|--------|-------------------------------------------------------------------------------------------|
+| 写一个基础插件 | [快速上手](docs/zh-cn/02-快速上手.md) → [生命周期](docs/zh-cn/03-生命周期.md)                             |
+| 对包作出响应 | [包监听器](docs/zh-cn/06-包监听器.md)                                                             |
+| 注册聊天/终端命令 | [命令系统](docs/zh-cn/07-命令系统.md)                                                             |
+| 自定义服务器登录流程 | [LoginStateMachine](docs/zh-cn/04-LoginStateMachine.md)                                   |
 | 让 Bot 找方块 / 挖方块 / 放方块 | [世界模型](docs/zh-cn/12-Actions-Core-世界模型.md) + [数据注册表](docs/zh-cn/13-Actions-Core-数据注册表.md) |
-| 多 Bot 协调 | [聊天与跨 Bot 消息](docs/zh-cn/08-聊天与跨Bot消息.md) |
+| 多 Bot 协调 | [聊天与跨 Bot 消息](docs/zh-cn/08-聊天与跨Bot消息.md)                                                 |
+| 扩展 Actions-Core / 写新模块 | [Actions-Core API](docs/zh-cn/11-Actions-Core-API.md)                                     |
+
 
 ---
 

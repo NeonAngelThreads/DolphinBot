@@ -1,4 +1,4 @@
-> [!NOTE] 上一页 · [10-架构](./10-Actions-Core-架构.md) · [PluginDocs_CN](../PluginDocs_CN.md) · [下一页](./12-Actions-Core-世界模型.md)
+> [!NOTE] 上一页 · [10-架构](./10-Actions-Core-架构.md) · [PluginDocs_CN](../../PluginDocs_CN.md) · [下一页](./12-Actions-Core-世界模型.md)
 
 # 11. Actions-Core — API
 

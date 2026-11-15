@@ -1,9 +1,9 @@
 ### Language: 
-**简体中文** / [한국어](README_KO.md) / [Español](README_ES.md) / [Français](README_FR.md) / [Русский](README_RU.md) / [Português](README_PT.md) / [English](README.md)
+**简体中文** / [한국어](docs/readme/README_KO.md) / [Español](docs/readme/README_ES.md) / [Français](docs/readme/README_FR.md) / [Русский](docs/readme/README_RU.md) / [Português](docs/readme/README_PT.md) / [English](README.md)
 # DolphinBot
 DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtocolLib 1.21.11-SNAPSHOT（协议 774）构建。
 <p align="center">
-   <img src="../../assets/logo.jpg" width="350" height="350">
+   <img src="assets/logo.jpg" width="350" height="350">
    <br>
     <a href="https://www.oracle.com/java/technologies/downloads/">
         <img src="https://forthebadge.com/badges/made-with-java.svg" alt="java"/>
@@ -40,7 +40,7 @@ DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtoco
      <img src="https://app.codacy.com/project/badge/Grade/ec90e9d4d7ef4023b124c4609b41a961"/>
   </a>
   <p align="center">
-     <a href="https://github.com/NeonAngelThreads/DolphinBot/blob/master/PluginDocs.md">📖文档</a>
+     <a href="https://github.com/NeonAngelThreads/DolphinBot/blob/master/PluginDocs_CN.md">📖文档</a>
      ·
      <a href="https://github.com/NeonAngelThreads/DolphinBot/issues">🐛提交建议/缺陷</a>
 </p> 
@@ -55,7 +55,7 @@ DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtoco
    - **高级日志系统**：DolphinAPI 还实现了 `TextComponent` 序列化器，可解析服务器消息的丰富颜色和样式，并提供更多调试信息。
    - **高性能**：DolphinBot 允许在单个客户端启动多个机器人实例，CPU 和内存占用低。
    - **易用**：可将机器人配置文件放入配置文件中，无需命令行定义，快速启动。
-### **快捷链接**：[自定义插件开发指南](PluginDocs.md)
+### **快捷链接**：[自定义插件开发指南](PluginDocs_CN.md)
 ## 功能：
    - 使用 CommandBuilder DolphinAPI 轻松注册以 `!` 开头的自定义命令。
    - 可在连接服务器期间**热注入**插件。
@@ -70,7 +70,7 @@ DolphinBot 是一个无头 Minecraft 机器人框架，基于 GeyserMC MCProtoco
 ## 截图：
 ### 在 Windows Server 2019 上运行：
 <p align="center">
-   <img src="../../assets/dev2.png">
+   <img src="assets/dev2.png">
 </p>
 
 ## 介绍：
@@ -176,7 +176,7 @@ java -Dvia.debug=true -jar "DolphinBot-[version].jar"
      java -jar "DolphinBot-[version]-full.jar" --username=Dolphin1 --password=123 --server=2b2t.xin --port=25565 --owner=Melibertan
      ```
    <p align="center">
-     <img src="../../assets/dolphinbot-profile.png" alt="profile list">
+     <img src="assets/dolphinbot-profile.png" alt="profile list">
    </p>
          
 > [!NOTE]

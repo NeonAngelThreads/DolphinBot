@@ -1,5 +1,5 @@
 ### Language: 
-[简体中文](README_CN.md) / [한국어](README_KO.md) / [Español](README_ES.md) / [Français](README_FR.md) / [Русский](README_RU.md) / **Português** / [English](README.md)
+[简体中文](README_CN.md) / [한국어](README_KO.md) / [Español](README_ES.md) / [Français](README_FR.md) / [Русский](README_RU.md) / **Português** / [English](../../README.md)
 # DolphinBot
 DolphinBot é um framework de bots Minecraft headless baseado em GeyserMC MCProtocolLib 1.21.11-SNAPSHOT (protocolo 774).
 <p align="center">
